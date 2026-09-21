@@ -289,47 +289,51 @@ export const Home: React.FC = () => {
               {/* FLOATING WORD CONSTELLATION */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                 
-                {/* SERENDIPITY (Strongest, top right) */}
+                {/* PRAGMATIC (Small, overlapping behind serendipity) */}
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, y: [-3, 3, -3] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.2 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
-                  className="absolute top-[8%] right-[5%] sm:top-[12%] sm:right-[15%] lg:right-[20%] bg-surface px-5 py-4 border-[0.5px] border-border-strong/40 shadow-sm rotate-2 z-20"
+                  initial={{ opacity: 0, rotate: -2, y: 0 }}
+                  animate={{ opacity: 0.9, y: [2, -1, 2] }}
+                  whileHover={{ y: -2, rotate: -1, opacity: 1, transition: { duration: 0.4 } }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
+                  className="hidden sm:block absolute top-[10%] right-[22%] lg:right-[26%] bg-[#FDFCF8] px-5 py-4 border border-black/[0.02] shadow-[0_4px_16px_-4px_rgba(0,0,0,0.02)] rounded-[4px_2px_3px_5px] z-10 pointer-events-auto cursor-default"
                 >
-                  <p className="font-serif text-xl sm:text-3xl text-foreground/90">serendipity</p>
-                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-2 uppercase tracking-[0.2em]">[ noun ]</p>
+                  <p className="font-serif text-sm sm:text-base text-foreground/80 italic tracking-wide">pragmatic</p>
                 </motion.div>
 
-                {/* PRAGMATIC (Small, overlapping serendipity) */}
+                {/* SERENDIPITY (Strongest, top right) */}
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.6, y: [2, -2, 2] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
-                  className="hidden sm:block absolute top-[9%] right-[25%] lg:right-[30%] bg-surface-tint/50 backdrop-blur-sm px-3 py-2 border-[0.5px] border-border-subtle shadow-sm -rotate-2 z-10"
+                  initial={{ opacity: 0, rotate: 1.5, y: 0 }}
+                  animate={{ opacity: 1, y: [-2, 2, -2] }}
+                  whileHover={{ y: -3, rotate: 0.5, transition: { duration: 0.4 } }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.2 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
+                  className="absolute top-[8%] right-[5%] sm:top-[14%] sm:right-[12%] lg:right-[18%] bg-gradient-to-br from-[#FFFFFF] to-[#FDFBF7] px-7 py-8 sm:px-9 sm:py-10 border border-black/[0.03] shadow-[0_12px_40px_-8px_rgba(0,0,0,0.04),_0_4px_12px_-2px_rgba(0,0,0,0.02)] rounded-[3px_5px_4px_2px] z-20 pointer-events-auto cursor-default flex flex-col"
                 >
-                  <p className="font-serif text-sm sm:text-base text-foreground/70 italic">pragmatic</p>
+                  <p className="font-serif text-2xl sm:text-4xl text-[#2A2928] tracking-tight">serendipity</p>
+                  <p className="font-sans text-[9px] sm:text-[10px] text-muted/60 mt-3 uppercase tracking-[0.25em] pl-1">[ noun ]</p>
                 </motion.div>
 
                 {/* EPHEMERAL (Medium, mid right) */}
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, y: [4, -4, 4] }}
+                  initial={{ opacity: 0, rotate: 2.5, y: 0 }}
+                  animate={{ opacity: 1, y: [3, -2, 3] }}
+                  whileHover={{ y: -3, rotate: 1.5, transition: { duration: 0.4 } }}
                   transition={{ opacity: { duration: 1.5, delay: 0.4 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
-                  className="hidden md:block absolute top-[45%] right-[8%] lg:right-[12%] bg-surface px-6 py-4 border-[0.5px] border-border-strong/30 shadow-subtle -rotate-3 z-10"
+                  className="hidden md:flex absolute top-[48%] right-[8%] lg:right-[10%] bg-gradient-to-tr from-[#FCFCFA] to-[#FFFFFF] px-8 py-7 border border-black/[0.02] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.03)] rounded-[2px_3px_5px_4px] z-10 pointer-events-auto cursor-default flex-col"
                 >
-                  <p className="font-serif text-2xl text-foreground/80">ephemeral</p>
-                  <p className="font-sans text-[9px] text-muted mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
+                  <p className="font-serif text-2xl lg:text-3xl text-[#302F2E] tracking-tight">ephemeral</p>
+                  <p className="font-sans text-[9px] text-muted/50 mt-2 uppercase tracking-[0.2em] self-end pr-2">[ adjective ]</p>
                 </motion.div>
 
                 {/* METICULOUS (Small, quiet, bottom right) */}
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.8, y: [-2, 2, -2] }}
+                  initial={{ opacity: 0, rotate: -1, y: 0 }}
+                  animate={{ opacity: 0.9, y: [-2, 1, -2] }}
+                  whileHover={{ y: -2, rotate: -0.5, opacity: 1, transition: { duration: 0.4 } }}
                   transition={{ opacity: { duration: 1.5, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
-                  className="absolute bottom-[8%] right-[10%] sm:bottom-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 border-[0.5px] border-border-subtle shadow-subtle rotate-1 z-10"
+                  className="absolute bottom-[8%] right-[10%] sm:bottom-[15%] sm:right-[20%] lg:right-[22%] bg-[#FBFaf6] px-6 py-5 border border-black/[0.03] shadow-[0_6px_20px_-4px_rgba(0,0,0,0.03)] rounded-[5px_3px_2px_4px] z-10 pointer-events-auto cursor-default flex flex-col"
                 >
-                  <p className="font-serif text-lg text-foreground/70">meticulous</p>
-                  <p className="font-sans text-[8px] text-muted/60 mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
+                  <p className="font-serif text-lg sm:text-xl text-[#363534] tracking-tight">meticulous</p>
+                  <p className="font-sans text-[8px] text-muted/50 mt-2 uppercase tracking-[0.2em] pl-0.5">[ adjective ]</p>
                 </motion.div>
                 
               </div>
