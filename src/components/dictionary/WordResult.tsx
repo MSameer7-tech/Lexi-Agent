@@ -36,11 +36,14 @@ export const WordResult: React.FC<WordResultProps> = ({ entry }) => {
 
   // Structured Editorial Layout
   return (
-    <div className="w-full">
-      <div className="rounded-[2rem] rounded-tl-md bg-surface border border-border-subtle shadow-elevated relative overflow-hidden">
+    <div className="w-full relative">
+      <div className="absolute -top-6 left-0 text-[9px] uppercase tracking-widest text-muted hidden md:block">
+        Vol. 1 / Lexicon
+      </div>
+      <div className="bg-surface border border-foreground shadow-sm relative overflow-hidden">
         {/* Decorative background glows */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-peach)] opacity-10 dark:opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--color-lavender)] opacity-15 dark:opacity-10 blur-3xl rounded-full translate-y-1/3 -translate-x-1/3"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-peach)] opacity-10 dark:opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--color-lavender)] opacity-15 dark:opacity-10 blur-3xl rounded-full translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
         
         <div className="relative z-10 p-8 md:p-12 lg:p-16 flex flex-col lg:flex-row gap-12 lg:gap-20">
           
@@ -64,37 +67,37 @@ export const WordResult: React.FC<WordResultProps> = ({ entry }) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mt-4">
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-12 h-12 rounded-full bg-[var(--color-sage)]/20 dark:bg-[var(--color-sage)]/10 text-[#4A5D4E] dark:text-[var(--color-sage)] flex items-center justify-center border border-[var(--color-sage)]/30 hover:bg-[var(--color-sage)]/40 transition-colors shadow-sm"
+                className="w-10 h-10 rounded-full border border-foreground/30 text-foreground flex items-center justify-center hover:bg-foreground hover:text-background transition-colors shadow-sm"
                 aria-label="Listen to pronunciation"
                 title="Pronounce"
               >
-                <Volume2 size={20} strokeWidth={1.5} />
+                <Volume2 size={16} strokeWidth={1} />
               </motion.button>
               
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSaved(!saved)}
-                className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all shadow-sm ${saved ? 'bg-[var(--color-lavender)] border-[var(--color-lavender)] text-foreground' : 'bg-surface-tint border-border-strong text-muted hover:text-foreground hover:bg-surface'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all shadow-sm ${saved ? 'bg-foreground border-foreground text-background' : 'border-foreground/30 text-foreground hover:bg-foreground hover:text-background'}`}
                 aria-label="Save word"
                 title="Save"
               >
-                <Bookmark size={20} strokeWidth={1.5} fill={saved ? 'currentColor' : 'none'} />
+                <Bookmark size={16} strokeWidth={1} fill={saved ? 'currentColor' : 'none'} />
               </motion.button>
               
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleCopy}
-                className="w-12 h-12 rounded-full bg-surface-tint border border-border-strong text-muted flex items-center justify-center hover:bg-surface hover:text-foreground transition-colors shadow-sm"
+                className="w-10 h-10 rounded-full border border-foreground/30 text-foreground flex items-center justify-center hover:bg-foreground hover:text-background transition-colors shadow-sm"
                 aria-label="Copy to clipboard"
                 title="Copy"
               >
-                {copied ? <Check size={20} strokeWidth={1.5} className="text-green-600 dark:text-green-400" /> : <Copy size={20} strokeWidth={1.5} />}
+                {copied ? <Check size={16} strokeWidth={1} /> : <Copy size={16} strokeWidth={1} />}
               </motion.button>
             </div>
           </div>

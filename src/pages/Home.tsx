@@ -423,8 +423,11 @@ export const Home: React.FC = () => {
             <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-sm z-40 pointer-events-none">
               <form 
                 onSubmit={handleSendMessage} 
-                className="relative flex items-end max-w-3xl mx-auto w-full pointer-events-auto bg-surface border border-border-strong rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] focus-within:ring-1 focus-within:ring-foreground transition-shadow duration-300"
+                className="relative flex items-end max-w-3xl mx-auto w-full pointer-events-auto bg-surface border border-foreground/20 rounded-none shadow-sm focus-within:border-foreground transition-colors duration-300"
               >
+                <div className="absolute -top-6 left-0 text-[9px] uppercase tracking-widest text-muted">
+                  Fig. 01 / Inquiry
+                </div>
                 <textarea
                   ref={textareaRef}
                   value={inputValue}
@@ -432,21 +435,23 @@ export const Home: React.FC = () => {
                   onKeyDown={handleKeyDown}
                   placeholder="Ask a follow up question..."
                   rows={1}
-                  className="w-full max-h-32 py-5 pl-6 pr-16 bg-transparent text-foreground focus:outline-none resize-none placeholder:text-subtle font-sans text-lg leading-relaxed custom-scrollbar"
+                  className="w-full max-h-32 py-5 pl-6 pr-16 bg-transparent text-foreground focus:outline-none resize-none placeholder:text-subtle font-serif italic text-lg leading-relaxed custom-scrollbar"
                   disabled={isLoading}
                 />
                 <div className="absolute right-3 bottom-3 flex items-center justify-center">
                   <button
                     type="submit"
                     disabled={!inputValue.trim() || isLoading}
-                    className="flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground text-background hover:scale-105 active:scale-95 transition-transform disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                    className="flex h-10 w-10 items-center justify-center bg-transparent text-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-30 border border-transparent hover:border-foreground disabled:hover:bg-transparent disabled:hover:text-foreground"
                   >
-                    <ArrowRight size={18} strokeWidth={2} />
+                    <ArrowRight size={18} strokeWidth={1} />
                   </button>
                 </div>
               </form>
               <div className="text-center mt-3 pointer-events-auto hidden sm:block">
-                <span className="text-xs text-subtle font-medium tracking-wide">Press <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Enter</kbd> to send, <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Shift</kbd> + <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Enter</kbd> for newline</span>
+                <span className="text-[10px] text-subtle font-sans tracking-widest uppercase">
+                  Press <kbd className="font-sans px-1 border-b border-border-strong">Enter</kbd> to send, <kbd className="font-sans px-1 border-b border-border-strong">Shift</kbd> + <kbd className="font-sans px-1 border-b border-border-strong">Enter</kbd> for newline
+                </span>
               </div>
             </div>
           </motion.div>
