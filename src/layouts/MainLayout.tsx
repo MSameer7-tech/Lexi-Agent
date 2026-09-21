@@ -30,7 +30,7 @@ export const MainLayout: React.FC = () => {
         
         {/* Left: Brand */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-foreground text-bg-base transition-transform group-hover:rotate-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-foreground text-background transition-transform group-hover:rotate-6">
             <BookA size={16} strokeWidth={2} />
           </div>
           <span className="font-serif text-2xl tracking-tight text-foreground">LexiAgent</span>
