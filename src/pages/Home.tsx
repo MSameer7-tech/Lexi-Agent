@@ -352,8 +352,8 @@ export const Home: React.FC = () => {
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
                       <WordResult entry={parseDictionaryMarkdown(message.content)} />
-                      <span className="text-[10px] text-border-strong font-medium uppercase tracking-widest ml-4 mt-2">
-                        LexiAgent • {formatTime(message.timestamp)}
+                      <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
+                        LexiAgent · {formatTime(message.timestamp)}
                       </span>
                     </div>
                   )}
@@ -403,38 +403,42 @@ export const Home: React.FC = () => {
             </div>
 
             {/* FLOATING INPUT AREA */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-sm z-40 pointer-events-none">
-              <form 
-                onSubmit={handleSendMessage} 
-                className="relative flex items-end max-w-3xl mx-auto w-full pointer-events-auto bg-surface border border-foreground/20 rounded-none shadow-sm focus-within:border-foreground transition-colors duration-300"
-              >
-                <div className="absolute -top-6 left-0 text-[9px] uppercase tracking-widest text-muted">
-                  Fig. 01 / Inquiry
+            <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-[2px] z-40 pointer-events-none flex flex-col items-center">
+              <div className="w-full max-w-[760px] relative pointer-events-auto">
+                <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
+                  FIG. 01 / INQUIRY
                 </div>
-                <textarea
-                  ref={textareaRef}
-                  value={inputValue}
-                  onChange={handleTextareaInput}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask a follow up question..."
-                  rows={1}
-                  className="w-full max-h-32 py-5 pl-6 pr-16 bg-transparent text-foreground focus:outline-none resize-none placeholder:text-subtle font-serif italic text-lg leading-relaxed custom-scrollbar"
-                  disabled={isLoading}
-                />
-                <div className="absolute right-3 bottom-3 flex items-center justify-center">
+                <form 
+                  onSubmit={handleSendMessage} 
+                  className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)] focus-within:border-foreground/30 focus-within:shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] focus-within:dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] focus-within:bg-white focus-within:dark:bg-[#2F2D28]`}
+                  style={{ borderWidth: '1px' }}
+                >
+                  <div className="absolute left-6 flex items-center text-muted pointer-events-none">
+                    <Search size={18} strokeWidth={1.5} />
+                  </div>
+                  <textarea
+                    ref={textareaRef}
+                    value={inputValue}
+                    onChange={handleTextareaInput}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask a follow up question..."
+                    rows={1}
+                    className="w-full min-h-[64px] sm:min-h-[80px] py-[22px] sm:py-[28px] pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
+                    disabled={isLoading}
+                  />
                   <button
                     type="submit"
                     disabled={!inputValue.trim() || isLoading}
-                    className="flex h-10 w-10 items-center justify-center bg-transparent text-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-30 border border-transparent hover:border-foreground disabled:hover:bg-transparent disabled:hover:text-foreground"
+                    className="absolute right-4 flex items-center justify-center w-12 h-12 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
                   >
-                    <ArrowRight size={18} strokeWidth={1} />
+                    <ArrowRight size={20} strokeWidth={1.5} />
                   </button>
-                </div>
-              </form>
+                </form>
               <div className="text-center mt-3 pointer-events-auto hidden sm:block">
                 <span className="text-[10px] text-subtle font-sans tracking-widest uppercase">
                   Press <kbd className="font-sans px-1 border-b border-border-strong">Enter</kbd> to send, <kbd className="font-sans px-1 border-b border-border-strong">Shift</kbd> + <kbd className="font-sans px-1 border-b border-border-strong">Enter</kbd> for newline
                 </span>
+              </div>
               </div>
             </div>
           </motion.div>

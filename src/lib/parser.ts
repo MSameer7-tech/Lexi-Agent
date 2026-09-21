@@ -1,67 +1,98 @@
+export interface ParsedDefinition {
+  text: string;
+  example?: string;
+}
+
 export interface ParsedDictionaryEntry {
   word?: string;
   partOfSpeech?: string;
   phonetic?: string;
-  definition?: string;
+  definitions?: ParsedDefinition[];
   synonyms?: string[];
   antonyms?: string[];
-  examples?: string[];
   rawMarkdown: string;
 }
 
-/**
- * Attempts to parse the current AI markdown response into structured dictionary fields.
- * If the markdown doesn't follow the expected structure, it returns the raw markdown for fallback rendering.
- */
 export function parseDictionaryMarkdown(markdown: string): ParsedDictionaryEntry {
   const entry: ParsedDictionaryEntry = { rawMarkdown: markdown };
 
   try {
-    // Extract Word (usually the first bold text, e.g., **serendipity**)
-    const wordMatch = markdown.match(/\*\*([^*]+)\*\*/);
-    if (wordMatch) {
-      entry.word = wordMatch[1].trim();
+    // Clean up carriage returns
+    const lines = markdown.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    
+    // Check if it's the new n8n format: "word (pos)" on line 1
+    const firstLineMatch = lines[0].match(/^([^(]+?)\s*\(([^)]+)\)$/);
+    if (firstLineMatch) {
+      entry.word = firstLineMatch[1].trim();
+      entry.partOfSpeech = firstLineMatch[2].trim();
+    } else {
+      // Fallback old format
+      const wordMatch = markdown.match(/\*\*([^*]+)\*\*/);
+      if (wordMatch) entry.word = wordMatch[1].trim();
+      const posMatch = markdown.match(/^\*\*.*\*\*\s*\n+\*([^*]+)\*/);
+      if (posMatch) entry.partOfSpeech = posMatch[1].trim();
     }
 
-    // Extract Part of Speech (usually the first italic text, e.g., *noun*)
-    // We only look near the beginning to avoid catching other italics
-    const posMatch = markdown.match(/^\*\*.*\*\*\s*\n+\*([^*]+)\*/);
-    if (posMatch) {
-      entry.partOfSpeech = posMatch[1].trim();
+    // Pronunciation
+    const pronMatch = markdown.match(/Pronunciation:\s*(.+)$/m);
+    if (pronMatch) {
+      entry.phonetic = pronMatch[1].trim();
     }
 
-    // Extract Synonyms
-    const synonymsMatch = markdown.match(/\*\*Synonyms:\*\*\s*(.+?)(?=\n\n|\n\*\*|$)/i);
-    if (synonymsMatch) {
-      entry.synonyms = synonymsMatch[1].split(',').map(s => s.trim());
+    // Synonyms
+    const synMatch = markdown.match(/Synonyms(?:[^:]*):\s*(.+)$/m) || markdown.match(/\*\*Synonyms:\*\*\s*(.+)$/m);
+    if (synMatch) {
+      entry.synonyms = synMatch[1].split(',').map(s => s.trim().replace(/\.$/, ''));
     }
 
-    // Extract Antonyms
-    const antonymsMatch = markdown.match(/\*\*Antonyms:\*\*\s*(.+?)(?=\n\n|\n\*\*|$)/i);
-    if (antonymsMatch) {
-      entry.antonyms = antonymsMatch[1].split(',').map(s => s.trim());
+    // Antonyms
+    const antMatch = markdown.match(/Antonyms(?:[^:]*):\s*(.+)$/m) || markdown.match(/\*\*Antonyms:\*\*\s*(.+)$/m);
+    if (antMatch) {
+      entry.antonyms = antMatch[1].split(',').map(s => s.trim().replace(/\.$/, ''));
     }
 
-    // Extract Example
-    const exampleMatch = markdown.match(/\*\*Example:\*\*\s*(.+?)(?=\n\n|\n\*\*|$)/i);
-    if (exampleMatch) {
-      entry.examples = [exampleMatch[1].trim().replace(/^"|"$/g, '')];
-    }
-
-    // Extract Definition (the text between part of speech and the first list like Synonyms/Example)
-    // This is a bit tricky, but we can find the text between the POS and the next **
-    if (entry.word && entry.partOfSpeech) {
-      const posRegexStr = `\\*${entry.partOfSpeech}\\*`;
-      const regex = new RegExp(`${posRegexStr}\\s*\\n+([\\s\\S]+?)(?:\\n\\n\\*\\*|$)`);
-      const defMatch = markdown.match(regex);
-      if (defMatch) {
-        entry.definition = defMatch[1].trim();
+    // Definitions
+    // We look for lines starting with "1.", "2.", or just after "Definition"
+    entry.definitions = [];
+    
+    const defBlockRegex = /Definition\s*\n([\s\S]+?)(?=\nSynonyms|\nAntonyms|$)/i;
+    const defBlockMatch = markdown.match(defBlockRegex);
+    
+    if (defBlockMatch) {
+      const defLines = defBlockMatch[1].split('\n').map(l => l.trim());
+      let currentDef: ParsedDefinition | null = null;
+      
+      for (const line of defLines) {
+        if (/^\d+\.\s+/.test(line)) {
+          if (currentDef) entry.definitions.push(currentDef);
+          currentDef = { text: line.replace(/^\d+\.\s+/, '').trim() };
+        } else if (line.toLowerCase().startsWith('example') || line.toLowerCase().startsWith('*example')) {
+          const exMatch = line.match(/:\s*(.+)$/);
+          if (currentDef && exMatch) {
+            currentDef.example = exMatch[1].replace(/^"|"$/g, '').trim();
+          } else if (currentDef) {
+            currentDef.example = line.replace(/^(?:\*?)Example.*?(?:\*?):\s*/i, '').replace(/^"|"$/g, '').trim();
+          }
+        } else if (currentDef && line.length > 0) {
+           currentDef.text += " " + line;
+        } else if (!currentDef && line.length > 0) {
+           currentDef = { text: line };
+        }
+      }
+      if (currentDef) {
+        entry.definitions.push(currentDef);
+      }
+    } else {
+      // Old format fallback
+      const oldDefMatch = markdown.match(/\*noun\*\s*\n+([\s\S]+?)(?:\n\n\*\*|$)/i);
+      if (oldDefMatch) {
+        entry.definitions.push({ text: oldDefMatch[1].trim() });
       }
     }
-
+    
     return entry;
   } catch (error) {
-    console.error("Failed to parse dictionary markdown", error);
+    console.error("Failed to parse", error);
     return { rawMarkdown: markdown };
   }
 }
