@@ -178,11 +178,35 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden"
           >
-            {/* SUBTLE BACKGROUND WORD */}
-            <div className="absolute inset-0 flex items-center justify-end md:justify-center pointer-events-none z-0 overflow-hidden select-none">
-              <span className="text-[35vw] md:text-[25vw] font-serif leading-none text-foreground opacity-[0.02] tracking-tighter ml-[10vw]">
-                LEXICON
-              </span>
+            {/* BACKGROUND ART DIRECTION */}
+            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
+              
+              {/* Layer 3: Editorial Grid */}
+              <div className="absolute top-[30%] left-0 right-0 h-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              <div className="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              <div className="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              {/* Intersection marks */}
+              <div className="absolute top-[30%] left-[10%] md:left-[15%] w-2 h-2 -ml-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
+              <div className="absolute top-[30%] right-[10%] md:right-[15%] w-2 h-2 -mr-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
+
+              {/* Layer 4: Tonal Atmosphere */}
+              <div className="absolute top-0 left-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_30%_30%,var(--color-peach)_0%,transparent_70%)] opacity-[0.04] dark:opacity-[0.03]"></div>
+
+              {/* Layer 5: Abstract Typographic Fragment */}
+              <div className="absolute -bottom-[15%] -right-[5%] opacity-[0.015] dark:opacity-[0.02]">
+                <span className="font-serif text-[60vh] leading-none text-foreground italic">
+                  &amp;
+                </span>
+              </div>
+
+              {/* Editorial Edge Details */}
+              <div className="absolute bottom-8 left-8 text-[8px] uppercase tracking-widest text-muted opacity-40 hidden md:block">
+                WORDS / 2026
+              </div>
+              <div className="absolute top-32 right-8 text-[8px] uppercase tracking-[0.3em] text-muted opacity-40 hidden md:block [writing-mode:vertical-lr]">
+                VOL. 01 / LEXICON
+              </div>
+
             </div>
 
             {/* HERO SECTION */}
