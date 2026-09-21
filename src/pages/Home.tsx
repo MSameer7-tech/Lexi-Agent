@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CornerDownLeft, BookOpen, BrainCircuit, SpellCheck, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
+import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown } from '../lib/parser';
 import { sendMessage } from '../services/api';
 import type { Message, Session } from '../types';
@@ -14,6 +15,7 @@ export const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeEvents, setActiveEvents] = useState<AgentEvent[]>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -47,6 +49,12 @@ export const Home: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
+    // Initialize telemetry
+    setActiveEvents([
+      { id: '1', label: 'Request sent to LexiAgent', timestamp: Date.now(), status: 'success' },
+      { id: '2', label: 'Processing request', status: 'pending' }
+    ]);
+
     const newUserMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -73,13 +81,34 @@ export const Home: React.FC = () => {
     }
 
     try {
+      // Simulate an intermediate event after 500ms
+      setTimeout(() => {
+        setActiveEvents(prev => {
+          const newEvents = [...prev];
+          if (newEvents[1]) newEvents[1].status = 'success';
+          return [
+            ...newEvents,
+            { id: '3', label: 'Retrieving dictionary data', status: 'pending' }
+          ];
+        });
+      }, 500);
+
       const response = await sendMessage({ message: messageText, sessionId });
       
+      const finalEvents: AgentEvent[] = [
+        { id: '1', label: 'Request sent to LexiAgent', timestamp: Date.now() - 1200, status: 'success' },
+        { id: '2', label: 'Processing request', status: 'success' },
+        { id: '3', label: 'Retrieving dictionary data', status: 'success', details: 'Queried primary lexicon' },
+        { id: '4', label: 'Response generated', timestamp: Date.now(), status: 'success' }
+      ];
+      setActiveEvents(finalEvents);
+
       const newAgentMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'agent',
         content: response.response,
         timestamp: Date.now(),
+        events: finalEvents
       };
 
       setSession(prev => prev ? {
@@ -90,6 +119,12 @@ export const Home: React.FC = () => {
     } catch (err) {
       console.error('Error fetching response:', err);
       setError("LexiAgent had trouble finding that information. Please try again.");
+      setActiveEvents(prev => {
+        const newEvents = [...prev];
+        const pendingItem = newEvents.find(e => e.status === 'pending');
+        if (pendingItem) pendingItem.status = 'error';
+        return newEvents;
+      });
     } finally {
       setIsLoading(false);
       // Reset textarea height
@@ -324,6 +359,9 @@ export const Home: React.FC = () => {
                     </div>
                   ) : (
                     <div className="w-full flex flex-col items-start gap-4">
+                      {message.events && message.events.length > 0 && (
+                        <ActivityTimeline events={message.events} className="mb-2" />
+                      )}
                       <WordResult entry={parseDictionaryMarkdown(message.content)} />
                       <span className="text-[10px] text-border-strong font-medium uppercase tracking-widest ml-4 mt-2">
                         LexiAgent • {formatTime(message.timestamp)}
@@ -338,12 +376,15 @@ export const Home: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col items-start w-full"
+                  className="flex flex-col items-start w-full gap-4"
                 >
+                  {activeEvents.length > 0 && (
+                    <ActivityTimeline events={activeEvents} className="mb-2" />
+                  )}
                   <div className="pl-4 border-l-2 border-border-strong flex items-center h-12">
                      <p className="font-sans text-sm text-muted animate-pulse tracking-wide flex items-center gap-2">
                        <span className="inline-block w-3 h-3 border-2 border-foreground border-t-transparent rounded-full animate-spin"></span>
-                       Searching the lexicon...
+                       Synthesizing response...
                      </p>
                   </div>
                 </motion.div>

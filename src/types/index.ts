@@ -1,8 +1,11 @@
+import type { AgentEvent } from '../components/agent/ActivityTimeline';
+
 export interface Message {
   id: string;
   role: 'user' | 'agent';
   content: string;
   timestamp: number;
+  events?: AgentEvent[];
 }
 
 export interface Session {
