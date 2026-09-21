@@ -10,6 +10,10 @@ export interface Message {
 
 export interface Session {
   id: string;
+  title: string;
+  preview?: string;
+  topic?: string;
+  isPinned?: boolean;
   messages: Message[];
   createdAt: number;
   updatedAt: number;

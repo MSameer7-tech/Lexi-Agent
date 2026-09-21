@@ -3,10 +3,13 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion } from 'framer-motion';
+import { HistoryDrawer } from '../components/history/HistoryDrawer';
+import { useHistoryStore } from '../store/historyStore';
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
+  const { setDrawerOpen } = useHistoryStore();
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
@@ -18,8 +21,8 @@ export const MainLayout: React.FC = () => {
   };
 
   const navItems = [
-    { path: '/history', label: 'History', icon: Clock },
-    { path: '/settings', label: 'Settings', icon: Settings },
+    { type: 'button', action: () => setDrawerOpen(true), label: 'History', icon: Clock, id: 'history' },
+    { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },
   ];
 
   return (
@@ -34,16 +37,10 @@ export const MainLayout: React.FC = () => {
         
         <nav className="flex items-center gap-6 md:gap-8">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "relative text-sm font-medium tracking-wide uppercase transition-colors hover:text-foreground",
-                  isActive ? "text-foreground" : "text-muted"
-                )}
-              >
+            const isActive = item.type === 'link' && location.pathname === item.path;
+            
+            const content = (
+              <>
                 <span className="hidden sm:inline">{item.label}</span>
                 <item.icon size={18} className="sm:hidden" />
                 {isActive && (
@@ -53,6 +50,25 @@ export const MainLayout: React.FC = () => {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
+              </>
+            );
+
+            const className = cn(
+              "relative text-sm font-medium tracking-wide uppercase transition-colors hover:text-foreground",
+              isActive ? "text-foreground" : "text-muted"
+            );
+
+            if (item.type === 'button') {
+              return (
+                <button key={item.id} onClick={item.action} className={className}>
+                  {content}
+                </button>
+              );
+            }
+
+            return (
+              <Link key={item.id} to={item.path!} className={className}>
+                {content}
               </Link>
             );
           })}
@@ -73,6 +89,7 @@ export const MainLayout: React.FC = () => {
         <Outlet />
       </main>
 
+      <HistoryDrawer />
     </div>
   );
 };

@@ -5,12 +5,15 @@ import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown } from '../lib/parser';
 import { sendMessage } from '../services/api';
-import type { Message, Session } from '../types';
+import { useHistoryStore } from '../store/historyStore';
+import type { Message } from '../types';
 
 export const Home: React.FC = () => {
+  const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession } = useHistoryStore();
+  const session = sessions.find(s => s.id === activeSessionId) || null;
+
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -19,6 +22,17 @@ export const Home: React.FC = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sync isSearching state based on active session
+  useEffect(() => {
+    if (activeSessionId) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+      setQuery('');
+      setInputValue('');
+    }
+  }, [activeSessionId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,18 +80,17 @@ export const Home: React.FC = () => {
     const sessionId = session?.id || 'session-' + Date.now();
 
     if (isFirstMessage) {
-      setSession({
+      addSession({
         id: sessionId,
+        title: messageText.slice(0, 40) + (messageText.length > 40 ? '...' : ''),
+        preview: messageText,
         messages: [newUserMessage],
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
+      setActiveSession(sessionId);
     } else {
-      setSession(prev => prev ? {
-        ...prev,
-        messages: [...prev.messages, newUserMessage],
-        updatedAt: Date.now(),
-      } : null);
+      addMessageToSession(sessionId, newUserMessage);
     }
 
     try {
@@ -111,11 +124,7 @@ export const Home: React.FC = () => {
         events: finalEvents
       };
 
-      setSession(prev => prev ? {
-        ...prev,
-        messages: [...prev.messages, newAgentMessage],
-        updatedAt: Date.now(),
-      } : null);
+      addMessageToSession(sessionId, newAgentMessage);
     } catch (err) {
       console.error('Error fetching response:', err);
       setError("LexiAgent had trouble finding that information. Please try again.");
@@ -152,11 +161,8 @@ export const Home: React.FC = () => {
     if (session && session.messages.length > 0) {
       const lastUserMessage = [...session.messages].reverse().find(m => m.role === 'user');
       if (lastUserMessage) {
-        // Remove the user message from state so it gets re-added by executeTurn
-        setSession(prev => prev ? {
-          ...prev,
-          messages: prev.messages.filter(m => m.id !== lastUserMessage.id)
-        } : null);
+        // We do not delete messages from history easily here since we rely on the store. 
+        // For now, retry just re-submits the last message query.
         executeTurn(lastUserMessage.content);
       }
     }
