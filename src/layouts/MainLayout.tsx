@@ -7,7 +7,7 @@ import { useHistoryStore } from '../store/historyStore';
 export const MainLayout: React.FC = () => {
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
-  const { setDrawerOpen } = useHistoryStore();
+  const { setDrawerOpen, setActiveSession } = useHistoryStore();
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
@@ -29,7 +29,7 @@ export const MainLayout: React.FC = () => {
       <header className="absolute top-0 w-full z-50 flex items-center justify-between px-6 py-8 md:px-12 md:py-10 bg-transparent">
         
         {/* Left: Brand */}
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/" onClick={() => setActiveSession(null)} className="flex items-center gap-3 group">
           <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-foreground text-background transition-transform group-hover:rotate-6">
             <BookA size={16} strokeWidth={2} />
           </div>
