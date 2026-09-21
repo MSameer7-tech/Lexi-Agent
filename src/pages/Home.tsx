@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CornerDownLeft, BookOpen, BrainCircuit, SpellCheck, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { CornerDownLeft, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown } from '../lib/parser';
@@ -176,42 +176,39 @@ export const Home: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)', y: -20 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full flex-1 pb-32"
+            className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden"
           >
             {/* HERO SECTION */}
-            <section className="relative w-full max-w-7xl mx-auto px-6 md:px-12 pt-10 md:pt-20 pb-24 md:pb-32 overflow-hidden flex flex-col md:flex-row items-center min-h-[75vh]">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-peach)] opacity-20 dark:opacity-5 blur-3xl rounded-[60%_40%_30%_70%/60%_30%_70%_40%] -z-10 translate-x-1/3 -translate-y-1/4 animate-pulse duration-[10s]"></div>
-              <div className="absolute bottom-10 left-10 w-72 h-72 bg-[var(--color-lavender)] opacity-30 dark:opacity-10 blur-3xl rounded-[40%_60%_70%_30%/40%_70%_30%_60%] -z-10 -translate-x-1/2"></div>
-              <div className="hidden lg:block absolute top-0 bottom-0 left-[60%] w-[1px] bg-border-subtle -z-10"></div>
-
-              <div className="w-full lg:w-[55%] z-10 relative">
-                <div className="mb-4 inline-flex items-center gap-2">
-                  <div className="w-8 h-[1px] bg-foreground"></div>
-                  <span className="font-sans text-xs font-semibold tracking-[0.2em] uppercase text-muted">A modern lexicon</span>
-                </div>
+            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 pt-20 pb-10">
+              
+              {/* Left Content (Typography & Search) */}
+              <div className="w-full lg:w-[50%] xl:w-[45%] z-10 relative mt-10 md:mt-0">
                 
-                <h1 className="font-serif text-6xl sm:text-7xl lg:text-[5.5rem] leading-[1.05] text-foreground tracking-tighter mb-8">
+                <h1 className="font-serif text-6xl sm:text-7xl lg:text-[6rem] leading-[1.05] text-foreground tracking-tighter mb-8">
                   Words, <br/>
                   <span className="italic text-muted font-light relative">
                     understood
-                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-[var(--color-peach)] opacity-50 dark:opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                      <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="transparent" />
+                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-muted opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                      <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
                     </svg>
                   </span> <br/>
                   differently.
                 </h1>
                 
                 <p className="font-sans text-lg md:text-xl text-subtle max-w-md mb-12 leading-relaxed">
-                  LexiAgent lets you explore the nuance of language through natural, intelligent conversation.
+                  LexiAgent lets you explore language through natural, intelligent conversation.
                 </p>
 
-                <div className="max-w-xl relative">
+                <div className="max-w-2xl relative">
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface border transition-all duration-500 rounded-2xl ${isInputFocused ? 'border-foreground shadow-elevated' : 'border-border-strong shadow-subtle'}`}
+                    className={`relative flex items-center bg-surface border transition-all duration-500 rounded-none ${isInputFocused ? 'border-foreground shadow-sm' : 'border-border-strong shadow-subtle'}`}
                   >
+                    <div className="absolute -top-6 left-0 text-[9px] uppercase tracking-widest text-muted hidden sm:block">
+                      Fig. 01 / Inquiry
+                    </div>
                     <div className={`absolute left-5 flex items-center transition-colors duration-300 ${isInputFocused ? 'text-foreground' : 'text-muted'}`}>
-                      <Search size={22} strokeWidth={1.5} />
+                      <Search size={22} strokeWidth={1} />
                     </div>
                     <input
                       type="text"
@@ -220,34 +217,30 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-16 sm:h-20 pl-14 pr-20 bg-transparent text-lg sm:text-xl text-foreground focus:outline-none placeholder:text-subtle/70 placeholder:font-light"
+                      className="w-full h-16 sm:h-20 pl-14 pr-20 bg-transparent text-lg sm:text-xl text-foreground font-serif italic focus:outline-none placeholder:text-subtle/70 placeholder:font-light"
                     />
                     <button
                       type="submit"
                       disabled={!query.trim()}
-                      className="absolute right-3 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground text-background disabled:opacity-40 hover:scale-105 active:scale-95 transition-all duration-300 shadow-subtle"
+                      className="absolute right-3 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-transparent border border-transparent hover:border-foreground text-foreground disabled:opacity-30 disabled:border-transparent transition-all duration-300"
                     >
-                      <CornerDownLeft size={20} strokeWidth={1.5} />
+                      <CornerDownLeft size={20} strokeWidth={1} />
                     </button>
                   </form>
                   
-                  <div className="mt-8">
-                    <p className="text-xs uppercase tracking-widest text-muted font-medium mb-4 flex items-center gap-2">
-                      <Search size={12} /> Try asking
-                    </p>
-                    <div className="flex flex-col gap-3">
+                  <div className="mt-10">
+                    <div className="flex flex-col gap-4">
                       {examplePrompts.map((prompt, i) => (
                         <motion.button
                           key={prompt}
-                          initial={{ opacity: 0, x: -10 }}
+                          initial={{ opacity: 0, x: -5 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.5 + (i * 0.1) }}
                           onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
                           className="text-left font-serif text-lg text-subtle hover:text-foreground transition-colors duration-300 flex items-center group w-max"
                         >
-                          <span className="w-6 text-sm text-border-strong group-hover:text-foreground transition-colors">0{i+1}</span>
+                          <span className="w-8 text-[10px] font-sans tracking-widest text-border-strong group-hover:text-foreground transition-colors">0{i+1}</span>
                           <span className="border-b border-transparent group-hover:border-foreground/30 transition-colors pb-0.5">{prompt}</span>
-                          <ArrowRight size={14} className="ml-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                         </motion.button>
                       ))}
                     </div>
@@ -255,69 +248,77 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              <div className="hidden lg:flex w-[45%] relative h-[600px] justify-center items-center">
+              {/* FLOATING WORD CONSTELLATION */}
+              {/* Absolute positioning to create intentional whitespace */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                
+                {/* Top Right (Visible on all sizes, repositioned on mobile) */}
                 <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                  className="absolute top-1/4 right-[20%] bg-surface px-6 py-4 rounded-xl shadow-elevated border border-border-subtle rotate-3 z-20"
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: 1,
+                    y: [-4, 4, -4],
+                  }}
+                  transition={{ 
+                    opacity: { duration: 1, delay: 0.2 },
+                    y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
+                  }}
+                  className="absolute top-[5%] right-[5%] sm:top-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 sm:px-6 sm:py-4 border border-border-subtle shadow-subtle rotate-2"
                 >
-                  <p className="font-serif text-2xl text-foreground">serendipity</p>
-                  <p className="font-sans text-xs text-muted mt-1 uppercase tracking-widest">[ noun ]</p>
+                  <p className="font-serif text-lg sm:text-2xl text-foreground">serendipity</p>
+                  <p className="font-sans text-[8px] sm:text-[10px] text-muted mt-1 uppercase tracking-widest">[ noun ]</p>
                 </motion.div>
 
+                {/* Upper/Mid Right (Hidden on mobile to save space) */}
                 <motion.div 
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
-                  className="absolute bottom-1/3 left-[10%] bg-surface-tint px-6 py-4 rounded-xl border border-border-subtle -rotate-6 z-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: 1,
+                    y: [3, -3, 3],
+                  }}
+                  transition={{ 
+                    opacity: { duration: 1, delay: 0.4 },
+                    y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 1 }
+                  }}
+                  className="hidden md:block absolute top-[40%] right-[5%] lg:right-[10%] bg-surface px-7 py-5 border border-border-subtle shadow-subtle -rotate-3"
                 >
-                  <p className="font-serif text-xl text-muted italic line-through decoration-1">predictable</p>
-                  <p className="font-serif text-2xl text-foreground mt-1">ephemeral</p>
+                  <p className="font-serif text-3xl text-foreground">ephemeral</p>
+                  <p className="font-sans text-[10px] text-muted mt-2 uppercase tracking-widest">[ adjective ]</p>
+                </motion.div>
+
+                {/* Lower Right (Moved down on mobile) */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: 1,
+                    y: [-2, 2, -2],
+                  }}
+                  transition={{ 
+                    opacity: { duration: 1, delay: 0.6 },
+                    y: { repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }
+                  }}
+                  className="absolute bottom-[5%] right-[10%] sm:bottom-[20%] sm:right-[25%] lg:right-[30%] bg-surface px-4 py-2 sm:px-5 sm:py-3 border border-border-subtle shadow-subtle rotate-1"
+                >
+                  <p className="font-serif text-lg sm:text-xl text-foreground">meticulous</p>
+                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-1 uppercase tracking-widest">[ adjective ]</p>
+                </motion.div>
+
+                {/* Left/Middle (Hidden on mobile) */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: 1,
+                    y: [2, -2, 2],
+                  }}
+                  transition={{ 
+                    opacity: { duration: 1, delay: 0.8 },
+                    y: { repeat: Infinity, duration: 8, ease: "easeInOut", delay: 2 }
+                  }}
+                  className="hidden md:block absolute top-[10%] left-[45%] lg:left-[55%] bg-surface/80 backdrop-blur-sm px-4 py-2 border border-border-subtle shadow-subtle -rotate-2"
+                >
+                  <p className="font-serif text-lg text-muted italic line-through decoration-border-strong">pragmatic</p>
                 </motion.div>
                 
-                <span className="absolute left-1/3 top-1/3 font-serif text-[20rem] leading-none text-border-subtle/50 select-none -z-10">"</span>
-              </div>
-            </section>
-
-            <div className="w-full max-w-7xl mx-auto px-6 md:px-12">
-              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-border-strong to-transparent opacity-50"></div>
-            </div>
-
-            <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-24">
-              <div className="mb-16">
-                <h2 className="font-serif text-4xl text-foreground mb-4">A complete toolkit.</h2>
-                <p className="font-sans text-muted">Everything you need to master a word, thoughtfully presented.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[160px]">
-                <div className="lg:col-span-2 lg:row-span-2 bg-surface border border-border-subtle rounded-2xl p-8 flex flex-col justify-between group hover:border-foreground/30 transition-colors">
-                  <div className="w-12 h-12 bg-surface-tint rounded-xl flex items-center justify-center text-foreground mb-6 group-hover:scale-110 transition-transform duration-500">
-                    <BookOpen size={24} strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-3xl text-foreground mb-2">Definitions</h3>
-                    <p className="text-subtle font-sans leading-relaxed">Precise, context-aware meanings extracted from the world's most trusted lexicons.</p>
-                  </div>
-                </div>
-                <div className="lg:col-span-2 bg-[var(--color-sage)]/20 dark:bg-[var(--color-sage)]/10 border border-[var(--color-sage)]/30 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden">
-                  <SpellCheck size={100} className="absolute -right-6 -bottom-6 text-[var(--color-sage)] opacity-40 dark:opacity-20 stroke-1" />
-                  <h3 className="font-serif text-2xl text-[#4A5D4E] dark:text-[var(--color-sage)] mb-2 relative z-10">Real-world Examples</h3>
-                  <p className="font-serif italic text-[#4A5D4E]/80 dark:text-[var(--color-sage)]/80 relative z-10">"The <span className="underline decoration-wavy underline-offset-4">ephemeral</span> nature of fashion."</p>
-                </div>
-              </div>
-            </section>
-
-            <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-16">
-              <div className="max-w-2xl p-10 md:p-14 bg-surface-tint border border-border-strong rounded-3xl relative">
-                <BrainCircuit size={32} className="text-muted mb-6" strokeWidth={1} />
-                <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4 leading-tight">
-                  LexiAgent doesn't just answer. <br/>
-                  <span className="text-muted italic">It knows when to look something up.</span>
-                </h2>
-                <p className="font-sans text-subtle leading-relaxed text-lg">
-                  Powered by an autonomous reasoning loop, it curates factual dictionary data before crafting a response, ensuring precision meets elegance.
-                </p>
               </div>
             </section>
           </motion.div>
