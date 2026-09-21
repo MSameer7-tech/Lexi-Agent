@@ -22,12 +22,11 @@ export const WordResult: React.FC<WordResultProps> = ({ entry }) => {
   // but wrap it in our beautiful container
   if (!entry.word || !entry.definition) {
     return (
-      <div className="w-full lg:max-w-[90%]">
-        <div className="p-8 md:p-12 rounded-[2rem] rounded-tl-md bg-surface border border-border-subtle shadow-subtle relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-lavender)] opacity-10 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 transition-opacity duration-700 group-hover:opacity-20"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[var(--color-peach)] opacity-5 blur-3xl rounded-full translate-y-1/2 -translate-x-1/2 transition-opacity duration-700 group-hover:opacity-15"></div>
+      <div className="w-full">
+        <div className="pl-6 md:pl-10 border-l-[3px] border-[var(--color-peach)]/50 relative py-2 group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-peach)] opacity-5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 transition-opacity duration-700 group-hover:opacity-10 pointer-events-none"></div>
           
-          <div className="relative z-10">
+          <div className="relative z-10 font-serif text-lg md:text-xl text-foreground leading-loose">
             <MarkdownRenderer content={entry.rawMarkdown} />
           </div>
         </div>

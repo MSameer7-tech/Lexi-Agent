@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CornerDownLeft, BookOpen, BrainCircuit, SpellCheck, Search, ArrowRight, Sparkles, Volume2, Split } from 'lucide-react';
+import { CornerDownLeft, BookOpen, BrainCircuit, SpellCheck, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { parseDictionaryMarkdown } from '../lib/parser';
 import { sendMessage } from '../services/api';
@@ -13,7 +13,10 @@ export const Home: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,60 +24,28 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [session?.messages]);
+  }, [session?.messages, isLoading, error]);
 
-  const handleInitialSearch = async (e: React.FormEvent | string) => {
-    if (typeof e !== 'string') e.preventDefault();
-    const searchQuery = typeof e === 'string' ? e : query;
-    if (!searchQuery.trim()) return;
+  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+    // Auto-resize
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  };
 
-    setIsSearching(true);
-    setIsLoading(true);
-
-    const sessionId = 'session-' + Date.now();
-    const newUserMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: searchQuery,
-      timestamp: Date.now(),
-    };
-
-    setSession({
-      id: sessionId,
-      messages: [newUserMessage],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-
-    try {
-      const response = await sendMessage({ message: searchQuery, sessionId });
-      
-      const newAgentMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'agent',
-        content: response.response,
-        timestamp: Date.now(),
-      };
-
-      setSession(prev => prev ? {
-        ...prev,
-        messages: [...prev.messages, newAgentMessage],
-        updatedAt: Date.now(),
-      } : null);
-    } catch (error) {
-      console.error('Error fetching definition:', error);
-    } finally {
-      setIsLoading(false);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
     }
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim() || !session || isLoading) return;
-
-    const messageText = inputValue;
-    setInputValue('');
+  const executeTurn = async (messageText: string) => {
+    if (!messageText.trim()) return;
+    
+    setIsSearching(true);
     setIsLoading(true);
+    setError(null);
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
@@ -83,14 +54,26 @@ export const Home: React.FC = () => {
       timestamp: Date.now(),
     };
 
-    setSession(prev => prev ? {
-      ...prev,
-      messages: [...prev.messages, newUserMessage],
-      updatedAt: Date.now(),
-    } : null);
+    const isFirstMessage = !session;
+    const sessionId = session?.id || 'session-' + Date.now();
+
+    if (isFirstMessage) {
+      setSession({
+        id: sessionId,
+        messages: [newUserMessage],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    } else {
+      setSession(prev => prev ? {
+        ...prev,
+        messages: [...prev.messages, newUserMessage],
+        updatedAt: Date.now(),
+      } : null);
+    }
 
     try {
-      const response = await sendMessage({ message: messageText, sessionId: session.id });
+      const response = await sendMessage({ message: messageText, sessionId });
       
       const newAgentMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -104,10 +87,43 @@ export const Home: React.FC = () => {
         messages: [...prev.messages, newAgentMessage],
         updatedAt: Date.now(),
       } : null);
-    } catch (error) {
-      console.error('Error fetching response:', error);
+    } catch (err) {
+      console.error('Error fetching response:', err);
+      setError("LexiAgent had trouble finding that information. Please try again.");
     } finally {
       setIsLoading(false);
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    }
+  };
+
+  const handleInitialSearch = (e: React.FormEvent | string) => {
+    if (typeof e !== 'string') e.preventDefault();
+    const searchQuery = typeof e === 'string' ? e : query;
+    executeTurn(searchQuery);
+  };
+
+  const handleSendMessage = (e: React.FormEvent | React.KeyboardEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || isLoading) return;
+    const text = inputValue;
+    setInputValue('');
+    executeTurn(text);
+  };
+
+  const handleRetry = () => {
+    if (session && session.messages.length > 0) {
+      const lastUserMessage = [...session.messages].reverse().find(m => m.role === 'user');
+      if (lastUserMessage) {
+        // Remove the user message from state so it gets re-added by executeTurn
+        setSession(prev => prev ? {
+          ...prev,
+          messages: prev.messages.filter(m => m.id !== lastUserMessage.id)
+        } : null);
+        executeTurn(lastUserMessage.content);
+      }
     }
   };
 
@@ -117,29 +133,29 @@ export const Home: React.FC = () => {
     "How do you pronounce serendipity?",
   ];
 
+  const formatTime = (ts: number) => {
+    return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(ts);
+  };
+
   return (
     <div className="flex-1 flex flex-col w-full h-full relative">
       <AnimatePresence mode="wait">
         {!isSearching ? (
+          // LANDING STATE (unchanged)
           <motion.div
             key="landing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)', y: -20 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full flex-1"
+            className="w-full flex-1 pb-32"
           >
             {/* HERO SECTION */}
             <section className="relative w-full max-w-7xl mx-auto px-6 md:px-12 pt-10 md:pt-20 pb-24 md:pb-32 overflow-hidden flex flex-col md:flex-row items-center min-h-[75vh]">
-              
-              {/* Decorative organic background blobs */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-peach)] opacity-20 dark:opacity-5 blur-3xl rounded-[60%_40%_30%_70%/60%_30%_70%_40%] -z-10 translate-x-1/3 -translate-y-1/4 animate-pulse duration-[10s]"></div>
               <div className="absolute bottom-10 left-10 w-72 h-72 bg-[var(--color-lavender)] opacity-30 dark:opacity-10 blur-3xl rounded-[40%_60%_70%_30%/40%_70%_30%_60%] -z-10 -translate-x-1/2"></div>
-              
-              {/* Decorative vertical line */}
               <div className="hidden lg:block absolute top-0 bottom-0 left-[60%] w-[1px] bg-border-subtle -z-10"></div>
 
-              {/* Left Content (Typography & Search) */}
               <div className="w-full lg:w-[55%] z-10 relative">
                 <div className="mb-4 inline-flex items-center gap-2">
                   <div className="w-8 h-[1px] bg-foreground"></div>
@@ -161,7 +177,6 @@ export const Home: React.FC = () => {
                   LexiAgent lets you explore the nuance of language through natural, intelligent conversation.
                 </p>
 
-                {/* Primary Search Input */}
                 <div className="max-w-xl relative">
                   <form 
                     onSubmit={handleInitialSearch} 
@@ -188,10 +203,9 @@ export const Home: React.FC = () => {
                     </button>
                   </form>
                   
-                  {/* Curated Suggestions */}
                   <div className="mt-8">
                     <p className="text-xs uppercase tracking-widest text-muted font-medium mb-4 flex items-center gap-2">
-                      <Sparkles size={12} /> Try asking
+                      <Search size={12} /> Try asking
                     </p>
                     <div className="flex flex-col gap-3">
                       {examplePrompts.map((prompt, i) => (
@@ -213,7 +227,6 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Content (Floating Labels / Decorative) */}
               <div className="hidden lg:flex w-[45%] relative h-[600px] justify-center items-center">
                 <motion.div 
                   initial={{ y: 20, opacity: 0 }}
@@ -234,29 +247,15 @@ export const Home: React.FC = () => {
                   <p className="font-serif text-xl text-muted italic line-through decoration-1">predictable</p>
                   <p className="font-serif text-2xl text-foreground mt-1">ephemeral</p>
                 </motion.div>
-
-                <motion.div 
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.7, duration: 0.8 }}
-                  className="absolute bottom-1/4 right-[10%] p-4 bg-[var(--color-sage)]/20 dark:bg-[var(--color-sage)]/10 backdrop-blur-sm rounded-full border border-[var(--color-sage)]/30 text-foreground z-20"
-                >
-                  <Volume2 size={24} strokeWidth={1} />
-                </motion.div>
                 
-                {/* Large decorative quotation mark */}
-                <span className="absolute left-1/3 top-1/3 font-serif text-[20rem] leading-none text-border-subtle/50 select-none -z-10">
-                  "
-                </span>
+                <span className="absolute left-1/3 top-1/3 font-serif text-[20rem] leading-none text-border-subtle/50 select-none -z-10">"</span>
               </div>
             </section>
 
-            {/* DIVIDER */}
             <div className="w-full max-w-7xl mx-auto px-6 md:px-12">
               <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-border-strong to-transparent opacity-50"></div>
             </div>
 
-            {/* CAPABILITIES SECTION (Bento Grid) */}
             <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-24">
               <div className="mb-16">
                 <h2 className="font-serif text-4xl text-foreground mb-4">A complete toolkit.</h2>
@@ -264,8 +263,6 @@ export const Home: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[160px]">
-                
-                {/* Definitions */}
                 <div className="lg:col-span-2 lg:row-span-2 bg-surface border border-border-subtle rounded-2xl p-8 flex flex-col justify-between group hover:border-foreground/30 transition-colors">
                   <div className="w-12 h-12 bg-surface-tint rounded-xl flex items-center justify-center text-foreground mb-6 group-hover:scale-110 transition-transform duration-500">
                     <BookOpen size={24} strokeWidth={1.5} />
@@ -275,51 +272,15 @@ export const Home: React.FC = () => {
                     <p className="text-subtle font-sans leading-relaxed">Precise, context-aware meanings extracted from the world's most trusted lexicons.</p>
                   </div>
                 </div>
-
-                {/* Synonyms & Antonyms */}
-                <div className="bg-[var(--color-peach)]/20 dark:bg-[var(--color-peach)]/10 border border-[var(--color-peach)]/30 rounded-2xl p-6 flex flex-col justify-between group">
-                  <Split size={20} className="text-[#8A5A44] dark:text-[#FADAC9]" strokeWidth={1.5} />
-                  <div>
-                    <h3 className="font-serif text-xl text-[#8A5A44] dark:text-[#FADAC9] mb-1">Synonyms</h3>
-                    <p className="text-sm opacity-80 text-[#8A5A44] dark:text-[#FADAC9]">Nuanced alternatives.</p>
-                  </div>
-                </div>
-
-                <div className="bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col justify-between">
-                  <h3 className="font-serif text-xl text-foreground">Antonyms</h3>
-                  <div className="flex gap-2 flex-wrap mt-2">
-                    <span className="px-3 py-1 bg-surface-tint border border-border-subtle rounded-md text-xs text-muted line-through">boring</span>
-                  </div>
-                </div>
-
-                {/* Pronunciation */}
-                <div className="bg-foreground text-background rounded-2xl p-6 flex flex-col justify-between lg:row-span-2 overflow-hidden relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Volume2 size={24} className="mb-4" strokeWidth={1.5} />
-                  <div>
-                    <h3 className="font-serif text-2xl mb-2">Audio</h3>
-                    <p className="text-sm text-background/70 leading-relaxed">Hear the phonetic nuances spoken aloud.</p>
-                  </div>
-                  <div className="mt-6 flex items-center gap-1 opacity-50">
-                    <div className="w-1 h-3 bg-background rounded-full animate-pulse"></div>
-                    <div className="w-1 h-5 bg-background rounded-full animate-pulse delay-75"></div>
-                    <div className="w-1 h-2 bg-background rounded-full animate-pulse delay-150"></div>
-                    <div className="w-1 h-4 bg-background rounded-full animate-pulse delay-200"></div>
-                  </div>
-                </div>
-
-                {/* Examples */}
                 <div className="lg:col-span-2 bg-[var(--color-sage)]/20 dark:bg-[var(--color-sage)]/10 border border-[var(--color-sage)]/30 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden">
                   <SpellCheck size={100} className="absolute -right-6 -bottom-6 text-[var(--color-sage)] opacity-40 dark:opacity-20 stroke-1" />
                   <h3 className="font-serif text-2xl text-[#4A5D4E] dark:text-[var(--color-sage)] mb-2 relative z-10">Real-world Examples</h3>
                   <p className="font-serif italic text-[#4A5D4E]/80 dark:text-[var(--color-sage)]/80 relative z-10">"The <span className="underline decoration-wavy underline-offset-4">ephemeral</span> nature of fashion."</p>
                 </div>
-
               </div>
             </section>
 
-            {/* AGENTIC EXPLAINER SECTION */}
-            <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-16 mb-24">
+            <section className="w-full max-w-7xl mx-auto px-6 md:px-12 py-16">
               <div className="max-w-2xl p-10 md:p-14 bg-surface-tint border border-border-strong rounded-3xl relative">
                 <BrainCircuit size={32} className="text-muted mb-6" strokeWidth={1} />
                 <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4 leading-tight">
@@ -329,78 +290,117 @@ export const Home: React.FC = () => {
                 <p className="font-sans text-subtle leading-relaxed text-lg">
                   Powered by an autonomous reasoning loop, it curates factual dictionary data before crafting a response, ensuring precision meets elegance.
                 </p>
-                
-                {/* Decorative dots */}
-                <div className="absolute top-10 right-10 flex gap-2 hidden sm:flex">
-                  <div className="w-2 h-2 rounded-full bg-border-strong"></div>
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-lavender)]"></div>
-                </div>
               </div>
             </section>
-            
           </motion.div>
         ) : (
-          /* CONVERSATIONAL VIEW (Remains largely the same, fits the editorial style) */
+          /* CONVERSATIONAL VIEW */
           <motion.div
             key="conversation"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col h-[calc(100vh-100px)] w-full max-w-5xl mx-auto px-4 sm:px-8 pt-8"
+            className="flex flex-col w-full min-h-screen pt-4 pb-40"
           >
-            <div className="flex-1 overflow-y-auto pb-10 space-y-12 pr-2 sm:pr-6 custom-scrollbar">
+            <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 space-y-16">
               {session?.messages.map((message, index) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 20, filter: 'blur(5px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index === session.messages.length - 1 ? 0.1 : 0 }}
-                  className={`flex w-full ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex flex-col w-full ${message.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   {message.role === 'user' ? (
-                    <div className="max-w-[85%] sm:max-w-[75%] rounded-[2rem] rounded-tr-md bg-foreground px-6 py-4 text-background shadow-elevated">
-                      <p className="text-lg font-sans">{message.content}</p>
+                    <div className="flex flex-col items-end gap-2 max-w-[85%] md:max-w-[70%]">
+                      <div className="px-6 py-4 rounded-2xl rounded-tr-sm bg-surface border border-border-strong text-foreground shadow-sm">
+                        <p className="text-lg font-serif italic text-muted leading-relaxed">
+                          "{message.content}"
+                        </p>
+                      </div>
+                      <span className="text-[10px] text-border-strong font-medium uppercase tracking-widest mr-2">
+                        {formatTime(message.timestamp)}
+                      </span>
                     </div>
                   ) : (
-                    <WordResult entry={parseDictionaryMarkdown(message.content)} />
+                    <div className="w-full flex flex-col items-start gap-4">
+                      <WordResult entry={parseDictionaryMarkdown(message.content)} />
+                      <span className="text-[10px] text-border-strong font-medium uppercase tracking-widest ml-4 mt-2">
+                        LexiAgent • {formatTime(message.timestamp)}
+                      </span>
+                    </div>
                   )}
                 </motion.div>
               ))}
               
+              {/* LOADING STATE */}
               {isLoading && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start w-full"
+                  className="flex flex-col items-start w-full"
                 >
-                  <div className="px-8 py-6 rounded-[2rem] rounded-tl-md bg-surface border border-border-subtle flex space-x-2 items-center shadow-subtle">
-                    <div className="w-2.5 h-2.5 bg-border-strong rounded-full animate-pulse" />
-                    <div className="w-2.5 h-2.5 bg-border-strong rounded-full animate-pulse delay-75" />
-                    <div className="w-2.5 h-2.5 bg-border-strong rounded-full animate-pulse delay-150" />
+                  <div className="pl-4 border-l-2 border-border-strong flex items-center h-12">
+                     <p className="font-sans text-sm text-muted animate-pulse tracking-wide flex items-center gap-2">
+                       <span className="inline-block w-3 h-3 border-2 border-foreground border-t-transparent rounded-full animate-spin"></span>
+                       Searching the lexicon...
+                     </p>
                   </div>
                 </motion.div>
               )}
-              <div ref={messagesEndRef} />
+
+              {/* ERROR STATE */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center w-full mt-8"
+                >
+                  <div className="p-6 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 flex flex-col items-center text-center gap-4 max-w-md">
+                    <AlertCircle className="text-red-500" size={24} />
+                    <p className="font-sans text-red-800 dark:text-red-400">{error}</p>
+                    <button
+                      onClick={handleRetry}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 font-medium hover:bg-red-50 dark:hover:bg-red-900/40 transition-colors"
+                    >
+                      <RefreshCw size={16} /> Retry
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+              
+              <div ref={messagesEndRef} className="h-1" />
             </div>
 
-            <div className="pt-6 pb-6 bg-gradient-to-t from-background via-background to-transparent sticky bottom-0 z-10">
-              <form onSubmit={handleSendMessage} className="relative flex items-center max-w-4xl mx-auto w-full group">
-                <input
-                  type="text"
+            {/* FLOATING INPUT AREA */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-sm z-40 pointer-events-none">
+              <form 
+                onSubmit={handleSendMessage} 
+                className="relative flex items-end max-w-3xl mx-auto w-full pointer-events-auto bg-surface border border-border-strong rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] focus-within:ring-1 focus-within:ring-foreground transition-shadow duration-300"
+              >
+                <textarea
+                  ref={textareaRef}
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={handleTextareaInput}
+                  onKeyDown={handleKeyDown}
                   placeholder="Ask a follow up question..."
-                  className="w-full h-16 pl-6 pr-16 rounded-2xl border border-border-strong bg-surface text-foreground shadow-elevated focus:ring-1 focus:ring-foreground focus:outline-none transition-all duration-300 placeholder:text-subtle font-sans text-lg"
+                  rows={1}
+                  className="w-full max-h-32 py-5 pl-6 pr-16 bg-transparent text-foreground focus:outline-none resize-none placeholder:text-subtle font-sans text-lg leading-relaxed custom-scrollbar"
                   disabled={isLoading}
                 />
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim() || isLoading}
-                  className="absolute right-2 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-tint text-foreground hover:bg-foreground hover:text-background transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                >
-                  <CornerDownLeft size={18} strokeWidth={1.5} />
-                </button>
+                <div className="absolute right-3 bottom-3 flex items-center justify-center">
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim() || isLoading}
+                    className="flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground text-background hover:scale-105 active:scale-95 transition-transform disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                  >
+                    <ArrowRight size={18} strokeWidth={2} />
+                  </button>
+                </div>
               </form>
+              <div className="text-center mt-3 pointer-events-auto hidden sm:block">
+                <span className="text-xs text-subtle font-medium tracking-wide">Press <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Enter</kbd> to send, <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Shift</kbd> + <kbd className="font-sans px-1.5 py-0.5 rounded-md bg-surface-tint border border-border-subtle">Enter</kbd> for newline</span>
+              </div>
             </div>
           </motion.div>
         )}
