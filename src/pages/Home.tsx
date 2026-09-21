@@ -178,37 +178,51 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden"
           >
+            {/* SUBTLE BACKGROUND WORD */}
+            <div className="absolute inset-0 flex items-center justify-end md:justify-center pointer-events-none z-0 overflow-hidden select-none">
+              <span className="text-[35vw] md:text-[25vw] font-serif leading-none text-foreground opacity-[0.02] tracking-tighter ml-[10vw]">
+                LEXICON
+              </span>
+            </div>
+
             {/* HERO SECTION */}
-            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 pt-20 pb-10">
+            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 pt-16 pb-10">
               
               {/* Left Content (Typography & Search) */}
               <div className="w-full lg:w-[50%] xl:w-[45%] z-10 relative mt-10 md:mt-0">
                 
-                <h1 className="font-serif text-6xl sm:text-7xl lg:text-[6rem] leading-[1.05] text-foreground tracking-tighter mb-8">
+                {/* Tiny Editorial Metadata */}
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="text-[9px] uppercase tracking-widest text-muted">A Modern Lexicon</span>
+                  <div className="w-8 h-[1px] bg-foreground/30"></div>
+                </div>
+
+                <h1 className="font-serif text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] text-foreground tracking-tighter mb-8">
                   Words, <br/>
-                  <span className="italic text-muted font-light relative">
+                  <span className="italic text-muted font-light relative -ml-1 sm:-ml-2">
                     understood
-                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-muted opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                      <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-muted opacity-20" viewBox="0 0 100 10" preserveAspectRatio="none">
+                      <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="1" fill="transparent" />
                     </svg>
                   </span> <br/>
                   differently.
                 </h1>
                 
-                <p className="font-sans text-lg md:text-xl text-subtle max-w-md mb-12 leading-relaxed">
+                <p className="font-sans text-base md:text-lg text-subtle max-w-sm mb-12 leading-relaxed">
                   LexiAgent lets you explore language through natural, intelligent conversation.
                 </p>
 
                 <div className="max-w-2xl relative">
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface border transition-all duration-500 rounded-none ${isInputFocused ? 'border-foreground shadow-sm' : 'border-border-strong shadow-subtle'}`}
+                    className={`relative flex items-center bg-surface transition-all duration-700 rounded-none ${isInputFocused ? 'border-foreground/40 shadow-sm' : 'border-border-strong/50 shadow-subtle'}`}
+                    style={{ borderWidth: '0.5px' }}
                   >
-                    <div className="absolute -top-6 left-0 text-[9px] uppercase tracking-widest text-muted hidden sm:block">
-                      Fig. 01 / Inquiry
+                    <div className="absolute -top-5 left-0 text-[8px] uppercase tracking-[0.2em] text-muted hidden sm:flex items-center gap-2">
+                      FIG. 01 <span className="opacity-40">/</span> INQUIRY
                     </div>
-                    <div className={`absolute left-5 flex items-center transition-colors duration-300 ${isInputFocused ? 'text-foreground' : 'text-muted'}`}>
-                      <Search size={22} strokeWidth={1} />
+                    <div className={`absolute left-5 flex items-center transition-colors duration-300 ${isInputFocused ? 'text-foreground/80' : 'text-muted/60'}`}>
+                      <Search size={18} strokeWidth={1} />
                     </div>
                     <input
                       type="text"
@@ -217,14 +231,14 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-16 sm:h-20 pl-14 pr-20 bg-transparent text-lg sm:text-xl text-foreground font-serif italic focus:outline-none placeholder:text-subtle/70 placeholder:font-light"
+                      className="w-full h-14 sm:h-16 pl-14 pr-16 bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none placeholder:text-subtle/60 placeholder:font-light"
                     />
                     <button
                       type="submit"
                       disabled={!query.trim()}
-                      className="absolute right-3 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-transparent border border-transparent hover:border-foreground text-foreground disabled:opacity-30 disabled:border-transparent transition-all duration-300"
+                      className="absolute right-3 flex items-center justify-center w-10 h-10 bg-transparent text-foreground/60 hover:text-foreground disabled:opacity-20 transition-colors duration-300"
                     >
-                      <CornerDownLeft size={20} strokeWidth={1} />
+                      <CornerDownLeft size={16} strokeWidth={1} />
                     </button>
                   </form>
                   
@@ -237,10 +251,10 @@ export const Home: React.FC = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.5 + (i * 0.1) }}
                           onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
-                          className="text-left font-serif text-lg text-subtle hover:text-foreground transition-colors duration-300 flex items-center group w-max"
+                          className="text-left font-serif text-base text-muted hover:text-foreground/90 transition-all duration-300 flex items-center group w-max"
                         >
-                          <span className="w-8 text-[10px] font-sans tracking-widest text-border-strong group-hover:text-foreground transition-colors">0{i+1}</span>
-                          <span className="border-b border-transparent group-hover:border-foreground/30 transition-colors pb-0.5">{prompt}</span>
+                          <span className="w-8 text-[9px] font-sans tracking-widest text-border-strong group-hover:text-foreground/50 transition-colors">0{i+1}</span>
+                          <span className="transform group-hover:translate-x-1 transition-transform duration-300">{prompt}</span>
                         </motion.button>
                       ))}
                     </div>
@@ -249,74 +263,49 @@ export const Home: React.FC = () => {
               </div>
 
               {/* FLOATING WORD CONSTELLATION */}
-              {/* Absolute positioning to create intentional whitespace */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                 
-                {/* Top Right (Visible on all sizes, repositioned on mobile) */}
+                {/* SERENDIPITY (Strongest, top right) */}
                 <motion.div 
                   initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    y: [-4, 4, -4],
-                  }}
-                  transition={{ 
-                    opacity: { duration: 1, delay: 0.2 },
-                    y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
-                  }}
-                  className="absolute top-[5%] right-[5%] sm:top-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 sm:px-6 sm:py-4 border border-border-subtle shadow-subtle rotate-2"
+                  animate={{ opacity: 1, y: [-3, 3, -3] }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.2 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
+                  className="absolute top-[8%] right-[5%] sm:top-[12%] sm:right-[15%] lg:right-[20%] bg-surface px-5 py-4 border-[0.5px] border-border-strong/40 shadow-sm rotate-2 z-20"
                 >
-                  <p className="font-serif text-lg sm:text-2xl text-foreground">serendipity</p>
-                  <p className="font-sans text-[8px] sm:text-[10px] text-muted mt-1 uppercase tracking-widest">[ noun ]</p>
+                  <p className="font-serif text-xl sm:text-3xl text-foreground/90">serendipity</p>
+                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-2 uppercase tracking-[0.2em]">[ noun ]</p>
                 </motion.div>
 
-                {/* Upper/Mid Right (Hidden on mobile to save space) */}
+                {/* PRAGMATIC (Small, overlapping serendipity) */}
                 <motion.div 
                   initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    y: [3, -3, 3],
-                  }}
-                  transition={{ 
-                    opacity: { duration: 1, delay: 0.4 },
-                    y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 1 }
-                  }}
-                  className="hidden md:block absolute top-[40%] right-[5%] lg:right-[10%] bg-surface px-7 py-5 border border-border-subtle shadow-subtle -rotate-3"
+                  animate={{ opacity: 0.6, y: [2, -2, 2] }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
+                  className="hidden sm:block absolute top-[9%] right-[25%] lg:right-[30%] bg-surface-tint/50 backdrop-blur-sm px-3 py-2 border-[0.5px] border-border-subtle shadow-sm -rotate-2 z-10"
                 >
-                  <p className="font-serif text-3xl text-foreground">ephemeral</p>
-                  <p className="font-sans text-[10px] text-muted mt-2 uppercase tracking-widest">[ adjective ]</p>
+                  <p className="font-serif text-sm sm:text-base text-foreground/70 italic">pragmatic</p>
                 </motion.div>
 
-                {/* Lower Right (Moved down on mobile) */}
+                {/* EPHEMERAL (Medium, mid right) */}
                 <motion.div 
                   initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    y: [-2, 2, -2],
-                  }}
-                  transition={{ 
-                    opacity: { duration: 1, delay: 0.6 },
-                    y: { repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }
-                  }}
-                  className="absolute bottom-[5%] right-[10%] sm:bottom-[20%] sm:right-[25%] lg:right-[30%] bg-surface px-4 py-2 sm:px-5 sm:py-3 border border-border-subtle shadow-subtle rotate-1"
+                  animate={{ opacity: 1, y: [4, -4, 4] }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.4 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
+                  className="hidden md:block absolute top-[45%] right-[8%] lg:right-[12%] bg-surface px-6 py-4 border-[0.5px] border-border-strong/30 shadow-subtle -rotate-3 z-10"
                 >
-                  <p className="font-serif text-lg sm:text-xl text-foreground">meticulous</p>
-                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-1 uppercase tracking-widest">[ adjective ]</p>
+                  <p className="font-serif text-2xl text-foreground/80">ephemeral</p>
+                  <p className="font-sans text-[9px] text-muted mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
                 </motion.div>
 
-                {/* Left/Middle (Hidden on mobile) */}
+                {/* METICULOUS (Small, quiet, bottom right) */}
                 <motion.div 
                   initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    y: [2, -2, 2],
-                  }}
-                  transition={{ 
-                    opacity: { duration: 1, delay: 0.8 },
-                    y: { repeat: Infinity, duration: 8, ease: "easeInOut", delay: 2 }
-                  }}
-                  className="hidden md:block absolute top-[10%] left-[45%] lg:left-[55%] bg-surface/80 backdrop-blur-sm px-4 py-2 border border-border-subtle shadow-subtle -rotate-2"
+                  animate={{ opacity: 0.8, y: [-2, 2, -2] }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
+                  className="absolute bottom-[8%] right-[10%] sm:bottom-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 border-[0.5px] border-border-subtle shadow-subtle rotate-1 z-10"
                 >
-                  <p className="font-serif text-lg text-muted italic line-through decoration-border-strong">pragmatic</p>
+                  <p className="font-serif text-lg text-foreground/70">meticulous</p>
+                  <p className="font-sans text-[8px] text-muted/60 mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
                 </motion.div>
                 
               </div>

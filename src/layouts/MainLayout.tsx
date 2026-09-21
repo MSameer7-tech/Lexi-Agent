@@ -42,11 +42,11 @@ export const MainLayout: React.FC = () => {
             const content = (
               <>
                 <span className="hidden sm:inline">{item.label}</span>
-                <item.icon size={18} className="sm:hidden" />
+                <item.icon size={16} className="sm:hidden" />
                 {isActive && (
                   <motion.div
                     layoutId="nav-indicator"
-                    className="absolute -bottom-2 left-0 right-0 h-[1px] bg-foreground"
+                    className="absolute -bottom-1 left-0 right-0 h-[1px] bg-foreground/50"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -54,7 +54,7 @@ export const MainLayout: React.FC = () => {
             );
 
             const className = cn(
-              "relative text-sm font-medium tracking-wide uppercase transition-colors hover:text-foreground",
+              "relative text-[10px] font-sans tracking-[0.2em] uppercase transition-colors duration-300 hover:text-foreground",
               isActive ? "text-foreground" : "text-muted"
             );
 
@@ -73,14 +73,14 @@ export const MainLayout: React.FC = () => {
             );
           })}
           
-          <div className="w-[1px] h-4 bg-border-strong mx-2 hidden sm:block"></div>
+          <div className="w-[1px] h-3 bg-border-strong/50 mx-1 hidden sm:block"></div>
           
           <button 
             onClick={toggleDarkMode}
-            className="text-muted hover:text-foreground transition-colors p-2 -ml-2"
+            className="text-muted hover:text-foreground transition-colors p-1"
             aria-label="Toggle theme"
           >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
           </button>
         </nav>
       </header>
