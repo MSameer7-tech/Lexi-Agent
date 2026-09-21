@@ -19,7 +19,7 @@ export const MainLayout: React.FC = () => {
   };
 
   const navItems = [
-    { type: 'button', action: () => setDrawerOpen(true), label: 'History', icon: Clock, id: 'history' },
+    { type: 'button', action: () => setDrawerOpen(true), label: 'Chats', icon: Clock, id: 'history' },
     { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },
   ];
 

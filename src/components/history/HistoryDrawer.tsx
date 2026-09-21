@@ -196,7 +196,7 @@ export const HistoryDrawer: React.FC = () => {
                 <div className="p-2 bg-foreground text-background rounded-lg">
                   <MessageSquare size={18} strokeWidth={2} />
                 </div>
-                <h2 className="font-serif text-2xl text-foreground tracking-tight">History</h2>
+                <h2 className="font-serif text-2xl text-foreground tracking-tight">Chats</h2>
               </div>
               <button 
                 onClick={() => setDrawerOpen(false)}
@@ -214,7 +214,7 @@ export const HistoryDrawer: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search conversations..."
+                  placeholder="Search chats..."
                   className="w-full h-12 pl-12 pr-4 rounded-xl bg-surface border border-border-subtle focus:border-foreground focus:ring-1 focus:ring-foreground transition-all text-sm font-sans placeholder:text-subtle"
                 />
               </div>
@@ -225,7 +225,7 @@ export const HistoryDrawer: React.FC = () => {
               {sessions.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
                   <Clock size={48} className="mb-4 text-muted" strokeWidth={1} />
-                  <p className="font-serif text-xl text-foreground mb-2">No history yet</p>
+                  <p className="font-serif text-xl text-foreground mb-2">No chats yet</p>
                   <p className="font-sans text-sm text-subtle">Your conversational explorations will appear here.</p>
                 </div>
               ) : (
