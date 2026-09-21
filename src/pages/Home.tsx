@@ -190,7 +190,7 @@ export const Home: React.FC = () => {
                   transition={{ duration: 0.8, delay: 0.1 }}
                   className="mb-8 flex items-center gap-4"
                 >
-                  <span className="text-[9px] uppercase tracking-widest text-muted">A Modern Lexicon</span>
+                  <span className="text-[9px] uppercase tracking-widest text-subtle">A Modern Lexicon</span>
                   <div className="w-12 h-[1px] bg-border-strong/50"></div>
                 </motion.div>
 
@@ -201,7 +201,7 @@ export const Home: React.FC = () => {
                   className="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground tracking-tight mb-8"
                 >
                   Words, <br/>
-                  <span className="italic text-muted/90 font-light -ml-1">
+                  <span className="italic text-foreground font-light -ml-1">
                     understood
                   </span> <br/>
                   differently.
@@ -211,7 +211,7 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="font-sans text-base md:text-lg text-subtle max-w-[340px] mb-14 leading-relaxed"
+                  className="font-sans text-base md:text-lg text-muted max-w-[340px] mb-14 leading-relaxed"
                 >
                   LexiAgent lets you explore language through natural, intelligent conversation.
                 </motion.p>
@@ -222,7 +222,7 @@ export const Home: React.FC = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="w-full max-w-xl relative"
                 >
-                  <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-muted">
+                  <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
                     FIG. 01 / INQUIRY
                   </div>
                   <form 
@@ -240,7 +240,7 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-16 sm:h-20 pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-foreground/50"
+                      className="w-full h-16 sm:h-20 pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
                     />
                     <button
                       type="submit"
@@ -256,9 +256,9 @@ export const Home: React.FC = () => {
                       <button
                         key={prompt}
                         onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
-                        className="text-left font-sans text-sm text-subtle hover:text-foreground transition-colors duration-300 flex items-center group w-max"
+                        className="text-left font-sans text-sm text-muted hover:text-foreground transition-colors duration-300 flex items-center group w-max"
                       >
-                        <span className="w-8 text-[9px] tracking-widest text-muted/40 group-hover:text-foreground/60 transition-colors">0{i+1}</span>
+                        <span className="w-8 text-[9px] tracking-widest text-subtle group-hover:text-muted transition-colors">0{i+1}</span>
                         <span className="transform group-hover:translate-x-[3px] transition-transform duration-300">{prompt}</span>
                       </button>
                     ))}
@@ -277,7 +277,7 @@ export const Home: React.FC = () => {
                     transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
                     className="hidden sm:block absolute top-[12%] right-[25%] md:top-[8%] md:right-[55%] w-[130px] bg-[#F8F5EF] dark:bg-surface-tint px-4 py-3 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_4px_12px_-2px_rgba(42,41,40,0.04)] rounded-[1px_2px_1px_1px] z-10"
                   >
-                    <p className="font-serif text-sm text-foreground/80 italic tracking-wide">pragmatic</p>
+                    <p className="font-serif text-sm text-foreground italic tracking-wide">pragmatic</p>
                   </motion.div>
 
                   {/* SERENDIPITY (Main floating card, upper-right/center-right) */}
@@ -288,7 +288,7 @@ export const Home: React.FC = () => {
                     className="absolute top-[8%] right-[5%] md:top-[22%] md:right-[15%] w-[210px] bg-[#FDFBF8] dark:bg-surface px-6 py-6 border border-black/[0.03] dark:border-white/[0.03] shadow-[0_8px_24px_-4px_rgba(42,41,40,0.05),0_2px_8px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_2px_3px] z-20 flex flex-col"
                   >
                     <p className="font-serif text-3xl text-foreground tracking-tight">serendipity</p>
-                    <p className="font-sans text-[9px] text-muted mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
+                    <p className="font-sans text-[9px] text-subtle mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
                   </motion.div>
 
                   {/* EPHEMERAL (Medium card, middle/lower-right) */}
@@ -299,7 +299,7 @@ export const Home: React.FC = () => {
                     className="hidden md:flex absolute top-[55%] right-[10%] md:top-[65%] md:right-[20%] w-[170px] bg-[#F8F5EF] dark:bg-surface px-5 py-5 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_6px_16px_-3px_rgba(42,41,40,0.04)] rounded-[1px_3px_2px_2px] z-10 flex-col"
                   >
                     <p className="font-serif text-2xl text-foreground tracking-tight">ephemeral</p>
-                    <p className="font-sans text-[8px] text-muted mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
+                    <p className="font-sans text-[8px] text-subtle mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
                   </motion.div>
 
                   {/* METICULOUS (Small card, lower-middle-right) */}
@@ -310,7 +310,7 @@ export const Home: React.FC = () => {
                     className="absolute bottom-[5%] right-[15%] md:bottom-[5%] md:right-[50%] w-[140px] bg-[#FBF8F2] dark:bg-surface-tint px-4 py-4 border border-black/[0.03] dark:border-white/[0.02] shadow-[0_4px_10px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_3px_2px] z-10 flex flex-col"
                   >
                     <p className="font-serif text-lg text-foreground tracking-tight">meticulous</p>
-                    <p className="font-sans text-[7px] text-muted mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
+                    <p className="font-sans text-[7px] text-subtle mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
                   </motion.div>
                   
                 </div>
