@@ -21,9 +21,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
           ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-6 text-fg-base space-y-2 font-sans text-lg" {...props} />,
           ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-6 text-fg-base space-y-2 font-sans text-lg" {...props} />,
           li: ({node, ...props}) => <li className="" {...props} />,
-          blockquote: ({node, ...props}) => (
+          blockquote: ({node, children, ...props}) => (
             <blockquote className="border-l-[1px] border-border-strong pl-6 py-1 my-8" {...props}>
-              <div className="font-serif italic text-muted text-2xl leading-relaxed" {...props} />
+              <div className="font-serif italic text-muted text-2xl leading-relaxed">{children}</div>
             </blockquote>
           ),
           a: ({node, ...props}) => <a className="text-foreground underline decoration-1 underline-offset-4 hover:text-muted transition-colors" {...props} />
