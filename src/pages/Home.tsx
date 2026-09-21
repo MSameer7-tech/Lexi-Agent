@@ -4,7 +4,7 @@ import { CornerDownLeft, BookOpen, BrainCircuit, SpellCheck, Search, ArrowRight,
 import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown } from '../lib/parser';
-import { sendMessage } from '../services/api';
+import { sendMessage } from '../services/lexiAgentApi';
 import { useHistoryStore } from '../store/historyStore';
 import type { Message } from '../types';
 
@@ -94,25 +94,12 @@ export const Home: React.FC = () => {
     }
 
     try {
-      // Simulate an intermediate event after 500ms
-      setTimeout(() => {
-        setActiveEvents(prev => {
-          const newEvents = [...prev];
-          if (newEvents[1]) newEvents[1].status = 'success';
-          return [
-            ...newEvents,
-            { id: '3', label: 'Retrieving dictionary data', status: 'pending' }
-          ];
-        });
-      }, 500);
-
       const response = await sendMessage({ message: messageText, sessionId });
       
       const finalEvents: AgentEvent[] = [
         { id: '1', label: 'Request sent to LexiAgent', timestamp: Date.now() - 1200, status: 'success' },
         { id: '2', label: 'Processing request', status: 'success' },
-        { id: '3', label: 'Retrieving dictionary data', status: 'success', details: 'Queried primary lexicon' },
-        { id: '4', label: 'Response generated', timestamp: Date.now(), status: 'success' }
+        { id: '3', label: 'Response generated', timestamp: Date.now(), status: 'success' }
       ];
       setActiveEvents(finalEvents);
 
