@@ -38,32 +38,32 @@
 
 @layer base {
   :root {
-    --bg-base: #F5F1EA;
-    --bg-surface: #FAF7F1;
-    --bg-surface-tint: #F8F4ED;
+    --bg-base: #FAF9F6;
+    --bg-surface: #FFFFFF;
+    --bg-surface-tint: #F5F4F0;
     
-    --fg-base: #2A2928;
-    --fg-muted: #5C5A58;
-    --fg-subtle: #8A8682;
+    --fg-base: #1C1917;
+    --fg-muted: #78716C;
+    --fg-subtle: #A8A29E;
     
-    --border-subtle: #E8E2D9;
-    --border-strong: #D8CFC4;
+    --border-subtle: #E7E5E4;
+    --border-strong: #D6D3D1;
     
     --accent: var(--color-lavender);
-    --accent-fg: #2A2928;
+    --accent-fg: #1C1917;
   }
 
   .dark {
-    --bg-base: #1C1B19;
-    --bg-surface: #242220;
-    --bg-surface-tint: #2C2A28;
+    --bg-base: #141312;
+    --bg-surface: #1C1B19;
+    --bg-surface-tint: #242220;
     
-    --fg-base: #F5F1EA;
-    --fg-muted: #BDB9B3;
-    --fg-subtle: #8A8682;
+    --fg-base: #F5F4F0;
+    --fg-muted: #A8A29E;
+    --fg-subtle: #78716C;
     
-    --border-subtle: #3F3C38;
-    --border-strong: #54504A;
+    --border-subtle: #292725;
+    --border-strong: #3F3C38;
     
     --accent: var(--color-lavender-dark);
     --accent-fg: #F5F4F0;

@@ -180,15 +180,33 @@ export const Home: React.FC = () => {
           >
             {/* BACKGROUND ART DIRECTION */}
             <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
-              {/* Layer 1: Warm paper foundation (handled by index.css --bg-base) */}
               
-              {/* Layer 4: Tonal Atmosphere - extremely soft warm natural light */}
-              <div className="absolute top-0 left-0 w-full h-[80%] bg-[radial-gradient(circle_at_20%_30%,#FFFFFF_0%,transparent_60%)] opacity-[0.2] dark:opacity-[0.03]"></div>
+              {/* Layer 3: Editorial Grid */}
+              <div className="absolute top-[30%] left-0 right-0 h-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              <div className="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              <div className="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
+              {/* Intersection marks */}
+              <div className="absolute top-[30%] left-[10%] md:left-[15%] w-2 h-2 -ml-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
+              <div className="absolute top-[30%] right-[10%] md:right-[15%] w-2 h-2 -mr-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
 
-              {/* Minimal Editorial Edge Detail */}
+              {/* Layer 4: Tonal Atmosphere */}
+              <div className="absolute top-0 left-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_30%_30%,var(--color-peach)_0%,transparent_70%)] opacity-[0.04] dark:opacity-[0.03]"></div>
+
+              {/* Layer 5: Abstract Typographic Fragment */}
+              <div className="absolute -bottom-[15%] -right-[5%] opacity-[0.015] dark:opacity-[0.02]">
+                <span className="font-serif text-[60vh] leading-none text-foreground italic">
+                  &amp;
+                </span>
+              </div>
+
+              {/* Editorial Edge Details */}
               <div className="absolute bottom-8 left-8 text-[8px] uppercase tracking-widest text-muted opacity-40 hidden md:block">
                 WORDS / 2026
               </div>
+              <div className="absolute top-32 right-8 text-[8px] uppercase tracking-[0.3em] text-muted opacity-40 hidden md:block [writing-mode:vertical-lr]">
+                VOL. 01 / LEXICON
+              </div>
+
             </div>
 
             {/* HERO SECTION */}
@@ -221,7 +239,7 @@ export const Home: React.FC = () => {
                 <div className="max-w-2xl relative">
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface transition-all duration-700 rounded-none ${isInputFocused ? 'border-foreground/40 shadow-sm' : 'border-border-strong/50 shadow-[0_2px_12px_-2px_rgba(60,50,40,0.04)]'}`}
+                    className={`relative flex items-center bg-surface transition-all duration-700 rounded-none ${isInputFocused ? 'border-foreground/40 shadow-sm' : 'border-border-strong/50 shadow-subtle'}`}
                     style={{ borderWidth: '0.5px' }}
                   >
                     <div className="absolute -top-5 left-0 text-[8px] uppercase tracking-[0.2em] text-muted hidden sm:flex items-center gap-2">
@@ -271,51 +289,47 @@ export const Home: React.FC = () => {
               {/* FLOATING WORD CONSTELLATION */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                 
-                {/* PRAGMATIC (Small card slightly behind serendipity) */}
+                {/* SERENDIPITY (Strongest, top right) */}
                 <motion.div 
-                  initial={{ opacity: 0, rotate: -2, y: 0 }}
-                  animate={{ opacity: 0.9, y: [2, -1, 2] }}
-                  whileHover={{ y: -2, rotate: -1, opacity: 1, transition: { duration: 0.4 } }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
-                  className="hidden sm:block absolute top-[13%] right-[22%] lg:right-[26%] w-[120px] bg-[#F6F2EA] dark:bg-surface-tint px-4 py-3 border-[0.5px] border-[#3c3228]/[0.06] dark:border-border-subtle shadow-[0_2px_12px_-2px_rgba(60,50,40,0.05),0_1px_3px_-1px_rgba(60,50,40,0.03)] rounded-[1px_2px_1px_2px] z-10 pointer-events-auto cursor-default"
-                >
-                  <p className="font-serif text-sm text-foreground/80 italic tracking-wide">pragmatic</p>
-                </motion.div>
-
-                {/* SERENDIPITY (Main floating card, upper-right) */}
-                <motion.div 
-                  initial={{ opacity: 0, rotate: 1, y: 0 }}
-                  animate={{ opacity: 1, y: [-2, 2, -2] }}
-                  whileHover={{ y: -3, rotate: 0.5, transition: { duration: 0.4 } }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, y: [-3, 3, -3] }}
                   transition={{ opacity: { duration: 1.5, delay: 0.2 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
-                  className="absolute top-[8%] right-[5%] sm:top-[16%] sm:right-[12%] lg:right-[15%] w-[190px] bg-[#FAF7F1] dark:bg-surface px-5 py-4 border-[0.5px] border-[#3c3228]/[0.08] dark:border-border-strong/30 shadow-[0_4px_16px_-4px_rgba(60,50,40,0.06),0_2px_6px_-2px_rgba(60,50,40,0.04)] rounded-[2px_1px_2px_3px] z-20 pointer-events-auto cursor-default flex flex-col"
+                  className="absolute top-[8%] right-[5%] sm:top-[12%] sm:right-[15%] lg:right-[20%] bg-surface px-5 py-4 border-[0.5px] border-border-strong/40 shadow-sm rotate-2 z-20"
                 >
-                  <p className="font-serif text-xl sm:text-2xl text-foreground tracking-tight">serendipity</p>
-                  <p className="font-sans text-[8px] text-muted/70 mt-2 uppercase tracking-[0.2em] pl-0.5">[ noun ]</p>
+                  <p className="font-serif text-xl sm:text-3xl text-foreground/90">serendipity</p>
+                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-2 uppercase tracking-[0.2em]">[ noun ]</p>
                 </motion.div>
 
-                {/* EPHEMERAL (Medium card farther down-right) */}
+                {/* PRAGMATIC (Small, overlapping serendipity) */}
                 <motion.div 
-                  initial={{ opacity: 0, rotate: 1.5, y: 0 }}
-                  animate={{ opacity: 1, y: [3, -2, 3] }}
-                  whileHover={{ y: -3, rotate: 0.5, transition: { duration: 0.4 } }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.6, y: [2, -2, 2] }}
+                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
+                  className="hidden sm:block absolute top-[9%] right-[25%] lg:right-[30%] bg-surface-tint/50 backdrop-blur-sm px-3 py-2 border-[0.5px] border-border-subtle shadow-sm -rotate-2 z-10"
+                >
+                  <p className="font-serif text-sm sm:text-base text-foreground/70 italic">pragmatic</p>
+                </motion.div>
+
+                {/* EPHEMERAL (Medium, mid right) */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, y: [4, -4, 4] }}
                   transition={{ opacity: { duration: 1.5, delay: 0.4 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
-                  className="hidden md:flex absolute top-[48%] right-[6%] lg:right-[10%] w-[160px] bg-[#F8F4ED] dark:bg-surface px-4 py-4 border-[0.5px] border-[#3c3228]/[0.06] dark:border-border-strong/30 shadow-[0_3px_12px_-3px_rgba(60,50,40,0.05),0_1px_4px_-1px_rgba(60,50,40,0.03)] rounded-[1px_3px_2px_2px] z-10 pointer-events-auto cursor-default flex-col"
+                  className="hidden md:block absolute top-[45%] right-[8%] lg:right-[12%] bg-surface px-6 py-4 border-[0.5px] border-border-strong/30 shadow-subtle -rotate-3 z-10"
                 >
-                  <p className="font-serif text-lg sm:text-xl text-foreground tracking-tight">ephemeral</p>
-                  <p className="font-sans text-[8px] text-muted/60 mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
+                  <p className="font-serif text-2xl text-foreground/80">ephemeral</p>
+                  <p className="font-sans text-[9px] text-muted mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
                 </motion.div>
 
-                {/* METICULOUS (Small card lower-right) */}
+                {/* METICULOUS (Small, quiet, bottom right) */}
                 <motion.div 
-                  initial={{ opacity: 0, rotate: -1, y: 0 }}
-                  animate={{ opacity: 0.9, y: [-2, 1, -2] }}
-                  whileHover={{ y: -2, rotate: -0.5, opacity: 1, transition: { duration: 0.4 } }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.8, y: [-2, 2, -2] }}
                   transition={{ opacity: { duration: 1.5, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
-                  className="absolute bottom-[10%] right-[10%] sm:bottom-[15%] sm:right-[18%] lg:right-[22%] w-[130px] bg-[#F9F6F0] dark:bg-surface-tint px-4 py-3 border-[0.5px] border-[#3c3228]/[0.05] dark:border-border-subtle shadow-[0_2px_10px_-2px_rgba(60,50,40,0.04),0_1px_3px_-1px_rgba(60,50,40,0.02)] rounded-[2px_1px_3px_2px] z-10 pointer-events-auto cursor-default flex flex-col"
+                  className="absolute bottom-[8%] right-[10%] sm:bottom-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 border-[0.5px] border-border-subtle shadow-subtle rotate-1 z-10"
                 >
-                  <p className="font-serif text-base sm:text-lg text-foreground tracking-tight">meticulous</p>
-                  <p className="font-sans text-[7px] text-muted/60 mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
+                  <p className="font-serif text-lg text-foreground/70">meticulous</p>
+                  <p className="font-sans text-[8px] text-muted/60 mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
                 </motion.div>
                 
               </div>
