@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CornerDownLeft, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown } from '../lib/parser';
@@ -176,77 +176,62 @@ export const Home: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)', y: -20 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden"
+            className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden bg-transparent"
           >
-            {/* BACKGROUND ART DIRECTION */}
-            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
+            {/* HERO COMPOSITION */}
+            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 py-10 md:py-0">
               
-              {/* Layer 3: Editorial Grid */}
-              <div className="absolute top-[30%] left-0 right-0 h-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
-              <div className="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
-              <div className="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-[1px] bg-foreground opacity-[0.03] dark:opacity-[0.05]"></div>
-              {/* Intersection marks */}
-              <div className="absolute top-[30%] left-[10%] md:left-[15%] w-2 h-2 -ml-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
-              <div className="absolute top-[30%] right-[10%] md:right-[15%] w-2 h-2 -mr-1 -mt-1 border border-foreground opacity-[0.08] dark:opacity-[0.1]"></div>
-
-              {/* Layer 4: Tonal Atmosphere */}
-              <div className="absolute top-0 left-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_30%_30%,var(--color-peach)_0%,transparent_70%)] opacity-[0.04] dark:opacity-[0.03]"></div>
-
-              {/* Layer 5: Abstract Typographic Fragment */}
-              <div className="absolute -bottom-[15%] -right-[5%] opacity-[0.015] dark:opacity-[0.02]">
-                <span className="font-serif text-[60vh] leading-none text-foreground italic">
-                  &amp;
-                </span>
-              </div>
-
-              {/* Editorial Edge Details */}
-              <div className="absolute bottom-8 left-8 text-[8px] uppercase tracking-widest text-muted opacity-40 hidden md:block">
-                WORDS / 2026
-              </div>
-              <div className="absolute top-32 right-8 text-[8px] uppercase tracking-[0.3em] text-muted opacity-40 hidden md:block [writing-mode:vertical-lr]">
-                VOL. 01 / LEXICON
-              </div>
-
-            </div>
-
-            {/* HERO SECTION */}
-            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 pt-16 pb-10">
-              
-              {/* Left Content (Typography & Search) */}
-              <div className="w-full lg:w-[50%] xl:w-[45%] z-10 relative mt-10 md:mt-0">
+              {/* LEFT SIDE (Typography & Search) */}
+              <div className="w-full lg:w-[45%] xl:w-[40%] z-10 relative flex flex-col justify-center mt-12 md:mt-0">
                 
-                {/* Tiny Editorial Metadata */}
-                <div className="mb-6 flex items-center gap-3">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="mb-8 flex items-center gap-4"
+                >
                   <span className="text-[9px] uppercase tracking-widest text-muted">A Modern Lexicon</span>
-                  <div className="w-8 h-[1px] bg-foreground/30"></div>
-                </div>
+                  <div className="w-12 h-[1px] bg-border-strong/50"></div>
+                </motion.div>
 
-                <h1 className="font-serif text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] text-foreground tracking-tighter mb-8">
+                <motion.h1 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground tracking-tight mb-8"
+                >
                   Words, <br/>
-                  <span className="italic text-muted font-light relative -ml-1 sm:-ml-2">
+                  <span className="italic text-muted/90 font-light -ml-1">
                     understood
-                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-muted opacity-20" viewBox="0 0 100 10" preserveAspectRatio="none">
-                      <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="1" fill="transparent" />
-                    </svg>
                   </span> <br/>
                   differently.
-                </h1>
+                </motion.h1>
                 
-                <p className="font-sans text-base md:text-lg text-subtle max-w-sm mb-12 leading-relaxed">
+                <motion.p 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="font-sans text-base md:text-lg text-subtle max-w-[340px] mb-14 leading-relaxed"
+                >
                   LexiAgent lets you explore language through natural, intelligent conversation.
-                </p>
+                </motion.p>
 
-                <div className="max-w-2xl relative">
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="w-full max-w-xl relative"
+                >
+                  <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-muted">
+                    FIG. 01 / INQUIRY
+                  </div>
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface transition-all duration-700 rounded-none ${isInputFocused ? 'border-foreground/40 shadow-sm' : 'border-border-strong/50 shadow-subtle'}`}
-                    style={{ borderWidth: '0.5px' }}
+                    className={`relative flex items-center bg-surface transition-all duration-500 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_4px_20px_-4px_rgba(42,41,40,0.06)]' : 'border-border-strong/40 shadow-[0_2px_10px_-2px_rgba(42,41,40,0.03)]'}`}
+                    style={{ borderWidth: '1px' }}
                   >
-                    <div className="absolute -top-5 left-0 text-[8px] uppercase tracking-[0.2em] text-muted hidden sm:flex items-center gap-2">
-                      FIG. 01 <span className="opacity-40">/</span> INQUIRY
-                    </div>
-                    <div className={`absolute left-5 flex items-center transition-colors duration-300 ${isInputFocused ? 'text-foreground/80' : 'text-muted/60'}`}>
-                      <Search size={18} strokeWidth={1} />
+                    <div className="absolute left-5 flex items-center text-muted/60 pointer-events-none">
+                      <Search size={16} strokeWidth={1.5} />
                     </div>
                     <input
                       type="text"
@@ -255,83 +240,80 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-14 sm:h-16 pl-14 pr-16 bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none placeholder:text-subtle/60 placeholder:font-light"
+                      className="w-full h-14 sm:h-16 pl-12 pr-14 bg-transparent text-base text-foreground font-sans focus:outline-none placeholder:text-muted/50"
                     />
                     <button
                       type="submit"
                       disabled={!query.trim()}
-                      className="absolute right-3 flex items-center justify-center w-10 h-10 bg-transparent text-foreground/60 hover:text-foreground disabled:opacity-20 transition-colors duration-300"
+                      className="absolute right-3 flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-300"
                     >
-                      <CornerDownLeft size={16} strokeWidth={1} />
+                      <ArrowRight size={18} strokeWidth={1.5} />
                     </button>
                   </form>
                   
-                  <div className="mt-10">
-                    <div className="flex flex-col gap-4">
-                      {examplePrompts.map((prompt, i) => (
-                        <motion.button
-                          key={prompt}
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.5 + (i * 0.1) }}
-                          onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
-                          className="text-left font-serif text-base text-muted hover:text-foreground/90 transition-all duration-300 flex items-center group w-max"
-                        >
-                          <span className="w-8 text-[9px] font-sans tracking-widest text-border-strong group-hover:text-foreground/50 transition-colors">0{i+1}</span>
-                          <span className="transform group-hover:translate-x-1 transition-transform duration-300">{prompt}</span>
-                        </motion.button>
-                      ))}
-                    </div>
+                  <div className="mt-10 flex flex-col gap-5">
+                    {examplePrompts.map((prompt, i) => (
+                      <button
+                        key={prompt}
+                        onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
+                        className="text-left font-sans text-sm text-subtle hover:text-foreground transition-colors duration-300 flex items-center group w-max"
+                      >
+                        <span className="w-8 text-[9px] tracking-widest text-muted/40 group-hover:text-foreground/60 transition-colors">0{i+1}</span>
+                        <span className="transform group-hover:translate-x-[3px] transition-transform duration-300">{prompt}</span>
+                      </button>
+                    ))}
                   </div>
-                </div>
+                </motion.div>
               </div>
 
-              {/* FLOATING WORD CONSTELLATION */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-                
-                {/* SERENDIPITY (Strongest, top right) */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, y: [-3, 3, -3] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.2 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
-                  className="absolute top-[8%] right-[5%] sm:top-[12%] sm:right-[15%] lg:right-[20%] bg-surface px-5 py-4 border-[0.5px] border-border-strong/40 shadow-sm rotate-2 z-20"
-                >
-                  <p className="font-serif text-xl sm:text-3xl text-foreground/90">serendipity</p>
-                  <p className="font-sans text-[8px] sm:text-[9px] text-muted mt-2 uppercase tracking-[0.2em]">[ noun ]</p>
-                </motion.div>
+              {/* RIGHT SIDE (Floating Vocabulary Constellation) */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 md:static md:w-[50%] md:h-[600px] md:pointer-events-auto">
+                <div className="relative w-full h-full min-h-[400px]">
+                  
+                  {/* PRAGMATIC (Small, slightly behind serendipity) */}
+                  <motion.div 
+                    initial={{ opacity: 0, rotate: -2, y: 10 }}
+                    animate={{ opacity: 1, y: [2, -1, 2] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
+                    className="hidden sm:block absolute top-[10%] right-[30%] md:top-[15%] md:right-[55%] w-[120px] bg-[#F8F4EC] dark:bg-surface-tint px-4 py-3 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_4px_12px_-2px_rgba(42,41,40,0.03)] rounded-[1px_2px_1px_1px] z-10"
+                  >
+                    <p className="font-serif text-sm text-foreground/80 italic tracking-wide">pragmatic</p>
+                  </motion.div>
 
-                {/* PRAGMATIC (Small, overlapping serendipity) */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.6, y: [2, -2, 2] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
-                  className="hidden sm:block absolute top-[9%] right-[25%] lg:right-[30%] bg-surface-tint/50 backdrop-blur-sm px-3 py-2 border-[0.5px] border-border-subtle shadow-sm -rotate-2 z-10"
-                >
-                  <p className="font-serif text-sm sm:text-base text-foreground/70 italic">pragmatic</p>
-                </motion.div>
+                  {/* SERENDIPITY (Main floating card, upper-right) */}
+                  <motion.div 
+                    initial={{ opacity: 0, rotate: 1.5, y: 10 }}
+                    animate={{ opacity: 1, y: [-2, 2, -2] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.5 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
+                    className="absolute top-[5%] right-[5%] md:top-[10%] md:right-[20%] w-[180px] bg-[#FAF7F0] dark:bg-surface px-5 py-5 border border-black/[0.03] dark:border-white/[0.03] shadow-[0_8px_24px_-4px_rgba(42,41,40,0.04),0_2px_8px_-2px_rgba(42,41,40,0.02)] rounded-[2px_1px_2px_3px] z-20 flex flex-col"
+                  >
+                    <p className="font-serif text-2xl text-foreground tracking-tight">serendipity</p>
+                    <p className="font-sans text-[8px] text-muted mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
+                  </motion.div>
 
-                {/* EPHEMERAL (Medium, mid right) */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, y: [4, -4, 4] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.4 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
-                  className="hidden md:block absolute top-[45%] right-[8%] lg:right-[12%] bg-surface px-6 py-4 border-[0.5px] border-border-strong/30 shadow-subtle -rotate-3 z-10"
-                >
-                  <p className="font-serif text-2xl text-foreground/80">ephemeral</p>
-                  <p className="font-sans text-[9px] text-muted mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
-                </motion.div>
+                  {/* EPHEMERAL (Medium card farther down-right) */}
+                  <motion.div 
+                    initial={{ opacity: 0, rotate: -2.5, y: 10 }}
+                    animate={{ opacity: 1, y: [3, -2, 3] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.7 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
+                    className="hidden md:flex absolute top-[55%] right-[10%] md:top-[60%] md:right-[15%] w-[150px] bg-[#F8F4EC] dark:bg-surface px-4 py-4 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_6px_16px_-3px_rgba(42,41,40,0.03)] rounded-[1px_3px_2px_2px] z-10 flex-col"
+                  >
+                    <p className="font-serif text-xl text-foreground tracking-tight">ephemeral</p>
+                    <p className="font-sans text-[7px] text-muted mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
+                  </motion.div>
 
-                {/* METICULOUS (Small, quiet, bottom right) */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.8, y: [-2, 2, -2] }}
-                  transition={{ opacity: { duration: 1.5, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
-                  className="absolute bottom-[8%] right-[10%] sm:bottom-[15%] sm:right-[20%] lg:right-[25%] bg-surface px-4 py-3 border-[0.5px] border-border-subtle shadow-subtle rotate-1 z-10"
-                >
-                  <p className="font-serif text-lg text-foreground/70">meticulous</p>
-                  <p className="font-sans text-[8px] text-muted/60 mt-1 uppercase tracking-[0.2em]">[ adjective ]</p>
-                </motion.div>
-                
+                  {/* METICULOUS (Small card lower-leftish) */}
+                  <motion.div 
+                    initial={{ opacity: 0, rotate: 1, y: 10 }}
+                    animate={{ opacity: 1, y: [-2, 1, -2] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
+                    className="absolute bottom-[5%] right-[15%] md:bottom-[15%] md:right-[45%] w-[130px] bg-[#FBF8F2] dark:bg-surface-tint px-4 py-3 border border-black/[0.03] dark:border-white/[0.02] shadow-[0_4px_10px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_3px_2px] z-10 flex flex-col"
+                  >
+                    <p className="font-serif text-base text-foreground tracking-tight">meticulous</p>
+                    <p className="font-sans text-[7px] text-muted mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
+                  </motion.div>
+                  
+                </div>
               </div>
             </section>
           </motion.div>

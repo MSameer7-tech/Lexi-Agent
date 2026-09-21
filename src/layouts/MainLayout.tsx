@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { motion } from 'framer-motion';
+import { BookOpen, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { HistoryDrawer } from '../components/history/HistoryDrawer';
 import { useHistoryStore } from '../store/historyStore';
 
@@ -27,65 +25,50 @@ export const MainLayout: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
-      <header className="absolute top-0 w-full z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-8 w-8 items-center justify-center bg-foreground text-background transition-transform group-hover:rotate-6 rounded-[4px]">
-            <BookA size={16} strokeWidth={2} />
-          </div>
-          <span className="font-serif text-2xl tracking-tight text-foreground">LexiAgent</span>
-        </Link>
+      {/* MINIMAL NAVBAR */}
+      <header className="absolute top-0 w-full z-50 flex items-center justify-between px-6 py-8 md:px-12 md:py-10 bg-transparent">
         
-        <nav className="flex items-center gap-6 md:gap-8">
+        {/* Left: Brand */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-6 h-6 bg-foreground text-bg-base rounded-[1px]">
+            <BookOpen size={12} strokeWidth={2} />
+          </div>
+          <span className="font-serif text-lg font-medium tracking-wide text-foreground">LexiAgent</span>
+        </div>
+        
+        {/* Right: Navigation */}
+        <nav className="flex items-center gap-6 sm:gap-10">
           {navItems.map((item) => {
             const isActive = item.type === 'link' && location.pathname === item.path;
-            
-            const content = (
-              <>
-                <span className="hidden sm:inline">{item.label}</span>
-                <item.icon size={16} className="sm:hidden" />
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute -bottom-1 left-0 right-0 h-[1px] bg-foreground/50"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </>
-            );
-
-            const className = cn(
-              "relative text-[10px] font-sans tracking-[0.2em] uppercase transition-colors duration-300 hover:text-foreground",
-              isActive ? "text-foreground" : "text-muted"
-            );
+            const className = "text-[10px] font-sans tracking-widest uppercase transition-colors duration-300 hover:text-foreground " + (isActive ? "text-foreground font-medium" : "text-muted");
 
             if (item.type === 'button') {
               return (
                 <button key={item.id} onClick={item.action} className={className}>
-                  {content}
+                  {item.label}
                 </button>
               );
             }
 
             return (
               <Link key={item.id} to={item.path!} className={className}>
-                {content}
+                {item.label}
               </Link>
             );
           })}
           
-          <div className="w-[1px] h-3 bg-border-strong/50 mx-1 hidden sm:block"></div>
-          
           <button 
             onClick={toggleDarkMode}
-            className="text-muted hover:text-foreground transition-colors p-1"
+            className="text-muted hover:text-foreground transition-colors ml-2"
             aria-label="Toggle theme"
           >
-            {isDark ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
+            {isDark ? <Sun size={12} strokeWidth={2} /> : <Moon size={12} strokeWidth={2} />}
           </button>
         </nav>
       </header>
 
-      <main className="flex-1 w-full flex flex-col pt-24 md:pt-32">
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 w-full flex flex-col relative z-10 pt-20">
         <Outlet />
       </main>
 

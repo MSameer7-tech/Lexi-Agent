@@ -38,37 +38,43 @@
 
 @layer base {
   :root {
-    --bg-base: #FAF9F6;
-    --bg-surface: #FFFFFF;
-    --bg-surface-tint: #F5F4F0;
+    --bg-base: #F5F1EA;
+    --bg-surface: #FAF7F0;
+    --bg-surface-tint: #F8F4EC;
     
-    --fg-base: #1C1917;
-    --fg-muted: #78716C;
-    --fg-subtle: #A8A29E;
+    --fg-base: #2A2928;
+    --fg-muted: #73706D;
+    --fg-subtle: #96928E;
     
-    --border-subtle: #E7E5E4;
-    --border-strong: #D6D3D1;
+    --border-subtle: #E8E3DB;
+    --border-strong: #D8D1C7;
     
-    --accent: var(--color-lavender);
-    --accent-fg: #1C1917;
+    --accent: #2A2928;
+    --accent-fg: #F5F1EA;
   }
 
   .dark {
-    --bg-base: #141312;
-    --bg-surface: #1C1B19;
-    --bg-surface-tint: #242220;
+    --bg-base: #1C1B19;
+    --bg-surface: #262422;
+    --bg-surface-tint: #2C2A28;
     
-    --fg-base: #F5F4F0;
-    --fg-muted: #A8A29E;
-    --fg-subtle: #78716C;
+    --fg-base: #F5F1EA;
+    --fg-muted: #A39E99;
+    --fg-subtle: #7A7773;
     
-    --border-subtle: #292725;
-    --border-strong: #3F3C38;
+    --border-subtle: #3A3733;
+    --border-strong: #4D4944;
     
-    --accent: var(--color-lavender-dark);
-    --accent-fg: #F5F4F0;
+    --accent: #F5F1EA;
+    --accent-fg: #1C1B19;
   }
+}
 
+@layer base {
+  * {
+    @apply border-border-subtle;
+  }
+  
   body {
     background-color: var(--bg-base);
     color: var(--fg-base);
@@ -97,19 +103,4 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--fg-subtle);
-}
-
-/* Subtle paper grain texture overlay */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
-  opacity: 1;
-}
-
-.dark body::after {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
 }
