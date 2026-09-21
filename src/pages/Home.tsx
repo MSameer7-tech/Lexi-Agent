@@ -227,11 +227,11 @@ export const Home: React.FC = () => {
                   </div>
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface transition-all duration-500 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_4px_20px_-4px_rgba(42,41,40,0.06)]' : 'border-border-strong/40 shadow-[0_2px_10px_-2px_rgba(42,41,40,0.03)]'}`}
+                    className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] bg-white' : 'border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)]'}`}
                     style={{ borderWidth: '1px' }}
                   >
-                    <div className="absolute left-5 flex items-center text-muted/60 pointer-events-none">
-                      <Search size={16} strokeWidth={1.5} />
+                    <div className="absolute left-6 flex items-center text-muted pointer-events-none">
+                      <Search size={18} strokeWidth={1.5} />
                     </div>
                     <input
                       type="text"
@@ -240,14 +240,14 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-14 sm:h-16 pl-12 pr-14 bg-transparent text-base text-foreground font-sans focus:outline-none placeholder:text-muted/50"
+                      className="w-full h-16 sm:h-20 pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-foreground/50"
                     />
                     <button
                       type="submit"
                       disabled={!query.trim()}
-                      className="absolute right-3 flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-300"
+                      className="absolute right-4 flex items-center justify-center w-12 h-12 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
                     >
-                      <ArrowRight size={18} strokeWidth={1.5} />
+                      <ArrowRight size={20} strokeWidth={1.5} />
                     </button>
                   </form>
                   
@@ -268,48 +268,48 @@ export const Home: React.FC = () => {
 
               {/* RIGHT SIDE (Floating Vocabulary Constellation) */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 md:static md:w-[50%] md:h-[600px] md:pointer-events-auto">
-                <div className="relative w-full h-full min-h-[400px]">
+                <div className="relative w-full h-full min-h-[500px]">
                   
-                  {/* PRAGMATIC (Small, slightly behind serendipity) */}
+                  {/* PRAGMATIC (Small, upper-middle right, slightly rotated -2) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: -2, y: 10 }}
-                    animate={{ opacity: 1, y: [2, -1, 2] }}
+                    animate={{ opacity: 1, y: [2, -2, 2] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
-                    className="hidden sm:block absolute top-[10%] right-[30%] md:top-[15%] md:right-[55%] w-[120px] bg-[#F8F4EC] dark:bg-surface-tint px-4 py-3 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_4px_12px_-2px_rgba(42,41,40,0.03)] rounded-[1px_2px_1px_1px] z-10"
+                    className="hidden sm:block absolute top-[12%] right-[25%] md:top-[8%] md:right-[55%] w-[130px] bg-[#F8F5EF] dark:bg-surface-tint px-4 py-3 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_4px_12px_-2px_rgba(42,41,40,0.04)] rounded-[1px_2px_1px_1px] z-10"
                   >
                     <p className="font-serif text-sm text-foreground/80 italic tracking-wide">pragmatic</p>
                   </motion.div>
 
-                  {/* SERENDIPITY (Main floating card, upper-right) */}
+                  {/* SERENDIPITY (Main floating card, upper-right/center-right) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: 1.5, y: 10 }}
                     animate={{ opacity: 1, y: [-2, 2, -2] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.5 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
-                    className="absolute top-[5%] right-[5%] md:top-[10%] md:right-[20%] w-[180px] bg-[#FAF7F0] dark:bg-surface px-5 py-5 border border-black/[0.03] dark:border-white/[0.03] shadow-[0_8px_24px_-4px_rgba(42,41,40,0.04),0_2px_8px_-2px_rgba(42,41,40,0.02)] rounded-[2px_1px_2px_3px] z-20 flex flex-col"
+                    className="absolute top-[8%] right-[5%] md:top-[22%] md:right-[15%] w-[210px] bg-[#FDFBF8] dark:bg-surface px-6 py-6 border border-black/[0.03] dark:border-white/[0.03] shadow-[0_8px_24px_-4px_rgba(42,41,40,0.05),0_2px_8px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_2px_3px] z-20 flex flex-col"
                   >
-                    <p className="font-serif text-2xl text-foreground tracking-tight">serendipity</p>
-                    <p className="font-sans text-[8px] text-muted mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
+                    <p className="font-serif text-3xl text-foreground tracking-tight">serendipity</p>
+                    <p className="font-sans text-[9px] text-muted mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
                   </motion.div>
 
-                  {/* EPHEMERAL (Medium card farther down-right) */}
+                  {/* EPHEMERAL (Medium card, middle/lower-right) */}
                   <motion.div 
-                    initial={{ opacity: 0, rotate: -2.5, y: 10 }}
-                    animate={{ opacity: 1, y: [3, -2, 3] }}
+                    initial={{ opacity: 0, rotate: -2, y: 10 }}
+                    animate={{ opacity: 1, y: [3, -3, 3] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.7 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
-                    className="hidden md:flex absolute top-[55%] right-[10%] md:top-[60%] md:right-[15%] w-[150px] bg-[#F8F4EC] dark:bg-surface px-4 py-4 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_6px_16px_-3px_rgba(42,41,40,0.03)] rounded-[1px_3px_2px_2px] z-10 flex-col"
+                    className="hidden md:flex absolute top-[55%] right-[10%] md:top-[65%] md:right-[20%] w-[170px] bg-[#F8F5EF] dark:bg-surface px-5 py-5 border border-black/[0.04] dark:border-white/[0.02] shadow-[0_6px_16px_-3px_rgba(42,41,40,0.04)] rounded-[1px_3px_2px_2px] z-10 flex-col"
                   >
-                    <p className="font-serif text-xl text-foreground tracking-tight">ephemeral</p>
-                    <p className="font-sans text-[7px] text-muted mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
+                    <p className="font-serif text-2xl text-foreground tracking-tight">ephemeral</p>
+                    <p className="font-sans text-[8px] text-muted mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
                   </motion.div>
 
-                  {/* METICULOUS (Small card lower-leftish) */}
+                  {/* METICULOUS (Small card, lower-middle-right) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: 1, y: 10 }}
-                    animate={{ opacity: 1, y: [-2, 1, -2] }}
+                    animate={{ opacity: 1, y: [-2, 2, -2] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
-                    className="absolute bottom-[5%] right-[15%] md:bottom-[15%] md:right-[45%] w-[130px] bg-[#FBF8F2] dark:bg-surface-tint px-4 py-3 border border-black/[0.03] dark:border-white/[0.02] shadow-[0_4px_10px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_3px_2px] z-10 flex flex-col"
+                    className="absolute bottom-[5%] right-[15%] md:bottom-[5%] md:right-[50%] w-[140px] bg-[#FBF8F2] dark:bg-surface-tint px-4 py-4 border border-black/[0.03] dark:border-white/[0.02] shadow-[0_4px_10px_-2px_rgba(42,41,40,0.03)] rounded-[2px_1px_3px_2px] z-10 flex flex-col"
                   >
-                    <p className="font-serif text-base text-foreground tracking-tight">meticulous</p>
+                    <p className="font-serif text-lg text-foreground tracking-tight">meticulous</p>
                     <p className="font-sans text-[7px] text-muted mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
                   </motion.div>
                   

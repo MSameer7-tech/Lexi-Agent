@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, Clock, Settings, Moon, Sun } from 'lucide-react';
+import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { HistoryDrawer } from '../components/history/HistoryDrawer';
 import { useHistoryStore } from '../store/historyStore';
 
@@ -29,12 +29,12 @@ export const MainLayout: React.FC = () => {
       <header className="absolute top-0 w-full z-50 flex items-center justify-between px-6 py-8 md:px-12 md:py-10 bg-transparent">
         
         {/* Left: Brand */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-6 h-6 bg-foreground text-bg-base rounded-[1px]">
-            <BookOpen size={12} strokeWidth={2} />
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-foreground text-bg-base transition-transform group-hover:rotate-6">
+            <BookA size={16} strokeWidth={2} />
           </div>
-          <span className="font-serif text-lg font-medium tracking-wide text-foreground">LexiAgent</span>
-        </div>
+          <span className="font-serif text-2xl tracking-tight text-foreground">LexiAgent</span>
+        </Link>
         
         {/* Right: Navigation */}
         <nav className="flex items-center gap-6 sm:gap-10">

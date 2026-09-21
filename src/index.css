@@ -38,9 +38,9 @@
 
 @layer base {
   :root {
-    --bg-base: #F5F1EA;
-    --bg-surface: #FAF7F0;
-    --bg-surface-tint: #F8F4EC;
+    --bg-base: #F3EFE7;
+    --bg-surface: #FDFBF8;
+    --bg-surface-tint: #F8F5EF;
     
     --fg-base: #2A2928;
     --fg-muted: #73706D;
