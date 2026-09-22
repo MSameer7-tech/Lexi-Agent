@@ -4,18 +4,23 @@ export interface ChatRequest {
 }
 
 export interface ChatResponse {
+  success: boolean;
   response: string;
   sessionId: string;
+  dictionary?: any | null;
+  events?: any[];
 }
 
-const WEBHOOK_URL = 'https://sameer11123.app.n8n.cloud/webhook/lexiagent';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export async function sendMessage(request: ChatRequest, signal?: AbortSignal): Promise<ChatResponse> {
   try {
-    const res = await fetch(WEBHOOK_URL, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/lexi-chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
       },
       body: JSON.stringify(request),
       signal,
@@ -27,23 +32,17 @@ export async function sendMessage(request: ChatRequest, signal?: AbortSignal): P
 
     const data = await res.json();
     
-    // Ensure we have a valid response string
+    // Ensure we have a valid response structure
     if (!data || typeof data.response !== 'string') {
-      // In some configurations n8n returns an array or different structure.
-      // Assuming it conforms to the exact specification provided by the user.
-      if (Array.isArray(data) && data[0] && typeof data[0].response === 'string') {
-        return {
-          response: data[0].response,
-          sessionId: data[0].sessionId || request.sessionId,
-        };
-      }
-      
-      throw new Error('Invalid or empty response format received from LexiAgent backend.');
+      throw new Error('Invalid or empty response format received from LexiAgent Edge Function.');
     }
     
     return {
+      success: data.success,
       response: data.response,
       sessionId: data.sessionId || request.sessionId,
+      dictionary: data.dictionary || null,
+      events: data.events || [],
     };
   } catch (error: any) {
     if (error.name === 'AbortError') {

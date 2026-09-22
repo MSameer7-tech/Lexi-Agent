@@ -96,3 +96,29 @@ export function parseDictionaryMarkdown(markdown: string): ParsedDictionaryEntry
     return { rawMarkdown: markdown };
   }
 }
+
+export function mapDictionaryApiToParsedEntry(dict: any, rawMarkdown: string): ParsedDictionaryEntry {
+  if (!dict) return { rawMarkdown };
+  
+  const primaryMeaning = dict.meanings?.[0];
+  
+  const definitions: ParsedDefinition[] = [];
+  if (primaryMeaning?.definitions) {
+    primaryMeaning.definitions.forEach((d: any) => {
+      definitions.push({
+        text: d.definition,
+        example: d.example || undefined
+      });
+    });
+  }
+
+  return {
+    word: dict.word,
+    phonetic: dict.phonetic,
+    partOfSpeech: primaryMeaning?.partOfSpeech,
+    definitions: definitions.length > 0 ? definitions : undefined,
+    synonyms: dict.synonyms?.length > 0 ? dict.synonyms : undefined,
+    antonyms: dict.antonyms?.length > 0 ? dict.antonyms : undefined,
+    rawMarkdown
+  };
+}

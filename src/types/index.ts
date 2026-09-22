@@ -6,6 +6,7 @@ export interface Message {
   content: string;
   timestamp: number;
   events?: AgentEvent[];
+  dictionary?: any | null;
 }
 
 export interface Session {

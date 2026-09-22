@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
-import { parseDictionaryMarkdown } from '../lib/parser';
+import { parseDictionaryMarkdown, mapDictionaryApiToParsedEntry } from '../lib/parser';
 import { sendMessage } from '../services/lexiAgentApi';
 import { useHistoryStore } from '../store/historyStore';
 import type { Message } from '../types';
@@ -96,11 +96,18 @@ export const Home: React.FC = () => {
     try {
       const response = await sendMessage({ message: messageText, sessionId });
       
-      const finalEvents: AgentEvent[] = [
-        { id: '1', label: 'Request sent to LexiAgent', timestamp: Date.now() - 1200, status: 'success' },
-        { id: '2', label: 'Processing request', status: 'success' },
-        { id: '3', label: 'Response generated', timestamp: Date.now(), status: 'success' }
-      ];
+      let finalEvents: AgentEvent[] = [];
+      if (response.events && response.events.length > 0) {
+        finalEvents = response.events.map((evt: any, i: number) => ({
+          id: i.toString(),
+          label: evt.type === 'tool_call' ? `Looking up "${evt.input}"` : evt.type === 'tool_result' ? (evt.success ? 'Dictionary information retrieved' : 'Dictionary lookup failed') : evt.type,
+          status: evt.success === false ? 'error' : 'success',
+          timestamp: Date.now()
+        }));
+      } else {
+        finalEvents = []; // For normal conversation, keep events empty
+      }
+      
       setActiveEvents(finalEvents);
 
       const newAgentMessage: Message = {
@@ -108,7 +115,8 @@ export const Home: React.FC = () => {
         role: 'agent',
         content: response.response,
         timestamp: Date.now(),
-        events: finalEvents
+        events: finalEvents,
+        dictionary: response.dictionary
       };
 
       addMessageToSession(sessionId, newAgentMessage);
@@ -351,7 +359,7 @@ export const Home: React.FC = () => {
                       {message.events && message.events.length > 0 && (
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
-                      <WordResult entry={parseDictionaryMarkdown(message.content)} />
+                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} />
                       <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
                         LexiAgent · {formatTime(message.timestamp)}
                       </span>
