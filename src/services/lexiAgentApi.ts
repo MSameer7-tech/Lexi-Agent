@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 export interface ChatRequest {
   message: string;
   sessionId: string;
@@ -16,11 +17,14 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export async function sendMessage(request: ChatRequest, signal?: AbortSignal): Promise<ChatResponse> {
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
     const res = await fetch(`${SUPABASE_URL}/functions/v1/lexi-chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(request),
       signal,

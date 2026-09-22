@@ -4,6 +4,7 @@ import { MainLayout } from './layouts/MainLayout';
 import { Home } from './pages/Home';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
+import { Auth } from './pages/Auth';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="history" element={<History />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="auth" element={<Auth />} />
         </Route>
       </Routes>
     </Router>
