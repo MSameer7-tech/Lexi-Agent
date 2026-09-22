@@ -1,8 +1,6 @@
 export interface DictionaryDefinition {
   definition: string;
   example: string | null;
-  synonyms: string[];
-  antonyms: string[];
 }
 
 export interface DictionaryMeaning {
@@ -18,13 +16,85 @@ export interface DictionaryResult {
   antonyms: string[];
 }
 
+function cleanMwText(text: string): string {
+  if (!text) return "";
+  let result = text
+    .replace(/{bc}/g, "") // remove bold colon
+    .replace(/{wi}(.*?){(?:\/)?wi}/g, "$1") // italic
+    .replace(/{it}(.*?){(?:\/)?it}/g, "_$1_") // italic
+    .replace(/{b}(.*?){(?:\/)?b}/g, "**$1**") // bold
+    .replace(/{sup}(.*?){(?:\/)?sup}/g, "$1") 
+    .replace(/{inf}(.*?){(?:\/)?inf}/g, "$1") 
+    .replace(/{sx\|([^|]+)\|([^|]*)\|([^|]*)}/g, "$1") // synonym cross ref
+    .replace(/{dxt\|([^|]+)\|([^|]*)\|([^|]*)}/g, "$1") // dict cross ref
+    .replace(/{a_link\|([^}]+)}/g, "$1") 
+    .replace(/{d_link\|([^|]+)\|([^}]+)}/g, "$1") 
+    .replace(/{gloss}(.*?){(?:\/)?gloss}/g, "($1)");
+    
+  // Strip any remaining generic tags like {dx_def} or {dx} that didn't match the pairs
+  result = result.replace(/{[^}]+}/g, "");
+  
+  return result.trim().replace(/\s+/g, ' ');
+}
+
+// Recursively find text and vis inside dt arrays
+function extractDefinitionsAndExamples(dtArray: any[]): DictionaryDefinition | null {
+  let defText = "";
+  let example = null;
+
+  for (const item of dtArray) {
+    if (Array.isArray(item) && item.length === 2) {
+      if (item[0] === "text") {
+        defText += cleanMwText(item[1]) + " ";
+      } else if (item[0] === "vis" && Array.isArray(item[1]) && item[1].length > 0) {
+        // take the first verbal illustration
+        if (item[1][0].t) {
+          example = cleanMwText(item[1][0].t);
+        }
+      }
+    }
+  }
+
+  defText = defText.trim();
+  if (defText) {
+    return { definition: defText, example };
+  }
+  return null;
+}
+
+function traverseSseq(sseq: any[], defs: DictionaryDefinition[]) {
+  if (!Array.isArray(sseq)) return;
+  
+  for (const item of sseq) {
+    if (Array.isArray(item)) {
+      if (item[0] === "sense" && item[1] && item[1].dt) {
+        const extracted = extractDefinitionsAndExamples(item[1].dt);
+        if (extracted) defs.push(extracted);
+      } else if (item[0] === "pseq" || item[0] === "bs") { // nested sequences
+        traverseSseq(item[1], defs);
+      } else {
+        // Continue traversing down if it's an array
+        for (const sub of item) {
+           if (Array.isArray(sub)) traverseSseq([sub], defs);
+        }
+      }
+    }
+  }
+}
+
 export async function dictionary_lookup(word: string): Promise<DictionaryResult | { error: string }> {
   try {
     const cleanWord = word.trim().replace(/\s+/g, ' ');
     if (!cleanWord) return { error: "Empty word provided" };
 
+    const apiKey = Deno.env.get('MW_DICTIONARY_API_KEY');
+    if (!apiKey) {
+      console.error("MW_DICTIONARY_API_KEY is not set.");
+      return { error: "Dictionary provider configuration error" };
+    }
+
     const encodedWord = encodeURIComponent(cleanWord);
-    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodedWord}`;
+    const url = `https://www.dictionaryapi.com/api/v3/references/collegiate/json/${encodedWord}?key=${apiKey}`;
 
     const response = await fetch(url);
     
@@ -38,74 +108,69 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
 
     const data = await response.json();
     if (!Array.isArray(data) || data.length === 0) {
-      return { error: "Malformed response from Dictionary API" };
+      return { error: `Word not found: ${cleanWord}` };
     }
 
-    // Process all entries for the word to get all phonetics, meanings, synonyms
+    // Merriam-Webster returns an array of strings if word is not found but there are spelling suggestions
+    if (typeof data[0] === "string") {
+      return { error: `Word not found. Did you mean: ${data.slice(0, 3).join(', ')}?` };
+    }
+
     const result: DictionaryResult = {
-      word: data[0].word,
+      word: cleanWord,
       phonetic: null,
       meanings: [],
       synonyms: [],
       antonyms: []
     };
 
-    const globalSynonyms = new Set<string>();
-    const globalAntonyms = new Set<string>();
-
+    const targetWordLower = cleanWord.toLowerCase();
+    
+    // Process all matching entries for the word
     for (const entry of data) {
-      // Get the first valid phonetic text
-      if (!result.phonetic && entry.phonetic) {
-        result.phonetic = entry.phonetic;
+      const entryId = entry.meta?.id?.split(':')[0]?.toLowerCase();
+      if (!entryId) continue;
+
+      if (entryId !== targetWordLower) continue;
+
+      // Extract phonetic (take the first available)
+      if (!result.phonetic && entry.hwi?.prs && entry.hwi.prs.length > 0) {
+         if (entry.hwi.prs[0].mw) {
+           result.phonetic = `/${entry.hwi.prs[0].mw}/`;
+         }
       }
-      if (!result.phonetic && entry.phonetics && Array.isArray(entry.phonetics)) {
-        for (const ph of entry.phonetics) {
-          if (ph.text) {
-            result.phonetic = ph.text;
-            break;
-          }
+      
+      const partOfSpeech = entry.fl || "unknown";
+      
+      const definitions: DictionaryDefinition[] = [];
+
+      // Try to extract rich definitions + examples using sseq traversal
+      if (entry.def && Array.isArray(entry.def)) {
+        for (const d of entry.def) {
+           if (d.sseq) {
+              traverseSseq(d.sseq, definitions);
+           }
         }
       }
 
-      // Process meanings
-      if (entry.meanings && Array.isArray(entry.meanings)) {
-        for (const meaning of entry.meanings) {
-          
-          const newMeaning: DictionaryMeaning = {
-            partOfSpeech: meaning.partOfSpeech || "unknown",
-            definitions: []
-          };
-
-          if (meaning.synonyms && Array.isArray(meaning.synonyms)) {
-            meaning.synonyms.forEach((s: string) => globalSynonyms.add(s));
-          }
-          if (meaning.antonyms && Array.isArray(meaning.antonyms)) {
-            meaning.antonyms.forEach((a: string) => globalAntonyms.add(a));
-          }
-
-          if (meaning.definitions && Array.isArray(meaning.definitions)) {
-            for (const def of meaning.definitions) {
-              const newDef: DictionaryDefinition = {
-                definition: def.definition,
-                example: def.example || null,
-                synonyms: def.synonyms || [],
-                antonyms: def.antonyms || []
-              };
-              
-              if (newDef.synonyms.length > 0) newDef.synonyms.forEach(s => globalSynonyms.add(s));
-              if (newDef.antonyms.length > 0) newDef.antonyms.forEach(a => globalAntonyms.add(a));
-
-              newMeaning.definitions.push(newDef);
-            }
-          }
-          
-          result.meanings.push(newMeaning);
+      // Fallback: if complex traversal failed, try to use shortdef
+      if (definitions.length === 0 && entry.shortdef && Array.isArray(entry.shortdef)) {
+        for (const sd of entry.shortdef) {
+          definitions.push({ definition: cleanMwText(sd), example: null });
         }
+      }
+
+      if (definitions.length > 0) {
+        result.meanings.push({
+          partOfSpeech,
+          definitions
+        });
       }
     }
-
-    result.synonyms = Array.from(globalSynonyms);
-    result.antonyms = Array.from(globalAntonyms);
+    
+    if (result.meanings.length === 0) {
+       return { error: `No definitions found for ${cleanWord}` };
+    }
 
     return result;
   } catch (error) {
