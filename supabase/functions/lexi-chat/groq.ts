@@ -1,12 +1,29 @@
-export async function callGroqChatCompletion(apiKey: string, systemPrompt: string, userMessage: string) {
+export const dictionaryToolDef = {
+  type: "function",
+  function: {
+    name: "dictionary_lookup",
+    description: "Look up an English word in the Free Dictionary API and return factual dictionary information including definitions, part of speech, pronunciation, examples, synonyms, and antonyms when available.",
+    parameters: {
+      type: "object",
+      properties: {
+        word: {
+          type: "string",
+          description: "The English word to look up."
+        }
+      },
+      required: ["word"]
+    }
+  }
+};
+
+export async function callGroqChatCompletion(apiKey: string, messages: any[]) {
   const url = "https://api.groq.com/openai/v1/chat/completions";
   
   const payload = {
-    model: "llama-3.3-70b-versatile", // Using a reliable and powerful Groq model
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userMessage }
-    ],
+    model: "openai/gpt-oss-20b",
+    messages: messages,
+    tools: [dictionaryToolDef],
+    tool_choice: "auto",
     temperature: 0.2,
   };
 
@@ -31,5 +48,5 @@ export async function callGroqChatCompletion(apiKey: string, systemPrompt: strin
     throw new Error("Invalid response structure from Groq");
   }
 
-  return data.choices[0].message.content;
+  return data.choices[0].message;
 }
