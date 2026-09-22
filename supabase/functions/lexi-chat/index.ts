@@ -1,4 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
+import { callGroqChatCompletion } from "./groq.ts";
+import { SYSTEM_PROMPT } from "./prompts/system.ts";
 
 export default {
   fetch: async (req: Request) => {
@@ -17,7 +19,7 @@ export default {
     try {
       // 3. Ensure it's a POST request
       if (req.method !== 'POST') {
-        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
           status: 405,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
@@ -28,7 +30,7 @@ export default {
       try {
         body = await req.json();
       } catch (err) {
-        return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+        return new Response(JSON.stringify({ success: false, error: "Invalid JSON body" }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
@@ -38,7 +40,7 @@ export default {
 
       // 5. Validate message
       if (!message || typeof message !== 'string' || message.trim() === '') {
-        return new Response(JSON.stringify({ error: "Missing or invalid 'message' parameter" }), {
+        return new Response(JSON.stringify({ success: false, error: "Message is required" }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
@@ -46,10 +48,23 @@ export default {
 
       const safeSessionId = sessionId || crypto.randomUUID();
 
-      // 6. Return dummy JSON response
+      // 6. Get Groq API Key
+      const groqApiKey = Deno.env.get('GROQ_API_KEY');
+      if (!groqApiKey) {
+        console.error("GROQ_API_KEY environment variable is not set");
+        return new Response(JSON.stringify({ success: false, error: "Internal Configuration Error" }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // 7. Call Groq
+      const aiResponse = await callGroqChatCompletion(groqApiKey, SYSTEM_PROMPT, message);
+
+      // 8. Return response
       return new Response(JSON.stringify({
         success: true,
-        message: "LexiAgent serverless endpoint is working",
+        response: aiResponse,
         sessionId: safeSessionId
       }), {
         status: 200,
@@ -58,7 +73,8 @@ export default {
 
     } catch (err: any) {
       console.error('Edge Function Error:', err);
-      return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      // Don't expose raw internal errors directly to the client
+      return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
