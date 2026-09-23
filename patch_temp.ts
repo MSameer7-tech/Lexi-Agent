@@ -37,9 +37,25 @@ export default {
 
       const { action, word, note, dictionary_data, message, sessionId } = body;
 
-      // ----------------------------------------------------
-      // AUTH & ROUTING FOR VOCABULARY API (Phase 6C)
-      // ----------------------------------------------------
+      if (!message || typeof message !== 'string' || message.trim() === '') {
+        return new Response(JSON.stringify({ success: false, error: "Message is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      const safeSessionId = sessionId || crypto.randomUUID();
+
+      const groqApiKey = Deno.env.get('GROQ_API_KEY');
+      if (!groqApiKey) {
+        console.error("GROQ_API_KEY environment variable is not set");
+        return new Response(JSON.stringify({ success: false, error: "Internal Configuration Error" }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Supabase Client Initialization for Persistence
       const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
       const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
       const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
@@ -52,9 +68,15 @@ export default {
       if (authHeader) {
         const token = authHeader.replace('Bearer ', '').trim();
         const { data: { user }, error } = await supabaseClient.auth.getUser(token);
-        if (user && !error) authenticatedUser = user;
+
+        if (user && !error) {
+          authenticatedUser = user;
+        }
       }
 
+      // ----------------------------------------------------
+      // ROUTING FOR VOCABULARY API (Phase 6C)
+      // ----------------------------------------------------
       if (action) {
         if (!authenticatedUser) {
           return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), { 
@@ -90,25 +112,10 @@ export default {
       // ----------------------------------------------------
 
 
-      if (!message || typeof message !== 'string' || message.trim() === '') {
-        return new Response(JSON.stringify({ success: false, error: "Message is required" }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-
-      const safeSessionId = sessionId || crypto.randomUUID();
-
-      const groqApiKey = Deno.env.get('GROQ_API_KEY');
-      if (!groqApiKey) {
-        console.error("GROQ_API_KEY environment variable is not set");
-        return new Response(JSON.stringify({ success: false, error: "Internal Configuration Error" }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-
-// Auth logic extracted to top of function for action routing
+      // Supabase Client Initialization for Persistence
+      const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
+// Auth has been extracted to top of handler to support routing
 
       let conversationId = null;
       let historyMessages: any[] = [];
