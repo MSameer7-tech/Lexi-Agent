@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import * as fs from 'fs';
+
+const content = `import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -74,7 +76,7 @@ export const Auth: React.FC = () => {
       });
       if (error) throw error;
     } catch (error: any) {
-      setAuthError(error.message || `An error occurred with ${provider} sign-in.`);
+      setAuthError(error.message || \`An error occurred with \${provider} sign-in.\`);
     }
   };
 
@@ -222,3 +224,6 @@ export const Auth: React.FC = () => {
     </div>
   );
 };
+`;
+
+fs.writeFileSync('src/pages/Auth.tsx', content);
