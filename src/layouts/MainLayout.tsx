@@ -46,7 +46,7 @@ export const MainLayout: React.FC = () => {
         
         {/* Right: Navigation */}
         <nav className="flex items-center gap-6 sm:gap-10">
-          {navItems.map((item) => {
+          {location.pathname !== '/auth' && navItems.map((item) => {
             const isActive = item.type === 'link' && location.pathname === item.path;
             const className = "text-[10px] font-sans tracking-widest uppercase transition-colors duration-300 hover:text-foreground " + (isActive ? "text-foreground font-medium" : "text-muted");
 
