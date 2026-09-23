@@ -4,10 +4,13 @@ export interface ParsedDefinition {
   example?: string;
 }
 
+import type { DictionaryPronunciation } from '../types';
+
 export interface ParsedDictionaryEntry {
   word?: string;
   partOfSpeech?: string;
   phonetic?: string;
+  pronunciations?: DictionaryPronunciation[];
   definitions?: ParsedDefinition[];
   synonyms?: string[];
   antonyms?: string[];
@@ -116,6 +119,7 @@ export function mapDictionaryApiToParsedEntry(dict: DictionaryData | null | unde
   return {
     word: dict.word,
     phonetic: dict.phonetic || undefined,
+    pronunciations: (dict.pronunciations && dict.pronunciations.length > 0) ? dict.pronunciations : undefined,
     partOfSpeech: primaryMeaning?.partOfSpeech,
     definitions: definitions.length > 0 ? definitions : undefined,
     synonyms: (dict.synonyms && dict.synonyms.length > 0) ? dict.synonyms : undefined,

@@ -9,9 +9,15 @@ export interface DictionaryMeaning {
   definitions: DictionaryDefinition[];
 }
 
+export interface DictionaryPronunciation {
+  phonetic: string;
+  audioUrl?: string | null;
+}
+
 export interface DictionaryData {
   word: string;
   phonetic: string | null;
+  pronunciations?: DictionaryPronunciation[];
   meanings: DictionaryMeaning[];
   synonyms?: string[];
   antonyms?: string[];
