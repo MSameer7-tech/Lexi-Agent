@@ -1,3 +1,4 @@
+import type { DictionaryData } from '../types';
 export interface ParsedDefinition {
   text: string;
   example?: string;
@@ -97,7 +98,7 @@ export function parseDictionaryMarkdown(markdown: string): ParsedDictionaryEntry
   }
 }
 
-export function mapDictionaryApiToParsedEntry(dict: any, rawMarkdown: string): ParsedDictionaryEntry {
+export function mapDictionaryApiToParsedEntry(dict: DictionaryData | null | undefined, rawMarkdown: string): ParsedDictionaryEntry {
   if (!dict) return { rawMarkdown };
   
   const primaryMeaning = dict.meanings?.[0];
@@ -114,11 +115,11 @@ export function mapDictionaryApiToParsedEntry(dict: any, rawMarkdown: string): P
 
   return {
     word: dict.word,
-    phonetic: dict.phonetic,
+    phonetic: dict.phonetic || undefined,
     partOfSpeech: primaryMeaning?.partOfSpeech,
     definitions: definitions.length > 0 ? definitions : undefined,
-    synonyms: dict.synonyms?.length > 0 ? dict.synonyms : undefined,
-    antonyms: dict.antonyms?.length > 0 ? dict.antonyms : undefined,
+    synonyms: (dict.synonyms && dict.synonyms.length > 0) ? dict.synonyms : undefined,
+    antonyms: (dict.antonyms && dict.antonyms.length > 0) ? dict.antonyms : undefined,
     rawMarkdown
   };
 }

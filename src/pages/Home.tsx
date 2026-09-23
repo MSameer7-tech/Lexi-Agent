@@ -98,11 +98,19 @@ export const Home: React.FC = () => {
       
       let finalEvents: AgentEvent[] = [];
       if (response.events && response.events.length > 0) {
-        finalEvents = response.events.map((evt: any, i: number) => ({
-          id: i.toString(),
-          label: evt.type === 'tool_call' ? `Looking up "${evt.input}"` : evt.type === 'tool_result' ? (evt.success ? 'Dictionary information retrieved' : 'Dictionary lookup failed') : evt.type,
-          status: evt.success === false ? 'error' : 'success',
-          timestamp: Date.now()
+        finalEvents = response.events
+          .filter((evt: any) => !(evt.type === 'tool_call' && evt.tool === 'thesaurus_lookup'))
+          .map((evt: any, i: number) => ({
+            id: i.toString(),
+            label: evt.type === 'tool_call' 
+              ? `Looking up "${evt.input}"`
+              : evt.type === 'tool_result'
+                ? (evt.tool === 'thesaurus_lookup' 
+                    ? (evt.success ? 'Thesaurus information retrieved' : 'Thesaurus lookup failed')
+                    : (evt.success ? 'Dictionary information retrieved' : 'Dictionary lookup failed'))
+                : evt.type,
+            status: evt.success === false ? 'error' : 'success',
+            timestamp: Date.now()
         }));
       } else {
         finalEvents = []; // For normal conversation, keep events empty
@@ -359,7 +367,7 @@ export const Home: React.FC = () => {
                       {message.events && message.events.length > 0 && (
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
-                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} rawDictionaryData={message.dictionary} />
+                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} rawDictionaryData={message.dictionary || undefined} />
                       <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
                         LexiAgent · {formatTime(message.timestamp)}
                       </span>

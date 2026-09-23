@@ -1,3 +1,21 @@
+
+export interface DictionaryDefinition {
+  definition: string;
+  example: string | null;
+}
+
+export interface DictionaryMeaning {
+  partOfSpeech: string;
+  definitions: DictionaryDefinition[];
+}
+
+export interface DictionaryData {
+  word: string;
+  phonetic: string | null;
+  meanings: DictionaryMeaning[];
+  synonyms?: string[];
+  antonyms?: string[];
+}
 import type { AgentEvent } from '../components/agent/ActivityTimeline';
 
 export interface Message {
@@ -6,7 +24,7 @@ export interface Message {
   content: string;
   timestamp: number;
   events?: AgentEvent[];
-  dictionary?: any | null;
+  dictionary?: DictionaryData | null;
 }
 
 export interface Session {
