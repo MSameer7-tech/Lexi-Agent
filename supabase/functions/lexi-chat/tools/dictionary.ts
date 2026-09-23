@@ -8,9 +8,15 @@ export interface DictionaryMeaning {
   definitions: DictionaryDefinition[];
 }
 
+export interface DictionaryPronunciation {
+  phonetic: string;
+  audioUrl: string | null;
+}
+
 export interface DictionaryResult {
   word: string;
   phonetic: string | null;
+  pronunciations: DictionaryPronunciation[];
   meanings: DictionaryMeaning[];
   synonyms: string[];
   antonyms: string[];
@@ -119,6 +125,7 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
     const result: DictionaryResult = {
       word: cleanWord,
       phonetic: null,
+      pronunciations: [],
       meanings: [],
       synonyms: [],
       antonyms: []
@@ -133,11 +140,37 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
 
       if (entryId !== targetWordLower) continue;
 
-      // Extract phonetic (take the first available)
-      if (!result.phonetic && entry.hwi?.prs && entry.hwi.prs.length > 0) {
-         if (entry.hwi.prs[0].mw) {
-           result.phonetic = `/${entry.hwi.prs[0].mw}/`;
-         }
+      // Extract phonetic and audio
+      if (entry.hwi?.prs && Array.isArray(entry.hwi.prs)) {
+        for (const pr of entry.hwi.prs) {
+          if (pr.mw) {
+            const phoneticStr = `/${pr.mw}/`;
+            
+            // Set the backwards-compatible phonetic if not set
+            if (!result.phonetic) {
+              result.phonetic = phoneticStr;
+            }
+
+            let audioUrl: string | null = null;
+            if (pr.sound && pr.sound.audio) {
+              const audioFilename = pr.sound.audio;
+              let subdir = audioFilename.charAt(0);
+              if (audioFilename.startsWith("bix")) subdir = "bix";
+              else if (audioFilename.startsWith("gg")) subdir = "gg";
+              else if (/^[^a-zA-Z]/.test(audioFilename)) subdir = "number";
+              
+              audioUrl = `https://media.merriam-webster.com/audio/prons/en/us/mp3/${subdir}/${audioFilename}.mp3`;
+            }
+
+            // Only push if we haven't already added this exact phonetic spelling to avoid duplicates
+            if (!result.pronunciations.some(p => p.phonetic === phoneticStr)) {
+              result.pronunciations.push({
+                phonetic: phoneticStr,
+                audioUrl
+              });
+            }
+          }
+        }
       }
       
       const partOfSpeech = entry.fl || "unknown";
