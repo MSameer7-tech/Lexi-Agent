@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { HistoryDrawer } from '../components/history/HistoryDrawer';
 import { useHistoryStore } from '../store/historyStore';
 import { useAuth } from '../contexts/AuthContext';
 
 export const MainLayout: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isDark, setIsDark] = useState(false);
   const { setDrawerOpen, setActiveSession } = useHistoryStore();
@@ -26,7 +27,7 @@ export const MainLayout: React.FC = () => {
     { type: 'link', path: '/vocabulary', label: 'Vocabulary', icon: undefined, id: 'vocabulary' },
     { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },
     session 
-      ? { type: 'button', action: () => signOut(), label: 'Sign Out', icon: undefined, id: 'signout' }
+      ? { type: 'button', action: async () => { await signOut(); navigate('/auth'); }, label: 'Sign Out', icon: undefined, id: 'signout' }
       : { type: 'link', path: '/auth', label: 'Sign In', icon: undefined, id: 'signin' }
   ];
 
