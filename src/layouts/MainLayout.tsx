@@ -21,6 +21,7 @@ export const MainLayout: React.FC = () => {
   };
 
   const navItems = [
+    { type: 'link', path: '/', label: 'Home', icon: undefined, id: 'home' },
     { type: 'button', action: () => setDrawerOpen(true), label: 'Chats', icon: Clock, id: 'history' },
     { type: 'link', path: '/vocabulary', label: 'Vocabulary', icon: undefined, id: 'vocabulary' },
     { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },
@@ -32,7 +33,7 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
       {/* MINIMAL NAVBAR */}
-      <header className="absolute top-0 w-full z-50 flex items-center justify-between px-6 py-8 md:px-12 md:py-10 bg-transparent">
+      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8 bg-background/95 backdrop-blur-sm border-b border-border-subtle/10 transition-all duration-300">
         
         {/* Left: Brand */}
         <Link to="/" onClick={() => setActiveSession(null)} className="flex items-center gap-3 group">
@@ -74,7 +75,7 @@ export const MainLayout: React.FC = () => {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 w-full flex flex-col relative z-10 pt-20">
+      <main className="flex-1 w-full flex flex-col relative z-10 pt-6">
         <Outlet />
       </main>
 

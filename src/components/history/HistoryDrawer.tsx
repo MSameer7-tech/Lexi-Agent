@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Pin, Trash2, Edit2, MessageSquare, Clock } from 'lucide-react';
@@ -7,6 +8,7 @@ import { cn } from '../../lib/utils';
 import type { Session } from '../../types';
 
 export const HistoryDrawer: React.FC = () => {
+  const navigate = useNavigate();
   const { isDrawerOpen, setDrawerOpen, sessions, activeSessionId, setActiveSession, togglePin, deleteSession, updateSession } = useHistoryStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -245,6 +247,7 @@ export const HistoryDrawer: React.FC = () => {
                 onClick={() => {
                   setActiveSession(null);
                   setDrawerOpen(false);
+                  navigate('/');
                 }}
                 className="w-full py-4 rounded-xl bg-foreground text-background font-medium hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-elevated"
               >
