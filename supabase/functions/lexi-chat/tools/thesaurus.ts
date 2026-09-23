@@ -31,9 +31,15 @@ export async function thesaurus_lookup(word: string): Promise<ThesaurusResult | 
     }
 
     // Attempt to parse JSON safely since MW sometimes returns plain text on invalid keys
+    const textResponse = await response.text();
+    if (textResponse.includes('Invalid API key') || textResponse.includes('Not subscribed')) {
+      console.error("MW Thesaurus Subscription Error: Key is invalid or not subscribed to the Thesaurus API.");
+      return { error: "Thesaurus API key is invalid or lacks subscription" };
+    }
+
     let data;
     try {
-      data = await response.json();
+      data = JSON.parse(textResponse);
     } catch (err) {
       return { error: "Thesaurus returned malformed response" };
     }
