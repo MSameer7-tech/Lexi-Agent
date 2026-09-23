@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { useHistoryStore } from '../store/historyStore';
 
 interface AuthContextType {
   session: Session | null;
@@ -28,9 +29,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession((prevSession) => {
+        // Check if user changed
+        if (prevSession?.user?.id && prevSession.user.id !== newSession?.user?.id) {
+          useHistoryStore.getState().clearSessions();
+        }
+        return newSession;
+      });
+      setUser(newSession?.user ?? null);
       setIsLoading(false);
     });
 
@@ -41,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    useHistoryStore.getState().clearSessions();
   };
 
   return (

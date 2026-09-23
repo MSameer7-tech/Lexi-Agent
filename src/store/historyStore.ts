@@ -15,6 +15,7 @@ interface HistoryState {
   deleteSession: (id: string) => void;
   togglePin: (id: string) => void;
   addMessageToSession: (sessionId: string, message: Message) => void;
+  clearSessions: () => void;
 }
 
 // Mock initial data to populate the drawer for design purposes
@@ -82,6 +83,8 @@ export const useHistoryStore = create<HistoryState>()(
           s.id === id ? { ...s, isPinned: !s.isPinned } : s
         )
       })),
+
+      clearSessions: () => set({ sessions: [], activeSessionId: null }),
 
       addMessageToSession: (sessionId, message) => set((state) => {
         const sessionExists = state.sessions.some(s => s.id === sessionId);
