@@ -34,7 +34,7 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-500 overflow-x-hidden">
       {/* MINIMAL NAVBAR */}
-      <header className="sticky top-0 w-full z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8 bg-background/95 backdrop-blur-sm border-b border-border-subtle/10 transition-all duration-300">
+      <header className="fixed top-0 left-0 right-0 w-full z-50 flex items-center justify-between px-6 py-6 md:px-12 md:py-8 bg-background/95 backdrop-blur-sm border-b border-border-subtle/10 transition-all duration-300">
         
         {/* Left: Brand */}
         <Link to="/" onClick={() => setActiveSession(null)} className="flex items-center gap-3 group">
@@ -76,7 +76,7 @@ export const MainLayout: React.FC = () => {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 w-full flex flex-col relative z-10 pt-6">
+      <main className="flex-1 w-full flex flex-col relative z-10 pt-24 md:pt-28">
         <Outlet />
       </main>
 
