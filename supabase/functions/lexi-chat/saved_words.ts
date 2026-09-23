@@ -102,3 +102,25 @@ export async function getSavedWords(
   
   return { saved_words: data };
 }
+
+
+/**
+ * Retrieves the word history for the authenticated user, ordered chronologically.
+ */
+export async function getWordHistory(
+  supabaseClient: SupabaseClient,
+  userId: string
+) {
+  const { data, error } = await supabaseClient
+    .from('word_history')
+    .select('*')
+    .eq('user_id', userId)
+    .order('last_seen_at', { ascending: false });
+    
+  if (error) {
+    console.error("getWordHistory Error:", error.code);
+    throw new Error("Failed to retrieve word history");
+  }
+  
+  return { word_history: data };
+}

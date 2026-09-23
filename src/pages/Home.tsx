@@ -359,7 +359,7 @@ export const Home: React.FC = () => {
                       {message.events && message.events.length > 0 && (
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
-                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} />
+                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} rawDictionaryData={message.dictionary} />
                       <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
                         LexiAgent · {formatTime(message.timestamp)}
                       </span>

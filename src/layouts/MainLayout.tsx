@@ -22,6 +22,7 @@ export const MainLayout: React.FC = () => {
 
   const navItems = [
     { type: 'button', action: () => setDrawerOpen(true), label: 'Chats', icon: Clock, id: 'history' },
+    { type: 'link', path: '/vocabulary', label: 'Vocabulary', icon: undefined, id: 'vocabulary' },
     { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },
     session 
       ? { type: 'button', action: () => signOut(), label: 'Sign Out', icon: undefined, id: 'signout' }

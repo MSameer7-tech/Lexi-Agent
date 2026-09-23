@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { callGroqChatCompletion } from "./groq.ts";
 import { SYSTEM_PROMPT } from "./prompts/system.ts";
 import { dictionary_lookup, DictionaryResult } from "./tools/dictionary.ts";
-import { saveWord, removeSavedWord, isWordSaved, getSavedWords } from "./saved_words.ts";
+import { saveWord, removeSavedWord, isWordSaved, getSavedWords, getWordHistory } from "./saved_words.ts";
 
 export default {
   fetch: async (req: Request) => {
@@ -79,6 +79,9 @@ export default {
             case 'get_saved':
               const getResult = await getSavedWords(supabaseClient, authenticatedUser.id);
               return new Response(JSON.stringify(getResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            case 'get_history':
+              const historyResult = await getWordHistory(supabaseClient, authenticatedUser.id);
+              return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             default:
               return new Response(JSON.stringify({ success: false, error: "Invalid action" }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
           }
