@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import * as fs from 'fs';
+
+const content = `import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const GoogleIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -72,7 +73,7 @@ export const Auth: React.FC = () => {
       });
       if (error) throw error;
     } catch (error: any) {
-      setAuthError(error.message || `An error occurred with ${provider} sign-in.`);
+      setAuthError(error.message || \`An error occurred with \${provider} sign-in.\`);
     }
   };
 
@@ -84,7 +85,7 @@ export const Auth: React.FC = () => {
         <div className="flex flex-col xl:flex-row gap-12 xl:gap-24 items-start xl:items-center w-full max-w-[800px] mx-auto">
           
           {/* Main Typography */}
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="max-w-[380px] z-10 flex-shrink-0">
+          <div className="max-w-[380px] z-10 flex-shrink-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="font-sans text-[10px] uppercase tracking-[0.2em] text-subtle/80 mb-6 sm:mb-8 flex items-center gap-4">
               <span className="w-6 h-[1px] bg-border-strong"></span>
               LexiAgent Personal Lexicon / 2026
@@ -95,10 +96,10 @@ export const Auth: React.FC = () => {
             <p className="font-sans text-[14.5px] sm:text-[15.5px] text-subtle mt-6 max-w-[320px] leading-[1.65]">
               Save words you discover, revisit what you've learned, and keep your vocabulary in one quiet place.
             </p>
-          </motion.div>
+          </div>
 
           {/* Decorative Archive/Index Visual */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }} className="w-full max-w-[280px] flex-shrink-0">
+          <div className="w-full max-w-[280px] flex-shrink-0 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
             <div className="flex flex-col">
               <div className="font-sans text-[9px] uppercase tracking-[0.15em] text-foreground mb-4">
                 Personal Archive
@@ -137,7 +138,7 @@ export const Auth: React.FC = () => {
                 "A place for words worth keeping."
               </div>
             </div>
-          </motion.div>
+          </div>
 
         </div>
       </div>
@@ -145,7 +146,7 @@ export const Auth: React.FC = () => {
       {/* RIGHT LOGIN AREA */}
       <div className="w-full md:w-[42%] lg:w-[40%] flex justify-center lg:justify-start px-6 md:px-8">
         
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }} className="w-full max-w-[420px] flex flex-col gap-8 bg-background sm:bg-[#FDFBF9] dark:bg-[#1C1C1A] p-0 sm:p-10 md:p-12 sm:shadow-[0_4px_30px_-4px_rgba(0,0,0,0.03)] dark:sm:shadow-none sm:border sm:border-border-subtle/50 rounded-[4px]">
+        <div className="w-full max-w-[420px] flex flex-col gap-8 bg-background sm:bg-[#FDFBF9] dark:bg-[#1C1C1A] p-0 sm:p-10 md:p-12 sm:shadow-[0_4px_30px_-4px_rgba(0,0,0,0.03)] dark:sm:shadow-none sm:border sm:border-border-subtle/50 rounded-[4px] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-75">
           
           <div className="flex flex-col gap-2">
             <h2 className="font-serif text-[26px] font-medium text-foreground tracking-tight">
@@ -238,8 +239,11 @@ export const Auth: React.FC = () => {
               {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
 };
+`;
+
+fs.writeFileSync('src/pages/Auth.tsx', content);
