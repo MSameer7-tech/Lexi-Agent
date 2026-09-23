@@ -65,10 +65,25 @@ export default {
 
       let authenticatedUser = null;
       if (authHeader) {
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        const token = authHeader.replace('Bearer ', '').trim();
+        const { data: { user }, error } = await supabaseClient.auth.getUser(token);
+        
+        console.log("EDGE AUTH DEBUG:", {
+          hasAuthorizationHeader: !!authHeader,
+          authenticated: !!user,
+          userId: user ? user.id : null,
+          error: error ? error.message : null
+        });
+
         if (user && !error) {
           authenticatedUser = user;
         }
+      } else {
+        console.log("EDGE AUTH DEBUG:", {
+          hasAuthorizationHeader: false,
+          authenticated: false,
+          userId: null
+        });
       }
 
       let conversationId = null;
@@ -86,6 +101,7 @@ export default {
 
         if (convData) {
           conversationId = convData.id;
+          console.log("CONVERSATION DEBUG:", { lookupSuccess: true, conversationCreated: false, conversationId, databaseErrorCode: null });
           
           // Load history
           const { data: msgsData } = await supabaseClient
@@ -118,21 +134,24 @@ export default {
 
           if (insertError) {
             console.error("Failed to create conversation:", insertError);
+            console.log("CONVERSATION DEBUG:", { lookupSuccess: false, conversationCreated: false, conversationId: null, databaseErrorCode: insertError.code });
             return new Response(JSON.stringify({ success: false, error: "Database error" }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
           }
           
           conversationId = newConv?.id;
+          console.log("CONVERSATION DEBUG:", { lookupSuccess: false, conversationCreated: true, conversationId, databaseErrorCode: null });
         }
 
         // Save the new incoming user message to the database
         if (conversationId) {
-          await supabaseClient.from('messages').insert({
+          const { error: msgError } = await supabaseClient.from('messages').insert({
             conversation_id: conversationId,
             role: 'user',
             content: message,
             dictionary_data: null,
             events: null
           });
+          console.log("MESSAGE DEBUG [USER]:", { userMessageSaved: !msgError, databaseErrorCode: msgError?.code || null });
         }
       }
 
@@ -212,13 +231,14 @@ export default {
 
       // Persist assistant response
       if (authenticatedUser && conversationId) {
-        await supabaseClient.from('messages').insert({
+        const { error: asstMsgError } = await supabaseClient.from('messages').insert({
           conversation_id: conversationId,
           role: 'assistant',
           content: finalResponse,
           dictionary_data: dictionaryData,
           events: events.length > 0 ? events : null
         });
+        console.log("MESSAGE DEBUG [ASSISTANT]:", { assistantMessageSaved: !asstMsgError, databaseErrorCode: asstMsgError?.code || null });
         
         // Touch updated_at (or let Postgres trigger handle it, but we can do a manual update just in case)
         await supabaseClient.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId);
