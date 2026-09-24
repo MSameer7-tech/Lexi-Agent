@@ -98,8 +98,8 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && (
         <div className="w-full lg:max-w-[80%] font-serif text-[14px] sm:text-[15px] text-foreground/90 leading-[1.6] prose prose-stone dark:prose-invert max-w-none mb-8 relative border-b border-border-subtle/30 pb-6">
-          <div className="font-sans text-[9px] uppercase tracking-[0.25em] text-subtle font-medium mb-3 flex items-center gap-3">
-            <span className="w-3 h-[1px] bg-border-subtle/50"></span>
+          <div className="font-sans text-[9px] uppercase tracking-[0.25em] text-foreground/60 font-medium mb-3 flex items-center gap-3">
+            <span className="w-3 h-[1px] bg-foreground/30"></span>
             LexiAgent · Explanation
           </div>
           <MarkdownRenderer content={entry.rawMarkdown} />
@@ -113,7 +113,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         <header className="flex flex-col lg:w-[40%] shrink-0">
           
           {/* Pinterest/Editorial annotation */}
-          <div className="font-sans text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-subtle/60 mb-5">
+          <div className="font-sans text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-foreground/50 font-medium mb-5">
             Dictionary Entry / {dateStr}
           </div>
 
@@ -127,7 +127,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
               <button 
                 onClick={handleSaveToggle}
                 disabled={isSaving}
-                className={`flex items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 ${isSaved ? 'text-foreground' : 'text-subtle hover:text-foreground'} ${isSaving ? 'opacity-50' : ''}`}
+                className={`flex items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 ${isSaved ? 'text-foreground' : 'text-foreground/50 hover:text-foreground'} ${isSaving ? 'opacity-50' : ''}`}
               >
                 {isSaved ? <Heart size={14} className="fill-foreground text-foreground" /> : <Heart size={14} />}
                 <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
@@ -139,7 +139,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
           <div className="flex flex-col">
             {/* Part of Speech */}
             {entry.meanings?.[0]?.partOfSpeech && (
-              <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-subtle/80 font-medium mb-4">
+              <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-foreground/60 font-medium mb-4">
                 {entry.meanings[0].partOfSpeech.replace(/\./g, '')}
               </span>
             )}
@@ -157,7 +157,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
             {/* Examples in Context */}
             {allExamples.length > 0 && (
               <div className="flex flex-col gap-4 mb-6">
-                <span className="font-sans text-[9px] sm:text-[10px] text-subtle/80 uppercase tracking-[0.25em] font-medium">In Context</span>
+                <span className="font-sans text-[9px] sm:text-[10px] text-foreground/60 uppercase tracking-[0.25em] font-medium">In Context</span>
                 <div className="flex flex-col gap-3">
                   {allExamples.slice(0, 4).map((ex, i) => (
                     <p key={i} className="font-serif text-[13px] sm:text-[14px] text-foreground/80 leading-[1.45] italic border-l-[2px] border-border-subtle/50 pl-3 py-0.5">
@@ -171,7 +171,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
             {/* Other Variants */}
             {entry.pronunciations && entry.pronunciations.length > 1 && (
               <div className="flex flex-col gap-4 mt-2 pt-5 border-t border-border-subtle/20">
-                <span className="font-sans text-[9px] text-subtle/60 uppercase tracking-[0.25em] font-medium">Other Pronunciations</span>
+                <span className="font-sans text-[9px] text-foreground/60 uppercase tracking-[0.25em] font-medium">Other Pronunciations</span>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                   {entry.pronunciations.slice(1).map((pron, i) => (
                     <div key={i} className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         <div className="flex flex-col gap-10 lg:w-[60%] w-full pt-1 lg:pt-8">
           {entry.meanings && entry.meanings.map((meaning, mIdx) => (
             <section key={mIdx} className="flex flex-col">
-              <h3 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-foreground/60 font-medium border-b border-border-subtle/20 pb-3 mb-6">
+              <h3 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-foreground/60 font-medium border-b border-foreground/10 pb-3 mb-6">
                 {meaning.partOfSpeech.replace(/\./g, '')}
               </h3>
               
@@ -220,7 +220,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
           
           {entry.synonyms && entry.synonyms.length > 0 && (
             <div className="flex-1 flex flex-col gap-4">
-               <h4 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-subtle/60 font-medium">Synonyms</h4>
+               <h4 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-foreground/60 font-medium">Synonyms</h4>
                <WordListCluster words={entry.synonyms} />
             </div>
           )}
@@ -231,7 +231,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
 
           {entry.antonyms && entry.antonyms.length > 0 && (
             <div className="flex-1 flex flex-col gap-4">
-               <h4 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-subtle/60 font-medium">Antonyms</h4>
+               <h4 className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-foreground/60 font-medium">Antonyms</h4>
                <WordListCluster words={entry.antonyms} />
             </div>
           )}
@@ -261,7 +261,7 @@ const WordListCluster = ({ words }: { words: string[] }) => {
       {isExpandable && (
         <button 
           onClick={() => setExpanded(!expanded)}
-          className="font-sans text-[9px] uppercase tracking-[0.2em] text-subtle/60 hover:text-foreground transition-colors ml-1 mt-[2px]"
+          className="font-sans text-[9px] uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors ml-1 mt-[2px]"
         >
           {expanded ? 'Show less' : `+ ${words.length - limit} more`}
         </button>
