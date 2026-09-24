@@ -13,6 +13,22 @@ interface WordResultProps {
   rawDictionaryData?: DictionaryData;
 }
 
+const getCardColorClasses = (word: string) => {
+  let hash = 0;
+  for (let i = 0; i < word.length; i++) {
+    hash = word.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % 4;
+  
+  const colors = [
+    'bg-[#FFE6E0]/40 dark:bg-[#51332F]/40 border-[#FFD9D0]/50 dark:border-[#63403B]/50', // Pink
+    'bg-[#DCE4FF]/40 dark:bg-[#283566]/40 border-[#CDDAFF]/50 dark:border-[#33427D]/50', // Blue
+    'bg-[#E5D9FF]/40 dark:bg-[#3B2C59]/40 border-[#D9CAFF]/50 dark:border-[#4B3A70]/50', // Purple
+    'bg-[#FFF1CC]/40 dark:bg-[#594B22]/40 border-[#FFE9A6]/50 dark:border-[#6E5D2A]/50'  // Yellow
+  ];
+  return colors[index];
+};
+
 export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData }) => {
   const { session } = useAuth();
   const navigate = useNavigate();
@@ -59,15 +75,29 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
 
   if (!entry.word || (!entry.meanings || entry.meanings.length === 0)) return null;
 
+  // Extract all examples from all definitions to display on the left
+  const allExamples: string[] = [];
+  if (entry.meanings) {
+    entry.meanings.forEach(m => {
+      m.definitions.forEach(d => {
+        if (d.example) {
+          allExamples.push(d.example);
+        }
+      });
+    });
+  }
+
   // Editorial date label
   const dateStr = `${String(new Date().getDate()).padStart(2, '0')}.${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+  
+  const colorClasses = getCardColorClasses(entry.word || 'default');
 
   return (
-    <div className="w-full relative flex flex-col pt-4 pb-12 transition-all">
+    <div className={`w-full relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-8 sm:p-10 lg:p-14 transition-all border ${colorClasses}`}>
       
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && (
-        <div className="w-full lg:max-w-[80%] font-serif text-[16px] sm:text-[17px] text-foreground/90 leading-[1.7] prose prose-stone dark:prose-invert max-w-none mb-16 relative">
+        <div className="w-full lg:max-w-[80%] font-serif text-[16px] sm:text-[17px] text-foreground/90 leading-[1.7] prose prose-stone dark:prose-invert max-w-none mb-14 relative border-b border-border-subtle/30 pb-10">
           <div className="font-sans text-[9px] uppercase tracking-[0.25em] text-subtle font-medium mb-5 flex items-center gap-3">
             <span className="w-4 h-[1px] bg-border-subtle/50"></span>
             LexiAgent · Explanation
@@ -110,7 +140,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
             {/* Part of Speech */}
             {entry.meanings?.[0]?.partOfSpeech && (
               <span className="font-sans text-[11px] sm:text-[12px] uppercase tracking-[0.25em] text-subtle/80 font-medium mb-6">
-                {entry.meanings[0].partOfSpeech.replace(/\./g, '')}
+                {entry.meanings[0].partOfSpeech.replace(/\\./g, '')}
               </span>
             )}
 
@@ -124,11 +154,18 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
               </div>
             )}
 
-            {/* Short Meaning Descriptor (extracted from first definition) */}
-            {entry.meanings?.[0]?.definitions?.[0]?.text && (
-              <p className="font-serif text-[17px] sm:text-[18px] text-foreground/80 leading-[1.6] italic border-l-[2px] border-border-subtle/40 pl-5 py-1 mb-8">
-                "{entry.meanings[0].definitions[0].text}"
-              </p>
+            {/* Examples in Context */}
+            {allExamples.length > 0 && (
+              <div className="flex flex-col gap-5 mt-2 mb-8">
+                <span className="font-sans text-[10px] text-subtle/80 uppercase tracking-[0.25em] font-medium">In Context</span>
+                <div className="flex flex-col gap-5">
+                  {allExamples.slice(0, 4).map((ex, i) => (
+                    <p key={i} className="font-serif text-[17px] sm:text-[18px] text-foreground/80 leading-[1.6] italic border-l-[2px] border-border-subtle/50 pl-4 py-0.5">
+                      "{ex}"
+                    </p>
+                  ))}
+                </div>
+              </div>
             )}
             
             {/* Other Variants */}
@@ -155,7 +192,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
           {entry.meanings && entry.meanings.map((meaning, mIdx) => (
             <section key={mIdx} className="flex flex-col">
               <h3 className="font-sans text-[11px] sm:text-[12px] uppercase tracking-[0.25em] text-foreground/60 font-medium border-b border-border-subtle/20 pb-4 mb-10">
-                {meaning.partOfSpeech.replace(/\./g, '')}
+                {meaning.partOfSpeech.replace(/\\./g, '')}
               </h3>
               
               <div className="flex flex-col gap-14 w-full">
@@ -168,14 +205,6 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
                       <p className="font-serif text-[19px] sm:text-[21px] text-foreground/90 leading-[1.6]">
                         {def.text}
                       </p>
-                      {def.example && (
-                        <div className="flex flex-col gap-1.5 mt-2">
-                          <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-subtle/50">Example</span>
-                          <p className="font-serif italic text-[16px] sm:text-[17px] text-muted leading-[1.6]">
-                            "{def.example}"
-                          </p>
-                        </div>
-                      )}
                     </div>
                   </div>
                 ))}
