@@ -106,16 +106,16 @@ export const Auth: React.FC = () => {
 
   return (
     <div className="flex-1 w-full px-4 pb-8 sm:px-6 md:px-10 lg:px-12">
-      <div className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1280px] items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.72fr)] xl:gap-12">
+      <div className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1500px] items-stretch gap-6 lg:grid-cols-[1.2fr_0.9fr] xl:gap-10 py-6">
         <motion.section
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="relative overflow-hidden rounded-md border border-border-subtle bg-surface/70 px-5 py-6 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-8 sm:py-8 lg:min-h-[620px] lg:px-10"
+          className="relative flex flex-col justify-center overflow-hidden rounded-md border border-border-subtle bg-surface/70 px-5 py-6 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-8 sm:py-12 lg:min-h-[700px] xl:min-h-[800px] lg:px-14"
         >
-          <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#FF6F61,#FFE082,#92DCE5,#B8A5FF)]" />
-          <div className="relative z-10 grid h-full gap-8 lg:grid-cols-[0.86fr_1fr] lg:items-center">
-            <div className="max-w-[480px]">
+          <div className="absolute inset-x-0 top-0 h-1 bg-border-strong/40" />
+          <div className="relative z-10 flex flex-col xl:flex-row h-full gap-8 lg:items-stretch xl:items-center">
+            <div className="w-full xl:max-w-[440px] flex-shrink-0 flex flex-col justify-center py-6">
               <div className="mb-6 flex w-fit items-center gap-2 rounded-[6px] border border-border-subtle bg-background/80 px-3 py-2 text-[11px] font-medium uppercase text-muted shadow-subtle">
                 <Book size={14} strokeWidth={1.8} className="text-foreground/70" />
                 LexiAgent Personal Archive
@@ -142,7 +142,7 @@ export const Auth: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative min-h-[360px] overflow-hidden rounded-md border border-border-subtle bg-[#F8F2EB] p-4 dark:bg-[#24211E] sm:min-h-[430px] sm:p-5">
+            <div className="relative min-h-[360px] flex-1 w-full overflow-hidden rounded-md border border-border-subtle bg-foreground/5 p-4 dark:bg-[#24211E] sm:min-h-[430px] lg:min-h-[500px] sm:p-5">
               <div className="grid grid-cols-9 gap-3 sm:gap-4">
                 {wordPins.map((pin, index) => (
                   <motion.article
@@ -184,12 +184,12 @@ export const Auth: React.FC = () => {
           </div>
         </motion.section>
 
-        <div className="flex w-full justify-center lg:justify-end">
+        <div className="flex w-full h-full justify-center lg:justify-end">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.08, ease: 'easeOut' }}
-            className="w-full max-w-[450px] rounded-md border border-border-subtle bg-surface p-5 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-7 md:p-8"
+            className="w-full h-full flex flex-col justify-center max-w-[550px] rounded-md border border-border-subtle bg-surface p-6 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-10 md:p-14"
           >
             <div className="mb-7 flex items-start justify-between gap-4">
               <div>
