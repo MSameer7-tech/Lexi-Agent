@@ -37,16 +37,19 @@ export const Home: React.FC = () => {
       setIsLoadingMessages(true);
       getConversationMessages(activeSessionId)
         .then(res => {
-          if (res && res.messages) {
-            const mapped = res.messages.map((m: any) => ({
+          if (res && res.messages && res.messages.length > 0) {
+            const mapped: Message[] = res.messages.map((m: any) => ({
               id: crypto.randomUUID(),
-              role: m.role,
+              role: m.role === 'assistant' ? 'agent' : m.role,
               content: m.content,
-              dictionaryData: m.dictionary_data,
-              events: m.events,
-              createdAt: new Date(m.created_at).getTime()
+              timestamp: new Date(m.created_at).getTime(),
+              events: m.events || undefined,
+              dictionary: m.dictionary_data || undefined,
             }));
             setMessages(activeSessionId, mapped);
+          } else {
+            // Mark as loaded even if empty so we don't refetch
+            setMessages(activeSessionId, []);
           }
         })
         .catch(err => console.error("Failed to fetch messages", err))

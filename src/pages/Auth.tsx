@@ -59,7 +59,15 @@ export const Auth: React.FC = () => {
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3 text-subtle font-sans text-xs uppercase tracking-widest">
+          <Loader2 size={18} className="animate-spin" />
+        </div>
+      </div>
+    );
+  }
   if (session) return <Navigate to="/" replace />;
 
   const handleEmailAuth = async (e: React.FormEvent) => {

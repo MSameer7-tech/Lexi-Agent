@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const cloudSessions = res.conversations.map((c: any) => ({
           id: c.session_id,
           title: c.title,
-          preview: '',
+          preview: c.preview || '',
           isPinned: false,
           messages: [],
           isLoaded: false,

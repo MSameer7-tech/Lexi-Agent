@@ -84,23 +84,47 @@ export default {
               const historyResult = await getWordHistory(supabaseClient, authenticatedUser.id);
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             
-            case 'get_conversations':
-              const { data: convData, error: convErr } = await supabaseClient
+            case 'get_conversations': {
+              // Fetch conversations with preview from the first user message
+              const { data: convListData, error: convListErr } = await supabaseClient
                 .from('conversations')
-                .select('session_id, title, created_at, updated_at')
+                .select('id, session_id, title, created_at, updated_at')
                 .eq('user_id', authenticatedUser.id)
                 .order('updated_at', { ascending: false });
-              if (convErr) throw convErr;
-              return new Response(JSON.stringify({ conversations: convData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              if (convListErr) throw convListErr;
 
-            case 'get_messages':
-              if (!reqBody.sessionId) throw new Error("Missing sessionId");
+              // For each conversation, fetch the first user message as a preview
+              const conversationsWithPreview = await Promise.all(
+                (convListData || []).map(async (conv: any) => {
+                  const { data: firstMsg } = await supabaseClient
+                    .from('messages')
+                    .select('content')
+                    .eq('conversation_id', conv.id)
+                    .eq('role', 'user')
+                    .order('created_at', { ascending: true })
+                    .limit(1)
+                    .maybeSingle();
+                  return {
+                    id: conv.id,
+                    session_id: conv.session_id,
+                    title: conv.title,
+                    preview: firstMsg?.content || '',
+                    created_at: conv.created_at,
+                    updated_at: conv.updated_at,
+                  };
+                })
+              );
+              return new Response(JSON.stringify({ conversations: conversationsWithPreview }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+
+            case 'get_messages': {
+              if (!sessionId) throw new Error("Missing sessionId");
               const { data: convInfo } = await supabaseClient
                 .from('conversations')
                 .select('id')
-                .eq('session_id', reqBody.sessionId)
+                .eq('session_id', sessionId)
                 .eq('user_id', authenticatedUser.id)
-                .single();
+                .maybeSingle();
               if (!convInfo) return new Response(JSON.stringify({ messages: [] }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
               
               const { data: messagesData, error: messagesErr } = await supabaseClient
@@ -111,6 +135,33 @@ export default {
               if (messagesErr) throw messagesErr;
               
               return new Response(JSON.stringify({ messages: messagesData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+
+            case 'delete_conversation': {
+              if (!sessionId) throw new Error("Missing sessionId");
+              // Verify ownership: find conversation by session_id AND user_id
+              const { data: convToDelete } = await supabaseClient
+                .from('conversations')
+                .select('id')
+                .eq('session_id', sessionId)
+                .eq('user_id', authenticatedUser.id)
+                .maybeSingle();
+              
+              if (!convToDelete) {
+                return new Response(JSON.stringify({ success: false, error: "Conversation not found" }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              }
+
+              // Delete conversation — messages cascade-delete via FK constraint
+              const { error: deleteErr } = await supabaseClient
+                .from('conversations')
+                .delete()
+                .eq('id', convToDelete.id)
+                .eq('user_id', authenticatedUser.id);
+              
+              if (deleteErr) throw deleteErr;
+
+              return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
             default:
               return new Response(JSON.stringify({ success: false, error: "Invalid action" }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
           }

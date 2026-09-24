@@ -1,19 +1,57 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search, Pin, Trash2, Edit2, MessageSquare, Clock } from 'lucide-react';
+import { X, Search, Pin, Trash2, Edit2, MessageSquare, Clock, Loader2 } from 'lucide-react';
 import { isToday, isYesterday, isThisWeek, formatDistanceToNow } from 'date-fns';
 import { useHistoryStore } from '../../store/historyStore';
+import { useAuth } from '../../contexts/AuthContext';
+import { deleteConversation, getConversations } from '../../services/lexiAgentApi';
 import { cn } from '../../lib/utils';
 import type { Session } from '../../types';
 
 export const HistoryDrawer: React.FC = () => {
   const navigate = useNavigate();
-  const { isDrawerOpen, setDrawerOpen, sessions, activeSessionId, setActiveSession, togglePin, deleteSession, updateSession } = useHistoryStore();
+  const { isDrawerOpen, setDrawerOpen, sessions, activeSessionId, setActiveSession, togglePin, deleteSession, updateSession, setSessions } = useHistoryStore();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const handleDeleteSession = async (sessionId: string) => {
+    if (deletingId) return; // Prevent double-click
+    setDeletingId(sessionId);
+    
+    if (user) {
+      try {
+        await deleteConversation(sessionId);
+        // Remove from local state immediately
+        deleteSession(sessionId);
+        // Refresh from Supabase to guarantee sync
+        const res = await getConversations();
+        if (res && res.conversations) {
+          const cloudSessions = res.conversations.map((c: any) => ({
+            id: c.session_id,
+            title: c.title,
+            preview: c.preview || '',
+            isPinned: false,
+            messages: [],
+            isLoaded: false,
+            createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
+            updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
+          }));
+          setSessions(cloudSessions);
+        }
+      } catch (err) {
+        console.error("Failed to delete conversation:", err);
+        // Don't remove from UI if backend failed
+      }
+    } else {
+      // Guest: just remove locally
+      deleteSession(sessionId);
+    }
+    setDeletingId(null);
+  };
   // Filter and group sessions
   const groupedSessions = useMemo(() => {
     let filtered = sessions;
@@ -147,11 +185,15 @@ export const HistoryDrawer: React.FC = () => {
               <Edit2 size={14} />
             </button>
             <button 
-              onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }}
-              className="p-1.5 hover:bg-red-500/20 hover:text-red-500 rounded-md transition-colors"
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                handleDeleteSession(session.id);
+              }}
+              disabled={deletingId === session.id}
+              className="p-1.5 hover:bg-red-500/20 hover:text-red-500 rounded-md transition-colors disabled:opacity-50"
               title="Delete"
             >
-              <Trash2 size={14} />
+              {deletingId === session.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
             </button>
           </div>
         </div>

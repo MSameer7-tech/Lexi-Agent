@@ -111,3 +111,7 @@ export async function getConversations() {
 export async function getConversationMessages(sessionId: string) {
   return fetchVocabularyApi({ action: 'get_messages', sessionId });
 }
+
+export async function deleteConversation(sessionId: string) {
+  return fetchVocabularyApi({ action: 'delete_conversation', sessionId });
+}
