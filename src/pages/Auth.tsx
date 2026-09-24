@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { ArrowRight, Bookmark, Check, Eye, EyeOff, Loader2, LockKeyhole, Mail, Pin, Sparkles } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, Eye, EyeOff, Loader2, LockKeyhole, Mail, Book } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const GoogleIcon = () => (
@@ -117,15 +117,15 @@ export const Auth: React.FC = () => {
           <div className="relative z-10 grid h-full gap-8 lg:grid-cols-[0.86fr_1fr] lg:items-center">
             <div className="max-w-[480px]">
               <div className="mb-6 flex w-fit items-center gap-2 rounded-[6px] border border-border-subtle bg-background/80 px-3 py-2 text-[11px] font-medium uppercase text-muted shadow-subtle">
-                <Sparkles size={14} strokeWidth={1.8} className="text-[#D65A50]" />
-                Personal lexicon, remixed
+                <Book size={14} strokeWidth={1.8} className="text-foreground/70" />
+                LexiAgent Personal Archive
               </div>
               <h1 className="font-serif text-[44px] font-medium leading-[0.98] tracking-tight text-foreground sm:text-[60px] lg:text-[68px]">
-                Pin your words.
+                Master your words.
                 <span className="mt-2 block italic text-muted">Keep the meaning.</span>
               </h1>
               <p className="mt-6 max-w-[390px] text-base leading-7 text-muted">
-                Build a vocabulary board that feels personal, searchable, and ready whenever a new word catches your attention.
+                Curate a vocabulary archive that feels personal, searchable, and ready whenever a new word catches your attention.
               </p>
 
               <div className="mt-8 grid max-w-[430px] grid-cols-3 gap-3">
@@ -153,7 +153,7 @@ export const Auth: React.FC = () => {
                     className={`${pin.className} ${pin.color} rounded-md border border-black/[0.04] p-4 shadow-[0_16px_36px_-24px_rgba(42,41,40,0.65)] dark:border-white/[0.06]`}
                   >
                     <div className="mb-5 flex items-center justify-between text-muted">
-                      <Pin size={14} strokeWidth={1.8} />
+                      <Bookmark size={14} strokeWidth={1.8} />
                       <span className="h-2 w-2 rounded-full bg-current opacity-30" />
                     </div>
                     <h2 className="font-serif text-[22px] leading-none tracking-tight text-foreground sm:text-[26px]">
@@ -193,15 +193,15 @@ export const Auth: React.FC = () => {
           >
             <div className="mb-7 flex items-start justify-between gap-4">
               <div>
-                <div className="mb-4 flex w-fit items-center gap-2 rounded-[6px] bg-[#FFE6E0] px-3 py-1.5 text-[11px] font-medium uppercase text-[#7E352F] dark:bg-[#51332F] dark:text-[#FFD1C9]">
+                <div className="mb-4 flex w-fit items-center gap-2 rounded-[4px] bg-foreground/5 px-3 py-1.5 text-[10px] font-semibold tracking-widest uppercase text-foreground">
                   <Check size={13} strokeWidth={2} />
-                  {isLogin ? 'Back to your board' : 'Start your board'}
+                  {isLogin ? 'Secure Sign In' : 'Create an Account'}
                 </div>
                 <h2 className="font-serif text-[32px] font-medium leading-tight tracking-tight text-foreground">
                   {isLogin ? 'Welcome back' : 'Create account'}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-muted">
-                  {isLogin ? 'Sign in and pick up right where your word board left off.' : 'Join LexiAgent and start collecting language that sticks.'}
+                  {isLogin ? 'Sign in to continue building your personal lexicon.' : 'Join LexiAgent and start archiving the words you discover.'}
                 </p>
               </div>
             </div>
@@ -261,7 +261,7 @@ export const Auth: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group mt-1 flex h-13 min-h-13 w-full items-center justify-between rounded-md border border-foreground bg-foreground px-5 text-sm font-semibold text-background transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#D65A50] hover:text-white hover:shadow-[0_18px_36px_-26px_rgba(214,90,80,0.95)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/15 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+                className="group mt-1 flex h-13 min-h-13 w-full items-center justify-between rounded-sm border border-foreground bg-foreground px-5 text-sm font-medium uppercase tracking-[0.1em] text-background transition-all duration-300 hover:-translate-y-0.5 hover:bg-transparent hover:text-foreground hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/15 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span>{isLogin ? 'Sign in' : 'Create account'}</span>
                 {isSubmitting ? (
@@ -272,7 +272,7 @@ export const Auth: React.FC = () => {
               </button>
             </form>
 
-            <div className="my-6 flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.14em] text-subtle">
+            <div className="my-6 flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.2em] text-subtle">
               <div className="flex-1 border-t border-border-subtle"></div>
               <span>Or continue with</span>
               <div className="flex-1 border-t border-border-subtle"></div>
