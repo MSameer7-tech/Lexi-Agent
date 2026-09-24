@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Pin, Trash2, Edit2, MessageSquare, Clock, Loader2 } from 'lucide-react';
 import { isToday, isYesterday, isThisWeek, formatDistanceToNow } from 'date-fns';
@@ -11,14 +11,79 @@ import type { Session } from '../../types';
 
 export const HistoryDrawer: React.FC = () => {
   const navigate = useNavigate();
-  const { isDrawerOpen, setDrawerOpen, sessions, activeSessionId, setActiveSession, togglePin, deleteSession, updateSession, setSessions } = useHistoryStore();
+  const { isDrawerOpen, setDrawerOpen, sessions, activeSessionId, setActiveSession, togglePin, deleteSession, updateSession, setSessions, appendSessions, hasMore, nextCursor, searchQuery, setSearchQuery } = useHistoryStore();
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pinningId, setPinningId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  
+  useEffect(() => {
+    if (!user) return;
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    searchTimeoutRef.current = setTimeout(async () => {
+      
+      try {
+        const res = await getConversations(30, null, searchQuery.trim());
+        if (res && res.conversations) {
+          const cloudSessions = res.conversations.map((c: any) => ({
+            id: c.session_id,
+            title: c.title,
+            preview: c.preview || '',
+            isPinned: c.is_pinned || false,
+            messages: [],
+            isLoaded: false,
+            createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
+            updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
+          }));
+          setSessions(cloudSessions, res.hasMore, res.nextCursor);
+        }
+      } catch (err) {
+        console.error("Search failed:", err);
+      } finally {
+        
+      }
+    }, 400); // 400ms debounce
+    
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [searchQuery, user, setSessions]);
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore || !nextCursor) return;
+    setIsLoadingMore(true);
+    try {
+      const res = await getConversations(30, nextCursor, searchQuery.trim());
+      if (res && res.conversations) {
+        const moreSessions = res.conversations.map((c: any) => ({
+          id: c.session_id,
+          title: c.title,
+          preview: c.preview || '',
+          isPinned: c.is_pinned || false,
+          messages: [],
+          isLoaded: false,
+          createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
+          updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
+        }));
+        appendSessions(moreSessions, res.hasMore, res.nextCursor);
+      }
+    } catch (err) {
+      console.error("Failed to load more:", err);
+      alert("Couldn't load more conversations.");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const handleDeleteSession = async (sessionId: string) => {
     if (deletingId) return; // Prevent double-click
@@ -57,16 +122,7 @@ export const HistoryDrawer: React.FC = () => {
   };
   // Filter and group sessions
   const groupedSessions = useMemo(() => {
-    let filtered = sessions;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      filtered = sessions.filter(s => 
-        (s.title || "").toLowerCase().includes(q) || 
-        s.topic?.toLowerCase().includes(q) ||
-        s.preview?.toLowerCase().includes(q)
-      );
-    }
-
+    const filtered = sessions;
     const pinned = filtered.filter(s => s.isPinned);
     const unpinned = filtered.filter(s => !s.isPinned);
 
@@ -336,6 +392,22 @@ export const HistoryDrawer: React.FC = () => {
                       {renderGroup('Yesterday', groupedSessions.yesterday)}
                       {renderGroup('Previous 7 Days', groupedSessions.previous7Days)}
                       {renderGroup('Older', groupedSessions.older)}
+                      
+                      {hasMore && (
+                        <div className="flex justify-center mt-6 mb-4">
+                          <button 
+                            onClick={handleLoadMore} 
+                            disabled={isLoadingMore}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface hover:bg-border-subtle/50 text-subtle hover:text-foreground text-sm font-medium transition-colors"
+                          >
+                            {isLoadingMore ? (
+                              <><Loader2 size={16} className="animate-spin" /> Loading...</>
+                            ) : (
+                              'Load more'
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>

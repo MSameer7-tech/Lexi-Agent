@@ -85,38 +85,40 @@ export default {
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             
             case 'get_conversations': {
-              // Fetch conversations with preview from the first user message
-              const { data: convListData, error: convListErr } = await supabaseClient
-                .from('conversations')
-                .select('id, session_id, title, created_at, updated_at, is_pinned')
-                .eq('user_id', authenticatedUser.id)
-                .order('is_pinned', { ascending: false })
-                .order('updated_at', { ascending: false });
-              if (convListErr) throw convListErr;
-
-              // For each conversation, fetch the first user message as a preview
-              const conversationsWithPreview = await Promise.all(
-                (convListData || []).map(async (conv: any) => {
-                  const { data: firstMsg } = await supabaseClient
-                    .from('messages')
-                    .select('content')
-                    .eq('conversation_id', conv.id)
-                    .eq('role', 'user')
-                    .order('created_at', { ascending: true })
-                    .limit(1)
-                    .maybeSingle();
-                  return {
-                    id: conv.id,
-                    session_id: conv.session_id,
-                    title: conv.title,
-                    preview: firstMsg?.content || '',
-                    created_at: conv.created_at,
-                    updated_at: conv.updated_at,
-                    is_pinned: conv.is_pinned || false
-                  };
-                })
-              );
-              return new Response(JSON.stringify({ conversations: conversationsWithPreview }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              const limit = reqBody.limit || 30;
+              const cursor = reqBody.cursor || null;
+              const search = reqBody.search || null;
+              
+              const { data: convs, error: convErr } = await supabaseClient
+                .rpc('get_conversations_page', {
+                  p_limit: limit + 1, // Fetch one extra to determine hasMore
+                  p_cursor_pinned: cursor?.pinned ?? null,
+                  p_cursor_updated_at: cursor?.updatedAt ?? null,
+                  p_cursor_id: cursor?.id ?? null,
+                  p_search: search
+                });
+                
+              if (convErr) throw convErr;
+              
+              const hasMore = (convs || []).length > limit;
+              const results = hasMore ? convs.slice(0, limit) : convs;
+              let nextCursor = null;
+              if (hasMore) {
+                const last = results[results.length - 1];
+                nextCursor = { pinned: last.is_pinned, updatedAt: last.updated_at, id: last.id };
+              }
+              
+              const formattedConvs = (results || []).map((c: any) => ({
+                id: c.id,
+                session_id: c.session_id,
+                title: c.title,
+                preview: c.preview || '',
+                created_at: c.created_at,
+                updated_at: c.updated_at,
+                is_pinned: c.is_pinned || false
+              }));
+              
+              return new Response(JSON.stringify({ conversations: formattedConvs, hasMore, nextCursor }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             }
 
             case 'rename_conversation': {
@@ -167,22 +169,28 @@ export default {
 
             case 'get_messages': {
               if (!sessionId) throw new Error("Missing sessionId");
-              const { data: convInfo } = await supabaseClient
-                .from('conversations')
-                .select('id')
-                .eq('session_id', sessionId)
-                .eq('user_id', authenticatedUser.id)
-                .maybeSingle();
-              if (!convInfo) return new Response(JSON.stringify({ messages: [] }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              const limit = reqBody.limit || 50;
+              const cursor = reqBody.cursor || null;
               
               const { data: messagesData, error: messagesErr } = await supabaseClient
-                .from('messages')
-                .select('role, content, dictionary_data, events, created_at')
-                .eq('conversation_id', convInfo.id)
-                .order('created_at', { ascending: true });
+                .rpc('get_messages_page', {
+                  p_session_id: sessionId,
+                  p_limit: limit + 1,
+                  p_cursor_created_at: cursor?.createdAt ?? null,
+                  p_cursor_id: cursor?.id ?? null
+                });
+                
               if (messagesErr) throw messagesErr;
               
-              return new Response(JSON.stringify({ messages: messagesData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              const hasMore = (messagesData || []).length > limit;
+              const results = hasMore ? messagesData.slice(0, limit) : messagesData;
+              let nextCursor = null;
+              if (hasMore) {
+                const last = results[results.length - 1];
+                nextCursor = { createdAt: last.created_at, id: last.id };
+              }
+              
+              return new Response(JSON.stringify({ messages: results, hasMore, nextCursor }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             }
 
             case 'delete_conversation': {

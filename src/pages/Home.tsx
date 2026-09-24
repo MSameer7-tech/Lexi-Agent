@@ -8,11 +8,12 @@ import { mapDictionaryApiToParsedEntry } from '../lib/parser';
 import { sendMessage, getConversationMessages } from '../services/lexiAgentApi';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistoryStore } from '../store/historyStore';
+import { Loader2 } from 'lucide-react';
 import type { Message } from '../types';
 
 export const Home: React.FC = () => {
   const { user } = useAuth();
-  const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages } = useHistoryStore();
+  const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages, prependMessages } = useHistoryStore();
   const session = sessions.find(s => s.id === activeSessionId) || null;
 
   const [query, setQuery] = useState('');
@@ -30,32 +31,59 @@ export const Home: React.FC = () => {
 
   
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 
-  // Cloud Hydration for Messages
+    // Cloud Hydration for Messages
   useEffect(() => {
     if (activeSessionId && user && session && !session.isLoaded && session.messages.length === 0) {
       setIsLoadingMessages(true);
-      getConversationMessages(activeSessionId)
+      getConversationMessages(activeSessionId, 50, null)
         .then(res => {
-          if (res && res.messages && res.messages.length > 0) {
-            const mapped: Message[] = res.messages.map((m: any) => ({
-              id: crypto.randomUUID(),
+          if (res && res.messages) {
+            // Note: messages come back newest first. Reverse them to display oldest -> newest
+            const mapped: Message[] = [...res.messages].reverse().map((m: any) => ({
+              id: m.id || crypto.randomUUID(),
               role: m.role === 'assistant' ? 'agent' : m.role,
               content: m.content,
               timestamp: new Date(m.created_at).getTime(),
               events: m.events || undefined,
               dictionary: m.dictionary_data || undefined,
             }));
-            setMessages(activeSessionId, mapped);
+            setMessages(activeSessionId, mapped, res.hasMore, res.nextCursor);
           } else {
-            // Mark as loaded even if empty so we don't refetch
-            setMessages(activeSessionId, []);
+            setMessages(activeSessionId, [], false, null);
           }
         })
         .catch(err => console.error("Failed to fetch messages", err))
         .finally(() => setIsLoadingMessages(false));
     }
   }, [activeSessionId, user, session, setMessages]);
+
+  const handleLoadOlderMessages = async () => {
+    if (!activeSessionId || !session || isLoadingOlder || !session.hasMoreMessages || !session.nextMessageCursor) return;
+    setIsLoadingOlder(true);
+    try {
+      const res = await getConversationMessages(activeSessionId, 50, session.nextMessageCursor);
+      if (res && res.messages) {
+        const mapped: Message[] = [...res.messages].reverse().map((m: any) => ({
+          id: m.id || crypto.randomUUID(),
+          role: m.role === 'assistant' ? 'agent' : m.role,
+          content: m.content,
+          timestamp: new Date(m.created_at).getTime(),
+          events: m.events || undefined,
+          dictionary: m.dictionary_data || undefined,
+        }));
+        // Use prependMessages to add to the top and deduplicate
+        prependMessages(activeSessionId, mapped, res.hasMore, res.nextCursor);
+      }
+    } catch (err) {
+      console.error("Failed to load older messages", err);
+      alert("Couldn't load older messages.");
+    } finally {
+      setIsLoadingOlder(false);
+    }
+  };
+
 
   // Sync isSearching state based on active session
   useEffect(() => {
@@ -452,6 +480,19 @@ export const Home: React.FC = () => {
                   </div>
                 </div>
               )}
+              
+              {session?.hasMoreMessages && (
+                <div className="flex justify-center mt-8 mb-4">
+                  <button
+                    onClick={handleLoadOlderMessages}
+                    disabled={isLoadingOlder}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface hover:bg-border-subtle/50 border border-border-subtle text-subtle hover:text-foreground text-[11px] uppercase tracking-widest font-medium transition-colors disabled:opacity-50"
+                  >
+                    {isLoadingOlder ? <><Loader2 size={12} className="animate-spin" /> Loading older entries...</> : '↑ Load older messages'}
+                  </button>
+                </div>
+              )}
+
               {!isLoadingMessages && session?.messages.map((message, index) => (
                 <motion.div
                   key={message.id}

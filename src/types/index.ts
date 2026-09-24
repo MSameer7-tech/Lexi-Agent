@@ -40,6 +40,8 @@ export interface Session {
   topic?: string;
   isPinned?: boolean;
   isLoaded?: boolean;
+  hasMoreMessages?: boolean;
+  nextMessageCursor?: any;
   messages: Message[];
   createdAt: number;
   updatedAt: number;

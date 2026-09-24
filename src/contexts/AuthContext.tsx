@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
           updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
         }));
-        useHistoryStore.getState().setSessions(cloudSessions);
+        useHistoryStore.getState().setSessions(cloudSessions, res.hasMore, res.nextCursor);
         // We don't restore active session from cloud automatically to keep it clean
         useHistoryStore.getState().setActiveSession(null);
       }

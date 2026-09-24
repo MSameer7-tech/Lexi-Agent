@@ -104,12 +104,12 @@ export async function getWordHistory() {
 }
 
 
-export async function getConversations() {
-  return fetchVocabularyApi({ action: 'get_conversations' });
+export async function getConversations(limit?: number, cursor?: any, search?: string) {
+  return fetchVocabularyApi({ action: 'get_conversations', limit, cursor, search });
 }
 
-export async function getConversationMessages(sessionId: string) {
-  return fetchVocabularyApi({ action: 'get_messages', sessionId });
+export async function getConversationMessages(sessionId: string, limit?: number, cursor?: any) {
+  return fetchVocabularyApi({ action: 'get_messages', sessionId, limit, cursor });
 }
 
 export async function deleteConversation(sessionId: string) {

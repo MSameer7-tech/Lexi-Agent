@@ -6,16 +6,25 @@ interface HistoryState {
   activeSessionId: string | null;
   isDrawerOpen: boolean;
   
+  hasMore: boolean;
+  nextCursor: any;
+  searchQuery: string;
+  
   // Actions
   setDrawerOpen: (isOpen: boolean) => void;
   setActiveSession: (id: string | null) => void;
-  setSessions: (sessions: Session[]) => void;
+  setSessions: (sessions: Session[], hasMore?: boolean, nextCursor?: any) => void;
+  appendSessions: (sessions: Session[], hasMore: boolean, nextCursor: any) => void;
+  setSearchQuery: (query: string) => void;
+  
   addSession: (session: Session) => void;
   updateSession: (id: string, updates: Partial<Session>) => void;
   deleteSession: (id: string) => void;
   togglePin: (id: string) => void;
+  
   addMessageToSession: (sessionId: string, message: Message) => void;
-  setMessages: (sessionId: string, messages: Message[]) => void;
+  setMessages: (sessionId: string, messages: Message[], hasMore?: boolean, nextCursor?: any) => void;
+  prependMessages: (sessionId: string, messages: Message[], hasMore: boolean, nextCursor: any) => void;
   clearSessions: () => void;
 }
 
@@ -23,12 +32,24 @@ export const useHistoryStore = create<HistoryState>((set) => ({
   sessions: [],
   activeSessionId: null,
   isDrawerOpen: false,
+  hasMore: false,
+  nextCursor: null,
+  searchQuery: '',
 
   setDrawerOpen: (isOpen) => set({ isDrawerOpen: isOpen }),
   
   setActiveSession: (id) => set({ activeSessionId: id }),
   
-  setSessions: (sessions) => set({ sessions }),
+  setSessions: (sessions, hasMore = false, nextCursor = null) => set({ sessions, hasMore, nextCursor }),
+  
+  appendSessions: (newSessions, hasMore, nextCursor) => set((state) => {
+    // Deduplicate
+    const existingIds = new Set(state.sessions.map(s => s.id));
+    const filtered = newSessions.filter(s => !existingIds.has(s.id));
+    return { sessions: [...state.sessions, ...filtered], hasMore, nextCursor };
+  }),
+
+  setSearchQuery: (searchQuery) => set({ searchQuery }),
 
   addSession: (session) => set((state) => ({ 
     sessions: [session, ...state.sessions] 
@@ -51,11 +72,24 @@ export const useHistoryStore = create<HistoryState>((set) => ({
     )
   })),
 
-  clearSessions: () => set({ sessions: [], activeSessionId: null }),
+  clearSessions: () => set({ sessions: [], activeSessionId: null, hasMore: false, nextCursor: null }),
 
-  setMessages: (sessionId, messages) => set((state) => ({
+  prependMessages: (sessionId, oldMessages, hasMoreMessages, nextMessageCursor) => set((state) => ({
+    sessions: state.sessions.map(s => {
+      if (s.id === sessionId) {
+        // Deduplicate messages
+        const existingIds = new Set(s.messages.map(m => m.id));
+        const filtered = oldMessages.filter(m => !existingIds.has(m.id));
+        return { ...s, messages: [...filtered, ...s.messages], hasMoreMessages, nextMessageCursor };
+      }
+      return s;
+    })
+  })),
+
+
+  setMessages: (sessionId, messages, hasMoreMessages = false, nextMessageCursor = null) => set((state) => ({
     sessions: state.sessions.map(s => 
-      s.id === sessionId ? { ...s, messages, isLoaded: true } : s
+      s.id === sessionId ? { ...s, messages, isLoaded: true, hasMoreMessages, nextMessageCursor } : s
     )
   })),
 
