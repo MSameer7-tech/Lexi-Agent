@@ -9,6 +9,7 @@ interface HistoryState {
   hasMore: boolean;
   nextCursor: any;
   searchQuery: string;
+  isHydrating: boolean;
   
   // Actions
   setDrawerOpen: (isOpen: boolean) => void;
@@ -16,6 +17,7 @@ interface HistoryState {
   setSessions: (sessions: Session[], hasMore?: boolean, nextCursor?: any) => void;
   appendSessions: (sessions: Session[], hasMore: boolean, nextCursor: any) => void;
   setSearchQuery: (query: string) => void;
+  setIsHydrating: (isHydrating: boolean) => void;
   
   addSession: (session: Session) => void;
   updateSession: (id: string, updates: Partial<Session>) => void;
@@ -35,6 +37,7 @@ export const useHistoryStore = create<HistoryState>((set) => ({
   hasMore: false,
   nextCursor: null,
   searchQuery: '',
+  isHydrating: true,
 
   setDrawerOpen: (isOpen) => set({ isDrawerOpen: isOpen }),
   
@@ -50,6 +53,7 @@ export const useHistoryStore = create<HistoryState>((set) => ({
   }),
 
   setSearchQuery: (searchQuery) => set({ searchQuery }),
+  setIsHydrating: (isHydrating) => set({ isHydrating }),
 
   addSession: (session) => set((state) => ({ 
     sessions: [session, ...state.sessions] 

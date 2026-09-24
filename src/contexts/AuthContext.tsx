@@ -28,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hydrateGuest = () => {
     isHydratingRef.current = true;
+    useHistoryStore.getState().setIsHydrating(true);
     try {
       const data = localStorage.getItem(GUEST_STORAGE_KEY);
       if (data) {
@@ -41,10 +42,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       useHistoryStore.getState().clearSessions();
     }
     isHydratingRef.current = false;
+    useHistoryStore.getState().setIsHydrating(false);
   };
 
   const hydrateCloud = async () => {
     isHydratingRef.current = true;
+    useHistoryStore.getState().setIsHydrating(true);
     try {
       const res = await getConversations();
       if (res && res.conversations) {
@@ -59,42 +62,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
         }));
         useHistoryStore.getState().setSessions(cloudSessions, res.hasMore, res.nextCursor);
-        // We don't restore active session from cloud automatically to keep it clean
-        useHistoryStore.getState().setActiveSession(null);
+        
+        // Restore active session if it still exists
+        const currentActive = useHistoryStore.getState().activeSessionId;
+        const savedActive = localStorage.getItem('lexiagent-active-session');
+        const activeId = currentActive || savedActive;
+        if (activeId && cloudSessions.some((c: any) => c.id === activeId)) {
+          useHistoryStore.getState().setActiveSession(activeId);
+        } else {
+          useHistoryStore.getState().setActiveSession(null);
+          localStorage.removeItem('lexiagent-active-session');
+        }
       }
     } catch (e) {
       console.error("Failed to hydrate cloud conversations", e);
     }
     isHydratingRef.current = false;
+    useHistoryStore.getState().setIsHydrating(false);
   };
 
   useEffect(() => {
-    // Initial load
-    supabase.auth.getSession().then(({ data: { session: authSession } }) => {
-      setSession(authSession);
-      setUser(authSession?.user ?? null);
-      
-      if (authSession?.user) {
-        hydrateCloud().finally(() => setIsLoading(false));
+    let initialized = false;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'INITIAL_SESSION' || !initialized) {
+        initialized = true;
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        if (newSession?.user) {
+          hydrateCloud().finally(() => setIsLoading(false));
+        } else {
+          hydrateGuest();
+          setIsLoading(false);
+        }
       } else {
-        hydrateGuest();
+        setSession((prevSession) => {
+          if (prevSession?.user?.id !== newSession?.user?.id) {
+            if (newSession?.user) {
+              hydrateCloud();
+            } else {
+              hydrateGuest();
+            }
+          }
+          return newSession;
+        });
+        setUser(newSession?.user ?? null);
         setIsLoading(false);
       }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession((prevSession) => {
-        if (prevSession?.user?.id !== newSession?.user?.id) {
-          if (newSession?.user) {
-            hydrateCloud();
-          } else {
-            hydrateGuest();
-          }
-        }
-        return newSession;
-      });
-      setUser(newSession?.user ?? null);
-      setIsLoading(false);
     });
 
     // Subscribe to historyStore changes to persist guest data
@@ -107,6 +121,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               sessions: state.sessions,
               activeSessionId: state.activeSessionId
             }));
+          } else {
+            if (state.activeSessionId) {
+              localStorage.setItem('lexiagent-active-session', state.activeSessionId);
+            } else {
+              localStorage.removeItem('lexiagent-active-session');
+            }
           }
         });
       }
