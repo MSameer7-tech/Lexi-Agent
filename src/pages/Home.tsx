@@ -5,12 +5,14 @@ import { WordResult } from '../components/dictionary/WordResult';
 import { MarkdownRenderer } from '../components/ui/MarkdownRenderer';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { mapDictionaryApiToParsedEntry } from '../lib/parser';
-import { sendMessage } from '../services/lexiAgentApi';
+import { sendMessage, getConversationMessages } from '../services/lexiAgentApi';
+import { useAuth } from '../contexts/AuthContext';
 import { useHistoryStore } from '../store/historyStore';
 import type { Message } from '../types';
 
 export const Home: React.FC = () => {
-  const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession } = useHistoryStore();
+  const { user } = useAuth();
+  const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages } = useHistoryStore();
   const session = sessions.find(s => s.id === activeSessionId) || null;
 
   const [query, setQuery] = useState('');
@@ -25,6 +27,32 @@ export const Home: React.FC = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+
+  // Cloud Hydration for Messages
+  useEffect(() => {
+    if (activeSessionId && user && session && !session.isLoaded && session.messages.length === 0) {
+      setIsLoadingMessages(true);
+      getConversationMessages(activeSessionId)
+        .then(res => {
+          if (res && res.messages) {
+            const mapped = res.messages.map((m: any) => ({
+              id: crypto.randomUUID(),
+              role: m.role,
+              content: m.content,
+              dictionaryData: m.dictionary_data,
+              events: m.events,
+              createdAt: new Date(m.created_at).getTime()
+            }));
+            setMessages(activeSessionId, mapped);
+          }
+        })
+        .catch(err => console.error("Failed to fetch messages", err))
+        .finally(() => setIsLoadingMessages(false));
+    }
+  }, [activeSessionId, user, session, setMessages]);
 
   // Sync isSearching state based on active session
   useEffect(() => {
@@ -413,7 +441,15 @@ export const Home: React.FC = () => {
             className="flex flex-col w-full min-h-screen pt-4 pb-40"
           >
             <div className="w-full max-w-[1300px] mx-auto px-4 sm:px-8 md:px-12 space-y-16">
-              {session?.messages.map((message, index) => (
+              {isLoadingMessages && (
+                <div className="flex justify-center py-20">
+                  <div className="font-sans text-[10px] uppercase tracking-widest text-subtle flex flex-col items-center gap-3">
+                    <RefreshCw size={16} className="animate-spin" />
+                    <span>Loading your lexicon...</span>
+                  </div>
+                </div>
+              )}
+              {!isLoadingMessages && session?.messages.map((message, index) => (
                 <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 20 }}

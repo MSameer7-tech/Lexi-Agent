@@ -83,6 +83,34 @@ export default {
             case 'get_history':
               const historyResult = await getWordHistory(supabaseClient, authenticatedUser.id);
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            
+            case 'get_conversations':
+              const { data: convData, error: convErr } = await supabaseClient
+                .from('conversations')
+                .select('session_id, title, created_at, updated_at')
+                .eq('user_id', authenticatedUser.id)
+                .order('updated_at', { ascending: false });
+              if (convErr) throw convErr;
+              return new Response(JSON.stringify({ conversations: convData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+            case 'get_messages':
+              if (!reqBody.sessionId) throw new Error("Missing sessionId");
+              const { data: convInfo } = await supabaseClient
+                .from('conversations')
+                .select('id')
+                .eq('session_id', reqBody.sessionId)
+                .eq('user_id', authenticatedUser.id)
+                .single();
+              if (!convInfo) return new Response(JSON.stringify({ messages: [] }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              
+              const { data: messagesData, error: messagesErr } = await supabaseClient
+                .from('messages')
+                .select('role, content, dictionary_data, events, created_at')
+                .eq('conversation_id', convInfo.id)
+                .order('created_at', { ascending: true });
+              if (messagesErr) throw messagesErr;
+              
+              return new Response(JSON.stringify({ messages: messagesData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             default:
               return new Response(JSON.stringify({ success: false, error: "Invalid action" }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
           }

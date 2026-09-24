@@ -102,3 +102,12 @@ export async function getSavedWords() {
 export async function getWordHistory() {
   return fetchVocabularyApi({ action: 'get_history' });
 }
+
+
+export async function getConversations() {
+  return fetchVocabularyApi({ action: 'get_conversations' });
+}
+
+export async function getConversationMessages(sessionId: string) {
+  return fetchVocabularyApi({ action: 'get_messages', sessionId });
+}

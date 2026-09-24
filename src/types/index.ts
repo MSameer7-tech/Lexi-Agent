@@ -39,6 +39,7 @@ export interface Session {
   preview?: string;
   topic?: string;
   isPinned?: boolean;
+  isLoaded?: boolean;
   messages: Message[];
   createdAt: number;
   updatedAt: number;
