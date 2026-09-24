@@ -14,7 +14,25 @@ interface WordResultProps {
   rawDictionaryData?: DictionaryData;
 }
 
+
+const getCardColorClasses = (word: string) => {
+  let hash = 0;
+  for (let i = 0; i < word.length; i++) {
+    hash = word.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % 4;
+  
+  const colors = [
+    'bg-[#FFE6E0] dark:bg-[#51332F] border-[#FFD9D0] dark:border-[#63403B]', // Pink
+    'bg-[#DCE4FF] dark:bg-[#283566] border-[#CDDAFF] dark:border-[#33427D]', // Blue
+    'bg-[#E5D9FF] dark:bg-[#3B2C59] border-[#D9CAFF] dark:border-[#4B3A70]', // Purple
+    'bg-[#FFF1CC] dark:bg-[#594B22] border-[#FFE9A6] dark:border-[#6E5D2A]'  // Yellow
+  ];
+  return colors[index];
+};
+
 export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData }) => {
+  const colorClasses = getCardColorClasses(entry.word || 'default');
   const { session } = useAuth();
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
@@ -72,7 +90,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
   }
 
   return (
-    <div className="w-full relative bg-surface border border-border-subtle shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-8 sm:p-10 lg:p-14 transition-all">
+    <div className={`w-full relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-8 sm:p-10 lg:p-14 transition-all border ${colorClasses}`}>
       
       {/* Absolute Save Button */}
       <div className="absolute top-8 right-8 sm:top-10 sm:right-10 z-10">
