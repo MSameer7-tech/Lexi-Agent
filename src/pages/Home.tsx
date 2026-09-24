@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
+import { MarkdownRenderer } from '../components/ui/MarkdownRenderer';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
-import { parseDictionaryMarkdown, mapDictionaryApiToParsedEntry } from '../lib/parser';
+import { mapDictionaryApiToParsedEntry } from '../lib/parser';
 import { sendMessage } from '../services/lexiAgentApi';
 import { useHistoryStore } from '../store/historyStore';
 import type { Message } from '../types';
@@ -385,7 +386,16 @@ export const Home: React.FC = () => {
                       {message.events && message.events.length > 0 && (
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
-                      <WordResult entry={message.dictionary ? mapDictionaryApiToParsedEntry(message.dictionary, message.content) : parseDictionaryMarkdown(message.content)} rawDictionaryData={message.dictionary || undefined} />
+                      {message.content && (
+                        <div className="w-full max-w-[85%] font-serif text-[17px] text-foreground leading-[1.6] pl-2 md:pl-4">
+                          <MarkdownRenderer content={message.content} />
+                        </div>
+                      )}
+                      {message.dictionary && (
+                        <div className="w-full mt-4">
+                          <WordResult entry={mapDictionaryApiToParsedEntry(message.dictionary, message.content)} rawDictionaryData={message.dictionary} />
+                        </div>
+                      )}
                       <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
                         LexiAgent · {formatTime(message.timestamp)}
                       </span>

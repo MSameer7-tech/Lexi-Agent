@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { isWordSaved, saveWord, removeSavedWord } from '../../services/lexiAgentApi';
 import type { ParsedDictionaryEntry } from '../../lib/parser';
 import type { DictionaryData } from '../../types';
-import { MarkdownRenderer } from '../ui/MarkdownRenderer';
+
 
 interface WordResultProps {
   entry: ParsedDictionaryEntry;
@@ -79,15 +79,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
   };
 
 
-  if (!entry.word || (!entry.definitions || entry.definitions.length === 0)) {
-    return (
-      <div className="w-full max-w-[760px] pl-6 md:pl-8 border-l border-border-subtle py-4">
-        <div className="font-serif text-base md:text-lg text-foreground leading-relaxed prose prose-stone dark:prose-invert">
-          <MarkdownRenderer content={entry.rawMarkdown} />
-        </div>
-      </div>
-    );
-  }
+  if (!entry.word || (!entry.meanings || entry.meanings.length === 0)) return null;
 
   return (
     <div className={`w-full relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-8 sm:p-10 lg:p-14 transition-all border ${colorClasses}`}>
@@ -144,16 +136,8 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
               </div>
             )}
             
-            {!entry.phonetic && entry.partOfSpeech && (
-              <div className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle">
-                {entry.partOfSpeech.replace(/\./g, '')}
-              </div>
-            )}
-            {entry.phonetic && entry.partOfSpeech && (
-               <div className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle mt-2">
-                 {entry.partOfSpeech.replace(/\./g, '')}
-               </div>
-            )}
+            
+            
           </div>
         </header>
 
@@ -161,35 +145,39 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         <div className="flex flex-col gap-12 lg:w-[65%] w-full">
           
           {/* DEFINITIONS */}
-          {entry.definitions && entry.definitions.length > 0 && (
-            <section className="flex flex-col gap-6">
-              <h3 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle">
-                Definitions
-              </h3>
-              
-              <div className="flex flex-col gap-8 w-full">
-                {entry.definitions.map((def, idx) => (
-                  <div key={idx} className="flex gap-4 sm:gap-6 w-full">
-                    <div className="font-sans text-[11px] text-subtle mt-1.5 shrink-0">
-                      {String(idx + 1).padStart(2, '0')}
-                    </div>
-                    <div className="flex flex-col gap-3 w-full">
-                      <p className="font-serif text-[18px] sm:text-[20px] text-foreground leading-[1.6]">
-                        {def.text}
-                      </p>
-                      {def.example && (
-                        <div className="flex gap-2">
-                          <span className="font-sans text-[12px] text-muted mt-0.5">Example:</span>
-                          <p className="font-serif italic text-[15px] sm:text-[16px] text-muted leading-relaxed">
-                            "{def.example}"
-                          </p>
+          {entry.meanings && entry.meanings.length > 0 && (
+            <div className="flex flex-col gap-12 w-full">
+              {entry.meanings.map((meaning, mIdx) => (
+                <section key={mIdx} className="flex flex-col gap-6">
+                  <h3 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle font-semibold border-b border-border-subtle/50 pb-2">
+                    {meaning.partOfSpeech.replace(/\./g, '')}
+                  </h3>
+                  
+                  <div className="flex flex-col gap-8 w-full">
+                    {meaning.definitions.map((def, dIdx) => (
+                      <div key={dIdx} className="flex gap-4 sm:gap-6 w-full">
+                        <div className="font-sans text-[11px] text-subtle mt-1.5 shrink-0 select-none">
+                          {String(dIdx + 1).padStart(2, '0')}
                         </div>
-                      )}
-                    </div>
+                        <div className="flex flex-col gap-3 w-full">
+                          <p className="font-serif text-[18px] sm:text-[20px] text-foreground leading-[1.6]">
+                            {def.text}
+                          </p>
+                          {def.example && (
+                            <div className="flex gap-2">
+                              <span className="font-sans text-[12px] text-muted mt-0.5">Example:</span>
+                              <p className="font-serif italic text-[15px] sm:text-[16px] text-muted leading-relaxed">
+                                "{def.example}"
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
+              ))}
+            </div>
           )}
 
           {/* SYNONYMS & ANTONYMS */}
