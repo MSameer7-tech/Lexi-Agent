@@ -82,134 +82,137 @@ export const Settings: React.FC = () => {
       animate="animate"
       className="mx-auto w-full max-w-[960px] px-5 py-10 sm:py-16 md:py-20"
     >
-      <motion.div variants={staggerItem} className="mb-10 sm:mb-14">
+      <motion.div variants={staggerItem} className="mb-11 sm:mb-14">
         <h1 className="font-serif text-[40px] sm:text-[46px] text-foreground tracking-tight leading-none">Preferences</h1>
       </motion.div>
       
-      {/* TWO COLUMN GRID FOR DESKTOP */}
-      <div className="flex flex-col lg:grid lg:grid-cols-2 gap-10 lg:gap-14">
+      {/* ONE UNIFIED GRID FOR DESKTOP */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-y-12 gap-x-6 lg:gap-x-8">
         
-        {/* LEFT COLUMN */}
-        <div className="flex flex-col gap-10 lg:gap-14">
-          
-          {/* ACCOUNT PROFILE */}
-          <motion.section variants={staggerItem}>
-            <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Account</h2>
-            <div className="flex items-center gap-5 sm:gap-6 p-6 sm:p-7 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt={displayName} className="w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full border border-border-subtle object-cover shrink-0 bg-surface-tint" />
-              ) : (
-                <div className="w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full bg-surface-tint border border-border-subtle flex items-center justify-center text-foreground font-serif text-xl shrink-0">
-                  {getInitials(displayName)}
+        {/* ======================================= */}
+        {/* ROW 1                                   */}
+        {/* ======================================= */}
+        
+        {/* ACCOUNT PROFILE */}
+        <motion.section variants={staggerItem} className="flex flex-col h-full">
+          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1">Account</h2>
+          <div className="flex-1 flex items-center gap-5 p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[160px]">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={displayName} className="w-[52px] h-[52px] rounded-full border border-border-subtle object-cover shrink-0 bg-surface-tint" />
+            ) : (
+              <div className="w-[52px] h-[52px] rounded-full bg-surface-tint border border-border-subtle flex items-center justify-center text-foreground font-serif text-xl shrink-0">
+                {getInitials(displayName)}
+              </div>
+            )}
+            <div className="flex flex-col justify-center">
+              <span className="font-serif text-[22px] sm:text-[24px] text-foreground leading-[1.1] truncate max-w-[200px] sm:max-w-[240px]">{displayName}</span>
+              <span className="font-sans text-[13px] text-muted mt-1.5 truncate max-w-[200px] sm:max-w-[240px]">{email}</span>
+              <span className="font-sans text-[9px] text-subtle mt-3 uppercase tracking-[0.15em] font-medium">{displayProvider}</span>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* YOUR LEXIAGENT */}
+        <motion.section variants={staggerItem} className="flex flex-col h-full">
+          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1">Your LexiAgent</h2>
+          <div className="flex-1 flex items-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[160px]">
+            {loadingCounts ? (
+              <div className="flex w-full items-center justify-center">
+                <Loader2 size={18} className="animate-spin text-subtle" />
+              </div>
+            ) : (
+              <div className="w-full grid grid-cols-2 gap-y-6 gap-x-4">
+                <div className="flex flex-col">
+                  <span className="font-serif text-[26px] sm:text-[28px] text-foreground leading-none mb-2">{counts.conversations}</span>
+                  <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Conversations</span>
                 </div>
-              )}
+                <div className="flex flex-col">
+                  <span className="font-serif text-[26px] sm:text-[28px] text-foreground leading-none mb-2">{counts.saved}</span>
+                  <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Saved Words</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-serif text-[26px] sm:text-[28px] text-foreground leading-none mb-2">{counts.explored}</span>
+                  <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Words Explored</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.section>
+
+        {/* ======================================= */}
+        {/* ROW 2                                   */}
+        {/* ======================================= */}
+
+        {/* APPEARANCE */}
+        <motion.section variants={staggerItem} className="flex flex-col h-full">
+          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1 mt-2 lg:mt-0">Appearance</h2>
+          <div className="flex-1 flex items-center justify-between p-6 gap-5 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[140px]">
+            <div className="flex flex-col justify-center">
+              <p className="font-serif text-[18px] sm:text-[20px] text-foreground leading-none">Theme</p>
+              <p className="text-[13px] text-muted mt-2 font-sans">Switch between light and dark modes.</p>
+            </div>
+            <motion.button 
+              whileTap={{ scale: 0.98 }}
+              onClick={toggleDarkMode}
+              className="flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-[10px] bg-surface-tint border border-border-subtle hover:border-border-strong hover:bg-border-subtle/10 transition-colors shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-border-strong"
+            >
+              {isDark ? <Sun size={13} className="text-foreground/80" /> : <Moon size={13} className="text-foreground/80" />}
+              <span className="text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/90 mt-[1px]">
+                {isDark ? 'Light' : 'Dark'}
+              </span>
+            </motion.button>
+          </div>
+        </motion.section>
+
+        {/* DICTIONARY */}
+        <motion.section variants={staggerItem} className="flex flex-col h-full">
+          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1 mt-2 lg:mt-0">Dictionary</h2>
+          <div className="flex-1 flex flex-col justify-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[140px]">
+            
+            {/* Row 1 */}
+            <div className="flex items-center justify-between">
               <div className="flex flex-col">
-                <span className="font-serif text-[22px] sm:text-[24px] text-foreground leading-[1.1] truncate max-w-[200px] sm:max-w-[240px]">{displayName}</span>
-                <span className="font-sans text-[13px] text-muted mt-1.5 truncate max-w-[200px] sm:max-w-[240px]">{email}</span>
-                <span className="font-sans text-[9px] text-subtle mt-2.5 uppercase tracking-[0.15em] font-medium">{displayProvider}</span>
+                <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70 mb-1.5">Pronunciation</span>
+                <span className="text-[13px] text-muted font-sans leading-relaxed">Audio available on dictionary entries.</span>
               </div>
             </div>
-          </motion.section>
-
-          {/* APPEARANCE */}
-          <motion.section variants={staggerItem}>
-            <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Appearance</h2>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 sm:p-7 gap-5 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
-              <div>
-                <p className="font-serif text-[18px] sm:text-[20px] text-foreground">Theme</p>
-                <p className="text-[13px] text-muted mt-1 font-sans">Switch between light and dark modes.</p>
+            
+            {/* Divider */}
+            <div className="w-full h-[1px] bg-border-subtle/30 my-4" />
+            
+            {/* Row 2 */}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70">Dictionary Source</span>
               </div>
-              <button 
-                onClick={toggleDarkMode}
-                className="flex items-center justify-center gap-2.5 px-4 py-2 rounded-[10px] bg-surface-tint border border-border-subtle hover:border-border-strong hover:bg-border-subtle/10 transition-colors shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-border-strong"
-              >
-                {isDark ? <Sun size={13} className="text-foreground/80" /> : <Moon size={13} className="text-foreground/80" />}
-                <span className="text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/90">
-                  {isDark ? 'Light' : 'Dark'}
-                </span>
-              </button>
-            </div>
-          </motion.section>
-
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="flex flex-col gap-10 lg:gap-14">
-
-          {/* YOUR LEXIAGENT */}
-          <motion.section variants={staggerItem}>
-            <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Your LexiAgent</h2>
-            <div className="flex flex-col justify-center p-6 sm:p-7 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
-              {loadingCounts ? (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 size={18} className="animate-spin text-subtle" />
-                </div>
-              ) : (
-                <div className="flex flex-col h-full justify-between py-1">
-                  <div className="flex items-start gap-12">
-                    <div className="flex flex-col">
-                      <span className="font-serif text-[26px] sm:text-[30px] text-foreground leading-none mb-1.5">{counts.conversations}</span>
-                      <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Conversations</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-serif text-[26px] sm:text-[30px] text-foreground leading-none mb-1.5">{counts.saved}</span>
-                      <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Saved Words</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col mt-5">
-                    <span className="font-serif text-[26px] sm:text-[30px] text-foreground leading-none mb-1.5">{counts.explored}</span>
-                    <span className="font-sans text-[9px] uppercase tracking-[0.15em] font-medium text-muted">Words Explored</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.section>
-
-          {/* DICTIONARY */}
-          <motion.section variants={staggerItem}>
-            <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Dictionary</h2>
-            <div className="flex flex-col rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 overflow-hidden">
-              
-              {/* Row 1 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 sm:p-7 gap-3 border-b border-border-subtle/30">
-                <div className="flex flex-col">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70 mb-1.5">Pronunciation</span>
-                  <span className="text-[13px] text-muted font-sans leading-relaxed">Audio available on dictionary entries.</span>
-                </div>
+              <div className="shrink-0 text-right">
+                <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-medium text-foreground/90">Merriam-Webster</span>
               </div>
-              
-              {/* Row 2 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 sm:p-7 gap-3">
-                <div className="flex flex-col">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70 mb-1.5">Dictionary Source</span>
-                </div>
-                <div className="shrink-0 sm:text-right mt-1 sm:mt-0">
-                  <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-medium text-foreground/90">Merriam-Webster</span>
-                </div>
-              </div>
-              
             </div>
-          </motion.section>
+            
+          </div>
+        </motion.section>
 
-        </div>
-      </div>
+        {/* ======================================= */}
+        {/* ROW 3                                   */}
+        {/* ======================================= */}
 
-      {/* ACCOUNT ACTIONS (FULL WIDTH AT BOTTOM) */}
-      <div className="mt-10 lg:mt-14">
-        <motion.section variants={staggerItem}>
-          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Session</h2>
-          <button 
+        {/* ACCOUNT ACTIONS (FULL WIDTH AT BOTTOM) */}
+        <motion.section variants={staggerItem} className="flex flex-col h-full lg:col-span-2 mt-2 lg:mt-4">
+          <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1">Session</h2>
+          <motion.button 
+            whileTap={{ scale: 0.985 }}
             onClick={handleSignOut}
-            className="w-full flex flex-row items-center justify-between p-6 sm:p-7 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 hover:bg-surface-tint hover:border-border-strong/60 transition-all group outline-none focus-visible:ring-2 focus-visible:ring-border-strong"
+            className="flex-1 flex flex-row items-center justify-between p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 hover:bg-surface-tint hover:border-border-strong/60 transition-all group outline-none focus-visible:ring-2 focus-visible:ring-border-strong min-h-[110px]"
           >
-            <div className="flex flex-col items-start text-left">
-              <p className="font-serif text-[18px] sm:text-[20px] text-foreground group-hover:text-foreground/80 transition-colors">Sign out</p>
-              <p className="text-[13px] text-muted mt-1 font-sans">End your current LexiAgent session.</p>
+            <div className="flex flex-col items-start text-left justify-center">
+              <p className="font-serif text-[18px] sm:text-[20px] text-foreground group-hover:text-foreground/80 transition-colors leading-none">Sign out</p>
+              <p className="text-[13px] text-muted mt-2 font-sans">End your current LexiAgent session.</p>
             </div>
             <LogOut size={18} className="text-subtle group-hover:text-foreground/70 transition-colors shrink-0 group-hover:translate-x-1 duration-300" />
-          </button>
+          </motion.button>
         </motion.section>
+
       </div>
       
       {/* Spacer for bottom */}
