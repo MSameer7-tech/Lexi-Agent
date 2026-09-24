@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { ArrowRight, Bookmark, Check, Eye, EyeOff, Loader2, LockKeyhole, Mail, Book } from 'lucide-react';
+import { ArrowRight, Bookmark, Eye, EyeOff, Loader2, LockKeyhole, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const GoogleIcon = () => (
@@ -116,10 +116,7 @@ export const Auth: React.FC = () => {
           <div className="absolute inset-x-0 top-0 h-1 bg-border-strong/40" />
           <div className="relative z-10 grid h-full gap-10 xl:gap-14 lg:grid-cols-[0.9fr_1fr] lg:items-center">
             <div className="max-w-[500px]">
-              <div className="mb-6 flex w-fit items-center gap-2 rounded-[6px] border border-border-subtle bg-background/80 px-3 py-2 text-[11px] font-medium uppercase text-muted shadow-subtle">
-                <Book size={14} strokeWidth={1.8} className="text-foreground/70" />
-                LexiAgent Personal Archive
-              </div>
+              
               <h1 className="font-serif text-[44px] font-medium leading-[0.98] tracking-tight text-foreground sm:text-[60px] lg:text-[68px]">
                 Master your words.
                 <span className="mt-2 block italic text-muted">Keep the meaning.</span>
@@ -193,10 +190,7 @@ export const Auth: React.FC = () => {
           >
             <div className="mb-7 flex items-start justify-between gap-4">
               <div>
-                <div className="mb-4 flex w-fit items-center gap-2 rounded-[4px] bg-foreground/5 px-3 py-1.5 text-[10px] font-semibold tracking-widest uppercase text-foreground">
-                  <Check size={13} strokeWidth={2} />
-                  {isLogin ? 'Secure Sign In' : 'Create an Account'}
-                </div>
+                
                 <h2 className="font-serif text-[32px] font-medium leading-tight tracking-tight text-foreground">
                   {isLogin ? 'Welcome back' : 'Create account'}
                 </h2>
