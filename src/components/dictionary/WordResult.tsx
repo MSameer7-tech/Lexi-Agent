@@ -23,10 +23,10 @@ const getCardColorClasses = (word: string) => {
   const index = Math.abs(hash) % 4;
   
   const colors = [
-    'bg-[#FFE6E0] dark:bg-[#51332F] border-[#FFD9D0] dark:border-[#63403B]', // Pink
-    'bg-[#DCE4FF] dark:bg-[#283566] border-[#CDDAFF] dark:border-[#33427D]', // Blue
-    'bg-[#E5D9FF] dark:bg-[#3B2C59] border-[#D9CAFF] dark:border-[#4B3A70]', // Purple
-    'bg-[#FFF1CC] dark:bg-[#594B22] border-[#FFE9A6] dark:border-[#6E5D2A]'  // Yellow
+    'bg-[#FFE6E0]/40 dark:bg-[#51332F]/40 border-[#FFD9D0]/50 dark:border-[#63403B]/50', // Pink
+    'bg-[#DCE4FF]/40 dark:bg-[#283566]/40 border-[#CDDAFF]/50 dark:border-[#33427D]/50', // Blue
+    'bg-[#E5D9FF]/40 dark:bg-[#3B2C59]/40 border-[#D9CAFF]/50 dark:border-[#4B3A70]/50', // Purple
+    'bg-[#FFF1CC]/40 dark:bg-[#594B22]/40 border-[#FFE9A6]/50 dark:border-[#6E5D2A]/50'  // Yellow
   ];
   return colors[index];
 };
