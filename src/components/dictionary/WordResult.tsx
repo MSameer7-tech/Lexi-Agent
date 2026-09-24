@@ -11,6 +11,8 @@ import { MarkdownRenderer } from '../ui/MarkdownRenderer';
 interface WordResultProps {
   entry: ParsedDictionaryEntry;
   rawDictionaryData?: DictionaryData;
+  variant?: "chat" | "vocabulary";
+  onClose?: () => void;
 }
 
 const getCardColorClasses = (word: string) => {
@@ -29,7 +31,7 @@ const getCardColorClasses = (word: string) => {
   return colors[index];
 };
 
-export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData }) => {
+export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData, variant = "chat", onClose }) => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
@@ -90,13 +92,15 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
   // Editorial date label
   const dateStr = `${String(new Date().getDate()).padStart(2, '0')}.${String(new Date().getMonth() + 1).padStart(2, '0')}`;
   
-  const colorClasses = getCardColorClasses(entry.word || 'default');
+  const colorClasses = variant === 'vocabulary' 
+    ? 'bg-[#FCFBF8] dark:bg-[#1E1C1A] border-border-subtle/50' 
+    : getCardColorClasses(entry.word || 'default');
 
   return (
-    <div className={`w-full max-w-[960px] relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
+    <div className={`w-full ${variant === 'chat' ? 'max-w-[960px]' : ''} relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
       
       {/* INTRODUCTORY AI RESPONSE */}
-      {entry.rawMarkdown && (
+      {entry.rawMarkdown && variant === 'chat' && (
         <div className="w-full lg:max-w-[80%] font-serif text-[14px] sm:text-[15px] text-foreground/80 leading-[1.6] prose prose-stone prose-p:text-foreground/80 dark:prose-invert max-w-none mb-8 relative border-b border-border-subtle/30 pb-6">
           <div className="font-sans text-[9px] uppercase tracking-[0.25em] text-foreground/60 font-medium mb-3 flex items-center gap-3">
             <span className="w-3 h-[1px] bg-foreground/30"></span>
@@ -113,9 +117,17 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         <header className="flex flex-col lg:w-[40%] shrink-0">
           
           {/* Pinterest/Editorial annotation */}
-          <div className="font-sans text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-foreground/50 font-medium mb-5">
-            Dictionary Entry / {dateStr}
+          <div className="flex items-center justify-between mb-5 w-full">
+            <div className="font-sans text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-foreground/50 font-medium">
+              Dictionary Entry / {dateStr}
+            </div>
           </div>
+          
+          {variant === 'vocabulary' && onClose && (
+            <button onClick={onClose} className="absolute top-6 right-6 lg:top-8 lg:right-10 flex items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-subtle hover:text-foreground transition-colors z-10 bg-background/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-border-subtle/50 shadow-sm">
+              <span className="font-medium">Close</span>
+            </button>
+          )}
 
           <div className="flex items-start justify-between mb-6">
             <h2 className="font-serif text-[36px] sm:text-[40px] lg:text-[42px] font-medium text-foreground tracking-tighter leading-none">
