@@ -33,12 +33,13 @@ DECLARE
 BEGIN
     RETURN QUERY
     WITH convs AS (
-        SELECT c.id, c.session_id, c.title, c.created_at, c.updated_at, c.is_pinned,
-               (SELECT m.content FROM messages m WHERE m.conversation_id = c.id AND m.role = 'user' ORDER BY m.created_at ASC, m.id ASC LIMIT 1) as preview
+        SELECT c.id, c.session_id, c.title,
+               (SELECT m.content FROM messages m WHERE m.conversation_id = c.id AND m.role = 'user' ORDER BY m.created_at ASC, m.id ASC LIMIT 1) as preview,
+               c.created_at, c.updated_at, c.is_pinned
         FROM conversations c
         WHERE c.user_id = v_user_id
     )
-    SELECT *
+    SELECT convs.id, convs.session_id, convs.title, convs.preview, convs.created_at, convs.updated_at, convs.is_pinned
     FROM convs
     WHERE (p_search IS NULL OR p_search = '' OR convs.title ILIKE '%' || p_search || '%' OR convs.preview ILIKE '%' || p_search || '%')
       AND (p_cursor_id IS NULL OR
