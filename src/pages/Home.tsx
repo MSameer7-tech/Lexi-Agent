@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark } from 'lucide-react';
+import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark, Mic } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { MarkdownRenderer } from '../components/ui/MarkdownRenderer';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
@@ -16,6 +16,8 @@ export const Home: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +36,55 @@ export const Home: React.FC = () => {
       setInputValue('');
     }
   }, [activeSessionId]);
+
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    if (('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window)) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onstart = () => setIsRecording(true);
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(prev => {
+          const newVal = prev ? prev + ' ' + transcript : transcript;
+          setTimeout(adjustTextareaHeight, 10);
+          return newVal;
+        });
+      };
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error', event.error);
+        setIsRecording(false);
+      };
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+      };
+    }
+  }, []);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) {
+      alert("Your browser does not support voice input.");
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -468,16 +519,26 @@ export const Home: React.FC = () => {
                     onKeyDown={handleKeyDown}
                     placeholder="Ask a follow up question..."
                     rows={1}
-                    className="w-full min-h-[64px] sm:min-h-[80px] py-[22px] sm:py-[28px] pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
+                    className="w-full min-h-[64px] sm:min-h-[80px] py-[22px] sm:py-[28px] pl-16 pr-[90px] bg-transparent text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
                     disabled={isLoading}
                   />
-                  <button
-                    type="submit"
-                    disabled={!inputValue.trim() || isLoading}
-                    className="absolute right-4 flex items-center justify-center w-12 h-12 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
-                  >
-                    <ArrowRight size={20} strokeWidth={1.5} />
-                  </button>
+                  <div className="absolute right-4 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={handleMicClick}
+                      className={`flex items-center justify-center w-10 h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
+                      title={isRecording ? "Stop recording" : "Use voice input"}
+                    >
+                      <Mic size={18} strokeWidth={1.5} className={isRecording ? "animate-pulse" : ""} />
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={!inputValue.trim() || isLoading}
+                      className="flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
+                    >
+                      <ArrowRight size={20} strokeWidth={1.5} />
+                    </button>
+                  </div>
                 </form>
               <div className="text-center mt-3 pointer-events-auto hidden sm:block">
                 <span className="text-[10px] text-subtle font-sans tracking-widest uppercase">
