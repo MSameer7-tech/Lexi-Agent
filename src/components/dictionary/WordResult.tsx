@@ -262,7 +262,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
       )}
       
       {/* MERRIAM-WEBSTER ATTRIBUTION */}
-      <div className="w-full flex justify-center mt-12 pt-8 border-t border-border-subtle/20">
+      <div className="w-full mt-10 sm:mt-12 pt-7 sm:pt-9 border-t border-border-subtle/20 -mb-1 sm:-mb-3 lg:-mb-4">
         <MerriamWebsterAttribution />
       </div>
     </div>
