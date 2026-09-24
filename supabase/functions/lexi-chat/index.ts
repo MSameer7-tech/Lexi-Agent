@@ -24,8 +24,9 @@ function checkRateLimit(identifier: string): boolean {
 
 export default {
   fetch: async (req: Request) => {
+    const allowedOrigin = Deno.env.get('CORS_ALLOWED_ORIGIN') || '*';
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     };
