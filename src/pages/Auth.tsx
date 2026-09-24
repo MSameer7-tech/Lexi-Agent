@@ -130,9 +130,9 @@ export const Auth: React.FC = () => {
 
               <div className="mt-8 grid max-w-[430px] grid-cols-3 gap-3">
                 {[
-                  ['2.4k', 'words found'],
-                  ['418', 'saved notes'],
-                  ['Fresh', 'daily recall'],
+                  ['A—Z', 'definitions'],
+                  ['Audio', 'pronunciations'],
+                  ['Synced', 'vocabulary'],
                 ].map(([value, label]) => (
                   <div key={label} className="rounded-md border border-border-subtle bg-background/70 p-3 shadow-subtle">
                     <p className="font-serif text-xl leading-none text-foreground">{value}</p>
