@@ -93,7 +93,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
   const colorClasses = getCardColorClasses(entry.word || 'default');
 
   return (
-    <div className={`w-full relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
+    <div className={`w-full max-w-[960px] relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
       
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && (
