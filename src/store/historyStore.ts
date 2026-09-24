@@ -119,7 +119,7 @@ export const useHistoryStore = create<HistoryState>()(
     }),
     {
       name: 'lexiagent-history',
-      partialize: (state) => ({ sessions: state.sessions }) // Only persist sessions
+      partialize: (state) => ({ sessions: state.sessions, activeSessionId: state.activeSessionId }) // Persist sessions and active chat
     }
   )
 );
