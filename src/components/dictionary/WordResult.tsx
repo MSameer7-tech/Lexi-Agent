@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { MarkdownRenderer } from '../ui/MarkdownRenderer';
 import { isWordSaved, saveWord, removeSavedWord } from '../../services/lexiAgentApi';
 import type { ParsedDictionaryEntry } from '../../lib/parser';
 import type { DictionaryData } from '../../types';
@@ -96,6 +97,14 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         </button>
         {saveError && <span className="text-[10px] text-red-500 mt-1 font-sans absolute right-0">{saveError}</span>}
       </div>
+
+      
+      {/* Conversational LLM Response Preamble */}
+      {entry.rawMarkdown && (
+        <div className="w-full font-serif text-[16px] md:text-[17px] text-foreground/90 leading-relaxed prose prose-stone dark:prose-invert max-w-none mb-10 lg:mb-14 pb-8 lg:pb-10 border-b border-border-subtle/30">
+          <MarkdownRenderer content={entry.rawMarkdown} />
+        </div>
+      )}
 
       <div className="w-full flex flex-col lg:flex-row gap-12 lg:gap-16 xl:gap-24">
         

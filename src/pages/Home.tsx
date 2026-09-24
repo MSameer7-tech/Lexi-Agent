@@ -386,15 +386,16 @@ export const Home: React.FC = () => {
                       {message.events && message.events.length > 0 && (
                         <ActivityTimeline events={message.events} className="mb-2" />
                       )}
-                      {message.content && (
-                        <div className="w-full max-w-[85%] font-serif text-[17px] text-foreground leading-[1.6] pl-2 md:pl-4">
-                          <MarkdownRenderer content={message.content} />
-                        </div>
-                      )}
-                      {message.dictionary && (
-                        <div className="w-full mt-4">
+                      {message.dictionary ? (
+                        <div className="w-full mt-2">
                           <WordResult entry={mapDictionaryApiToParsedEntry(message.dictionary, message.content)} rawDictionaryData={message.dictionary} />
                         </div>
+                      ) : (
+                        message.content && (
+                          <div className="w-full max-w-[90%] md:max-w-[85%] bg-surface border border-border-subtle shadow-[0_4px_12px_-4px_rgba(42,41,40,0.05)] dark:shadow-[0_4px_12px_-4px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 font-serif text-[17px] text-foreground leading-[1.6]">
+                            <MarkdownRenderer content={message.content} />
+                          </div>
+                        )
                       )}
                       <span className="text-[9px] text-subtle uppercase tracking-widest mt-2 pl-6 md:pl-10 opacity-70">
                         LexiAgent · {formatTime(message.timestamp)}
