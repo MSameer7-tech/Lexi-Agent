@@ -75,6 +75,11 @@ export const Vocabulary: React.FC = () => {
     }
   };
 
+  const expandedItem = useMemo(() => {
+    if (!expandedWord) return null;
+    return saved.find(w => w.word === expandedWord) || history.find(w => w.word === expandedWord);
+  }, [expandedWord, history, saved]);
+
   if (authLoading) return null;
 
   if (!session) {
@@ -144,11 +149,6 @@ export const Vocabulary: React.FC = () => {
       </div>
     );
   };
-
-  const expandedItem = useMemo(() => {
-    if (!expandedWord) return null;
-    return saved.find(w => w.word === expandedWord) || history.find(w => w.word === expandedWord);
-  }, [expandedWord, history, saved]);
 
   return (
     <div className="flex-1 w-full max-w-[1150px] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-24">
