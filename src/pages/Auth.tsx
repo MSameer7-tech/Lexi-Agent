@@ -128,15 +128,15 @@ export const Auth: React.FC = () => {
                 Curate a vocabulary archive that feels personal, searchable, and ready whenever a new word catches your attention.
               </p>
 
-              <div className="mt-8 grid max-w-[430px] grid-cols-3 gap-3">
+              <div className="mt-8 flex flex-wrap gap-3">
                 {[
                   ['A—Z', 'definitions'],
                   ['Audio', 'pronunciations'],
                   ['Synced', 'vocabulary'],
                 ].map(([value, label]) => (
-                  <div key={label} className="rounded-md border border-border-subtle bg-background/70 p-3 shadow-subtle">
+                  <div key={label} className="flex-1 min-w-[120px] rounded-md border border-border-subtle bg-background/70 p-3 shadow-subtle">
                     <p className="font-serif text-xl leading-none text-foreground">{value}</p>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-subtle">{label}</p>
+                    <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-subtle">{label}</p>
                   </div>
                 ))}
               </div>
