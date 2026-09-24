@@ -27,14 +27,20 @@ export async function callGroqChatCompletion(apiKey: string, messages: any[]) {
     temperature: 0.2,
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout for Groq
+  
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: controller.signal
   });
+  
+  clearTimeout(timeoutId);
 
   if (!response.ok) {
     const errorText = await response.text();

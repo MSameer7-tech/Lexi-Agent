@@ -18,7 +18,10 @@ export async function thesaurus_lookup(word: string): Promise<ThesaurusResult | 
     const encodedWord = encodeURIComponent(cleanWord);
     const url = `https://www.dictionaryapi.com/api/v3/references/thesaurus/json/${encodedWord}?key=${apiKey}`;
 
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
     
     if (response.status === 404) {
       return { error: `Word not found: ${cleanWord}` };

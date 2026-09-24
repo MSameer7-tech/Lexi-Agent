@@ -27,7 +27,7 @@ CREATE OR REPLACE FUNCTION get_conversations_page(
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
     is_pinned BOOLEAN
-) LANGUAGE plpgsql SECURITY DEFINER AS $$
+) LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
     v_user_id UUID := auth.uid();
 BEGIN
@@ -61,7 +61,7 @@ CREATE OR REPLACE FUNCTION get_messages_page(
     dictionary_data JSONB,
     events JSONB,
     created_at TIMESTAMPTZ
-) LANGUAGE plpgsql SECURITY DEFINER AS $$
+) LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
     v_user_id UUID := auth.uid();
     v_conv_id UUID;

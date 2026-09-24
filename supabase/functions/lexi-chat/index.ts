@@ -6,6 +6,22 @@ import { dictionary_lookup, DictionaryResult } from "./tools/dictionary.ts";
 import { thesaurus_lookup } from "./tools/thesaurus.ts";
 import { saveWord, removeSavedWord, isWordSaved, getSavedWords, getWordHistory } from "./saved_words.ts";
 
+const rateLimitMap = new Map<string, number[]>();
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const windowMs = 60000; // 1 minute
+  const maxRequests = 50; // 50 requests per minute per user/ip in this isolate
+  let requests = rateLimitMap.get(identifier) || [];
+  requests = requests.filter(time => now - time < windowMs);
+  if (requests.length >= maxRequests) {
+    rateLimitMap.set(identifier, requests);
+    return false;
+  }
+  requests.push(now);
+  rateLimitMap.set(identifier, requests);
+  return true;
+}
+
 export default {
   fetch: async (req: Request) => {
     const corsHeaders = {
@@ -36,7 +52,12 @@ export default {
         });
       }
 
-      const { action, word, note, dictionary_data, message, sessionId } = body;
+      const action = body.action;
+      const word = body.word ? String(body.word).trim().substring(0, 100) : undefined;
+      const note = body.note ? String(body.note).trim().substring(0, 500) : undefined;
+      const dictionary_data = body.dictionary_data;
+      const message = body.message ? String(body.message).trim().substring(0, 5000) : undefined;
+      const sessionId = body.sessionId ? String(body.sessionId) : undefined;
 
       // ----------------------------------------------------
       // AUTH & ROUTING FOR VOCABULARY API (Phase 6C)
@@ -85,9 +106,9 @@ export default {
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             
             case 'get_conversations': {
-              const limit = reqBody.limit || 30;
+              const limit = Math.max(1, Math.min(Number(reqBody.limit) || 30, 100));
               const cursor = reqBody.cursor || null;
-              const search = reqBody.search || null;
+              const search = reqBody.search ? String(reqBody.search).trim().substring(0, 200) : null;
               
               const { data: convs, error: convErr } = await supabaseClient
                 .rpc('get_conversations_page', {
@@ -169,7 +190,7 @@ export default {
 
             case 'get_messages': {
               if (!sessionId) throw new Error("Missing sessionId");
-              const limit = reqBody.limit || 50;
+              const limit = Math.max(1, Math.min(Number(reqBody.limit) || 50, 100));
               const cursor = reqBody.cursor || null;
               
               const { data: messagesData, error: messagesErr } = await supabaseClient

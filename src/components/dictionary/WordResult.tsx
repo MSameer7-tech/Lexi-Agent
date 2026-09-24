@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, Loader2, Heart } from 'lucide-react';
+import { Volume2, Loader2, Heart, MessageSquare } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -134,8 +134,17 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
               {entry.word}
             </h2>
             
-            {/* SAVE BUTTON */}
-            <div className="shrink-0 mt-2 ml-4 flex flex-col items-end">
+            {/* ACTIONS */}
+            <div className="shrink-0 mt-2 ml-4 flex items-center gap-4">
+              {variant === 'vocabulary' && (
+                <button 
+                  onClick={() => navigate('/', { state: { askAbout: entry.word } })}
+                  className="flex items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 text-foreground/50 hover:text-foreground"
+                >
+                  <MessageSquare size={14} />
+                  <span className="hidden sm:inline">Ask</span>
+                </button>
+              )}
               <button 
                 onClick={handleSaveToggle}
                 disabled={isSaving}
@@ -144,8 +153,8 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
                 {isSaved ? <Heart size={14} className="fill-foreground text-foreground" /> : <Heart size={14} />}
                 <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
               </button>
-              {saveError && <span className="text-[10px] text-red-500 mt-2 font-sans">{saveError}</span>}
             </div>
+            {saveError && <div className="absolute right-8 top-32 text-[10px] text-red-500 font-sans">{saveError}</div>}
           </div>
           
           <div className="flex flex-col">

@@ -8,6 +8,7 @@ import { mapDictionaryApiToParsedEntry } from '../lib/parser';
 import { sendMessage, getConversationMessages } from '../services/lexiAgentApi';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistoryStore } from '../store/historyStore';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import type { Message } from '../types';
 
@@ -15,6 +16,11 @@ export const Home: React.FC = () => {
   const { user } = useAuth();
   const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages, prependMessages } = useHistoryStore();
   const session = sessions.find(s => s.id === activeSessionId) || null;
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+
 
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -171,6 +177,32 @@ export const Home: React.FC = () => {
       handleSendMessage(e);
     }
   };
+
+    useEffect(() => {
+    if (location.state?.askAbout) {
+      const askWord = location.state.askAbout;
+      // Clear the state so it doesn't trigger on reload
+      navigate('/', { replace: true });
+      
+      const newPrompt = `Tell me more about the word "${askWord}"`;
+      
+      if (activeSessionId) {
+        setInputValue(newPrompt);
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+          }
+        }, 100);
+      } else {
+        setQuery(newPrompt);
+        // Automatically start the search?
+        // handleInitialSearch(newPrompt);
+        setTimeout(() => {
+          handleInitialSearch(newPrompt);
+        }, 100);
+      }
+    }
+  }, [location.state]);
 
   const executeTurn = async (messageText: string) => {
     if (!messageText.trim()) return;
