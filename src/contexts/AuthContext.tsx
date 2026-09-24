@@ -25,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isHydratingRef = useRef(false);
+  const isGuestRef = useRef(true);
 
   const hydrateGuest = () => {
     isHydratingRef.current = true;
@@ -82,53 +83,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    let initialized = false;
+    isGuestRef.current = !user;
+  }, [user]);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
-      if (event === 'INITIAL_SESSION' || !initialized) {
-        initialized = true;
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        if (newSession?.user) {
-          hydrateCloud().finally(() => setIsLoading(false));
-        } else {
-          hydrateGuest();
-          setIsLoading(false);
-        }
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session: authSession } }) => {
+      setSession(authSession);
+      setUser(authSession?.user ?? null);
+      if (authSession?.user) {
+        hydrateCloud().finally(() => setIsLoading(false));
       } else {
-        setSession((prevSession) => {
-          if (prevSession?.user?.id !== newSession?.user?.id) {
-            if (newSession?.user) {
-              hydrateCloud();
-            } else {
-              hydrateGuest();
-            }
-          }
-          return newSession;
-        });
-        setUser(newSession?.user ?? null);
+        hydrateGuest();
         setIsLoading(false);
       }
     });
 
-    // Subscribe to historyStore changes to persist guest data
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'INITIAL_SESSION') return;
+
+      setSession((prevSession) => {
+        if (prevSession?.user?.id !== newSession?.user?.id) {
+          if (newSession?.user) {
+            hydrateCloud();
+          } else {
+            hydrateGuest();
+          }
+        }
+        return newSession;
+      });
+      setUser(newSession?.user ?? null);
+      setIsLoading(false);
+    });
+
+    // Subscribe to historyStore changes to persist guest data synchronously
     const unsub = useHistoryStore.subscribe((state) => {
       if (!isHydratingRef.current) {
-        // We only persist to guest local storage if NOT logged in
-        supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-          if (!currentSession?.user) {
-            localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify({
-              sessions: state.sessions,
-              activeSessionId: state.activeSessionId
-            }));
+        if (isGuestRef.current) {
+          localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify({
+            sessions: state.sessions,
+            activeSessionId: state.activeSessionId
+          }));
+        } else {
+          if (state.activeSessionId) {
+            localStorage.setItem('lexiagent-active-session', state.activeSessionId);
           } else {
-            if (state.activeSessionId) {
-              localStorage.setItem('lexiagent-active-session', state.activeSessionId);
-            } else {
-              localStorage.removeItem('lexiagent-active-session');
-            }
+            localStorage.removeItem('lexiagent-active-session');
           }
-        });
+        }
       }
     });
 

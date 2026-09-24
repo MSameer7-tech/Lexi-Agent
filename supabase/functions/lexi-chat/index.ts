@@ -107,9 +107,9 @@ export default {
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             
             case 'get_conversations': {
-              const limit = Math.max(1, Math.min(Number(reqBody.limit) || 30, 100));
-              const cursor = reqBody.cursor || null;
-              const search = reqBody.search ? String(reqBody.search).trim().substring(0, 200) : null;
+              const limit = Math.max(1, Math.min(Number(body.limit) || 30, 100));
+              const cursor = body.cursor || null;
+              const search = body.search ? String(body.search).trim().substring(0, 200) : null;
               
               const { data: convs, error: convErr } = await supabaseClient
                 .rpc('get_conversations_page', {
@@ -145,7 +145,7 @@ export default {
 
             case 'rename_conversation': {
               if (!sessionId) throw new Error("Missing sessionId");
-              const newTitle = reqBody.title?.trim();
+              const newTitle = body.title?.trim();
               if (!newTitle) throw new Error("Title is required");
               
               const titleToSave = newTitle.substring(0, 100); // Enforce max 100 chars
@@ -191,8 +191,8 @@ export default {
 
             case 'get_messages': {
               if (!sessionId) throw new Error("Missing sessionId");
-              const limit = Math.max(1, Math.min(Number(reqBody.limit) || 50, 100));
-              const cursor = reqBody.cursor || null;
+              const limit = Math.max(1, Math.min(Number(body.limit) || 50, 100));
+              const cursor = body.cursor || null;
               
               const { data: messagesData, error: messagesErr } = await supabaseClient
                 .rpc('get_messages_page', {
