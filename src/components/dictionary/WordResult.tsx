@@ -72,47 +72,49 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
   }
 
   return (
-    <div className="w-full relative pl-6 md:pl-10 border-l border-border-subtle py-4 md:py-6">
-      <div className="w-full max-w-[760px] flex flex-col gap-10">
+    <div className="w-full relative bg-surface border border-border-subtle shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-8 sm:p-10 lg:p-14 transition-all">
+      
+      {/* Absolute Save Button */}
+      <div className="absolute top-8 right-8 sm:top-10 sm:right-10 z-10">
+        <button 
+          onClick={handleSaveToggle}
+          disabled={isSaving}
+          className={`flex items-center gap-2 font-sans text-[11px] uppercase tracking-widest transition-colors duration-300 ${isSaved ? 'text-foreground' : 'text-muted hover:text-foreground'} ${isSaving ? 'opacity-50' : ''}`}
+        >
+          <Heart size={14} className={isSaved ? 'fill-foreground text-foreground' : ''} />
+          <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save word'}</span>
+        </button>
+        {saveError && <span className="text-[10px] text-red-500 mt-1 font-sans absolute right-0">{saveError}</span>}
+      </div>
+
+      <div className="w-full flex flex-col lg:flex-row gap-12 lg:gap-16 xl:gap-24">
         
-        {/* WORD, PRONUNCIATION, POS */}
-        <header className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-[28px] sm:text-[30px] lg:text-[32px] font-medium text-foreground tracking-tight leading-none">
-              {entry.word}
-            </h2>
-            <div className="flex flex-col items-end">
-              <button 
-                onClick={handleSaveToggle}
-                disabled={isSaving}
-                className={`flex items-center gap-2 font-sans text-[11px] uppercase tracking-widest transition-colors duration-300 ${isSaved ? 'text-foreground' : 'text-muted hover:text-foreground'} ${isSaving ? 'opacity-50' : ''}`}
-              >
-                <Heart size={14} className={isSaved ? 'fill-foreground text-foreground' : ''} />
-                <span>{isSaved ? 'Saved' : 'Save word'}</span>
-              </button>
-              {saveError && <span className="text-[10px] text-red-500 mt-1 font-sans">{saveError}</span>}
-            </div>
-          </div>
+        {/* Left Side: WORD, PRONUNCIATION, POS */}
+        <header className="flex flex-col gap-6 lg:w-[35%] shrink-0">
+          <h2 className="font-serif text-[42px] sm:text-[48px] lg:text-[56px] font-medium text-foreground tracking-tight leading-none pr-16 lg:pr-0">
+            {entry.word}
+          </h2>
           
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-6">
             {entry.phonetic && (
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="font-sans text-[11px] text-subtle uppercase tracking-widest">Pronunciation</span>
-                  <span className="font-sans text-[15px] sm:text-[16px] text-foreground tracking-wide">{entry.phonetic}</span>
-                  {entry.pronunciations?.[0]?.audioUrl && (
-                    <AudioButton url={entry.pronunciations[0].audioUrl} label="pronunciation" />
-                  )}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col items-start gap-2">
+                  <span className="font-sans text-[10px] text-subtle uppercase tracking-widest">Pronunciation</span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-sans text-[16px] sm:text-[18px] text-foreground tracking-wide">{entry.phonetic}</span>
+                    {entry.pronunciations?.[0]?.audioUrl && (
+                      <AudioButton url={entry.pronunciations[0].audioUrl} label="pronunciation" />
+                    )}
+                  </div>
                 </div>
                 
-                {/* Other pronunciations variants if they exist */}
                 {entry.pronunciations && entry.pronunciations.length > 1 && (
-                  <div className="flex flex-col gap-1.5 mt-1 border-l border-border-subtle/50 pl-3">
+                  <div className="flex flex-col gap-2 mt-2 border-l border-border-subtle/50 pl-4">
                     <span className="font-sans text-[9px] text-subtle uppercase tracking-widest">Other Variants</span>
-                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                    <div className="flex flex-wrap gap-x-6 gap-y-3">
                       {entry.pronunciations.slice(1).map((pron, i) => (
                         <div key={i} className="flex items-center gap-2">
-                          <span className="font-sans text-[13px] text-subtle tracking-wide">{pron.phonetic}</span>
+                          <span className="font-sans text-[14px] text-subtle tracking-wide">{pron.phonetic}</span>
                           {pron.audioUrl && (
                             <AudioButton url={pron.audioUrl} label="variant pronunciation" />
                           )}
@@ -130,58 +132,62 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
               </div>
             )}
             {entry.phonetic && entry.partOfSpeech && (
-               <div className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle mt-1">
+               <div className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle mt-2">
                  {entry.partOfSpeech.replace(/\./g, '')}
                </div>
             )}
           </div>
         </header>
 
-        {/* DEFINITIONS */}
-        {entry.definitions && entry.definitions.length > 0 && (
-          <section className="flex flex-col gap-6">
-            <h3 className="font-serif text-[18px] sm:text-[20px] text-foreground tracking-tight">
-              Definitions
-            </h3>
-            
-            <div className="flex flex-col gap-8">
-              {entry.definitions.map((def, idx) => (
-                <div key={idx} className="flex gap-4 sm:gap-6">
-                  <div className="font-sans text-[11px] text-subtle mt-1.5 shrink-0">
-                    {String(idx + 1).padStart(2, '0')}
+        {/* Right Side: DEFINITIONS, SYNONYMS & ANTONYMS */}
+        <div className="flex flex-col gap-12 lg:w-[65%] w-full">
+          
+          {/* DEFINITIONS */}
+          {entry.definitions && entry.definitions.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <h3 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle">
+                Definitions
+              </h3>
+              
+              <div className="flex flex-col gap-8 w-full">
+                {entry.definitions.map((def, idx) => (
+                  <div key={idx} className="flex gap-4 sm:gap-6 w-full">
+                    <div className="font-sans text-[11px] text-subtle mt-1.5 shrink-0">
+                      {String(idx + 1).padStart(2, '0')}
+                    </div>
+                    <div className="flex flex-col gap-3 w-full">
+                      <p className="font-serif text-[18px] sm:text-[20px] text-foreground leading-[1.6]">
+                        {def.text}
+                      </p>
+                      {def.example && (
+                        <div className="flex gap-2">
+                          <span className="font-sans text-[12px] text-muted mt-0.5">Example:</span>
+                          <p className="font-serif italic text-[15px] sm:text-[16px] text-muted leading-relaxed">
+                            "{def.example}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-3 max-w-[720px]">
-                    <p className="font-sans text-[16px] sm:text-[17px] text-foreground leading-[1.6]">
-                      {def.text}
-                    </p>
-                    {def.example && (
-                      <div className="flex gap-2">
-                        <span className="font-sans text-[12px] text-muted mt-0.5">Example:</span>
-                        <p className="font-serif italic text-[14px] sm:text-[15px] text-muted leading-relaxed">
-                          "{def.example}"
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+                ))}
+              </div>
+            </section>
+          )}
 
-        {/* SYNONYMS & ANTONYMS */}
-        {(entry.synonyms || entry.antonyms) && (
-          <section className="flex flex-col gap-8 pt-6 border-t border-border-subtle/50">
-            {entry.synonyms && entry.synonyms.length > 0 && (
-              <WordListSection title="Synonyms" words={entry.synonyms} />
-            )}
-            
-            {entry.antonyms && entry.antonyms.length > 0 && (
-              <WordListSection title="Antonyms" words={entry.antonyms} />
-            )}
-          </section>
-        )}
-        
+          {/* SYNONYMS & ANTONYMS */}
+          {(entry.synonyms || entry.antonyms) && (
+            <section className="flex flex-col gap-8 pt-8 border-t border-border-subtle/50 w-full">
+              {entry.synonyms && entry.synonyms.length > 0 && (
+                <WordListSection title="Synonyms" words={entry.synonyms} />
+              )}
+              
+              {entry.antonyms && entry.antonyms.length > 0 && (
+                <WordListSection title="Antonyms" words={entry.antonyms} />
+              )}
+            </section>
+          )}
+          
+        </div>
       </div>
     </div>
   );
@@ -196,7 +202,7 @@ const WordListSection = ({ title, words }: { title: string, words: string[] }) =
   const displayWords = expanded ? words : words.slice(0, limit);
   
   return (
-    <div className="flex flex-col gap-4 max-w-[720px]">
+    <div className="flex flex-col gap-4 w-full">
       <h4 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-subtle">{title}</h4>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
         {displayWords.map((word, i) => (

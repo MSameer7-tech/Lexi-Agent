@@ -360,7 +360,7 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.4 }}
             className="flex flex-col w-full min-h-screen pt-4 pb-40"
           >
-            <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 space-y-16">
+            <div className="w-full max-w-[1300px] mx-auto px-4 sm:px-8 md:px-12 space-y-16">
               {session?.messages.map((message, index) => (
                 <motion.div
                   key={message.id}
