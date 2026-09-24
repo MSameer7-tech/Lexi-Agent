@@ -70,6 +70,9 @@ export const HistoryDrawer: React.FC = () => {
           if (!isEditing) {
             setActiveSession(session.id);
             if (window.innerWidth < 1024) setDrawerOpen(false); // Close on mobile after select
+            
+            // Navigate to home page so the chat actually appears if they were on another page (e.g. /vocabulary)
+            navigate('/');
           }
         }}
       >
