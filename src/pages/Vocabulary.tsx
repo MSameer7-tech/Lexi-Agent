@@ -24,7 +24,7 @@ const getVocabularyCardClasses = (word: string) => {
     'bg-[#F8F5FC] dark:bg-[#2B2733] border-[#E6DEF2] dark:border-[#3D3747]'  // Lavender
   ];
 
-  const rotations = ['-rotate-1', 'rotate-0', 'rotate-1'];
+  const rotations = ['rotate-0', 'rotate-0', 'rotate-0'];
   return `${colors[index]} ${rotations[rotateIndex]} transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)] hover:border-foreground/20 dark:hover:border-foreground/30 cursor-pointer border rounded-[12px] p-5 sm:p-6 mb-4 sm:mb-6 flex flex-col group`;
 };
 
