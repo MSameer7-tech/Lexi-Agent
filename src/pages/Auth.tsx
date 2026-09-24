@@ -220,6 +220,7 @@ export const Auth: React.FC = () => {
                     <Mail size={17} strokeWidth={1.8} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle" />
                     <input
                       type="email"
+                      autoComplete="off"
                       required
                       placeholder="you@example.com"
                       value={email}
@@ -234,6 +235,7 @@ export const Auth: React.FC = () => {
                     <LockKeyhole size={17} strokeWidth={1.8} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle" />
                     <input
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       required
                       placeholder="Enter your password"
                       value={password}
@@ -288,6 +290,13 @@ export const Auth: React.FC = () => {
                 GitHub
               </button>
             </div>
+            
+            <button
+              onClick={() => navigate('/')}
+              className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-md border border-dashed border-border-strong/70 bg-transparent text-[13px] font-medium text-muted transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/10"
+            >
+              Continue as Guest
+            </button>
 
             <button
               onClick={() => {
