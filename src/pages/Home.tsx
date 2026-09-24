@@ -112,13 +112,18 @@ export const Home: React.FC = () => {
       recognitionRef.current.lang = 'en-US';
 
       recognitionRef.current.onstart = () => setIsRecording(true);
-      recognitionRef.current.onresult = (event: any) => {
+            recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
-        setInputValue(prev => {
-          const newVal = prev ? prev + ' ' + transcript : transcript;
-          setTimeout(adjustTextareaHeight, 10);
-          return newVal;
-        });
+        const currentActiveSession = useHistoryStore.getState().activeSessionId;
+        if (!currentActiveSession) {
+          setQuery(prev => prev ? prev + ' ' + transcript : transcript);
+        } else {
+          setInputValue(prev => {
+            const newVal = prev ? prev + ' ' + transcript : transcript;
+            setTimeout(adjustTextareaHeight, 10);
+            return newVal;
+          });
+        }
       };
       recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
@@ -367,15 +372,25 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-16 sm:h-20 pl-16 pr-16 bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
+                      className="w-full h-16 sm:h-20 pl-16 pr-[90px] bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
                     />
-                    <button
-                      type="submit"
-                      disabled={!query.trim()}
-                      className="absolute right-4 flex items-center justify-center w-12 h-12 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
-                    >
-                      <ArrowRight size={20} strokeWidth={1.5} />
-                    </button>
+                    <div className="absolute right-2 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={handleMicClick}
+                        className={`flex items-center justify-center w-10 h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
+                        title={isRecording ? "Stop recording" : "Use voice input"}
+                      >
+                        <Mic size={18} strokeWidth={1.5} className={isRecording ? "animate-pulse" : ""} />
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!query.trim()}
+                        className="flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
+                      >
+                        <ArrowRight size={20} strokeWidth={1.5} />
+                      </button>
+                    </div>
                   </form>
                   
                   <div className="mt-10 flex flex-col gap-5">
