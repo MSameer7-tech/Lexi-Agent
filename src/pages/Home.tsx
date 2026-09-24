@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { ActivityTimeline, type AgentEvent } from '../components/agent/ActivityTimeline';
 import { parseDictionaryMarkdown, mapDictionaryApiToParsedEntry } from '../lib/parser';
@@ -282,55 +282,73 @@ export const Home: React.FC = () => {
                 </motion.div>
               </div>
 
-              {/* RIGHT SIDE (Floating Vocabulary Constellation) */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 md:static md:w-[50%] md:h-[600px] md:pointer-events-auto">
+              {/* RIGHT SIDE (Floating Colored Cards) */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 md:static md:w-[50%] md:h-[640px] md:pointer-events-auto">
                 <div className="relative w-full h-full min-h-[500px]">
                   
-                  {/* PRAGMATIC (Small, upper-middle right, slightly rotated -2) */}
+                  {/* SERENDIPITY (Pink) */}
                   <motion.div 
-                    initial={{ opacity: 0, rotate: -2, y: 10 }}
-                    animate={{ opacity: 1, y: [2, -2, 2] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 } }}
-                    className="hidden sm:block absolute top-[12%] right-[25%] md:top-[8%] md:right-[55%] w-[130px] bg-[#F8F5EF] dark:bg-[#272521] px-4 py-3 border border-black/[0.04] dark:border-[#383530] shadow-[0_4px_12px_-2px_rgba(42,41,40,0.04)] dark:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.1)] rounded-[1px_2px_1px_1px] z-10"
-                  >
-                    <p className="font-serif text-sm text-foreground italic tracking-wide">pragmatic</p>
-                  </motion.div>
-
-                  {/* SERENDIPITY (Main floating card, upper-right/center-right) */}
-                  <motion.div 
-                    initial={{ opacity: 0, rotate: 1.5, y: 10 }}
-                    animate={{ opacity: 1, y: [-2, 2, -2] }}
+                    initial={{ opacity: 0, rotate: -3, y: 10 }}
+                    animate={{ opacity: 1, y: [4, -4, 4] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.5 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
-                    className="absolute top-[8%] right-[5%] md:top-[22%] md:right-[15%] w-[210px] bg-[#FDFBF8] dark:bg-[#2B2925] px-6 py-6 border border-black/[0.03] dark:border-[#3F3A34] shadow-[0_8px_24px_-4px_rgba(42,41,40,0.05),0_2px_8px_-2px_rgba(42,41,40,0.03)] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.15)] rounded-[2px_1px_2px_3px] z-20 flex flex-col"
+                    className="absolute top-[20%] right-[40%] md:top-[12%] md:right-[40%] w-[180px] h-[200px] sm:w-[220px] sm:h-[240px] bg-[#FFE6E0] dark:bg-[#51332F] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-20 flex flex-col transition-transform hover:-rotate-1"
                   >
-                    <p className="font-serif text-3xl text-foreground tracking-tight">serendipity</p>
-                    <p className="font-sans text-[9px] text-subtle mt-3 uppercase tracking-[0.2em]">[ noun ]</p>
+                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
+                      <Bookmark size={20} strokeWidth={2} />
+                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                    </div>
+                    <p className="font-serif text-[32px] sm:text-[40px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">serendipity</p>
+                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">happy accident</p>
                   </motion.div>
 
-                  {/* EPHEMERAL (Medium card, middle/lower-right) */}
+                  {/* SONDER (Blue) */}
                   <motion.div 
-                    initial={{ opacity: 0, rotate: -2, y: 10 }}
+                    initial={{ opacity: 0, rotate: 6, y: 10 }}
+                    animate={{ opacity: 1, y: [-4, 4, -4] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 1 } }}
+                    className="hidden sm:flex absolute top-[5%] right-[2%] md:top-[2%] md:right-[5%] w-[190px] h-[210px] sm:w-[230px] sm:h-[250px] bg-[#DCE4FF] dark:bg-[#283566] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:rotate-3"
+                  >
+                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
+                      <Bookmark size={20} strokeWidth={2} />
+                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                    </div>
+                    <p className="font-serif text-[36px] sm:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">sonder</p>
+                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">everyone has<br/>a story</p>
+                  </motion.div>
+
+                  {/* GLOW-UP (Purple) */}
+                  <motion.div 
+                    initial={{ opacity: 0, rotate: -6, y: 10 }}
                     animate={{ opacity: 1, y: [3, -3, 3] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.7 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 2 } }}
-                    className="hidden md:flex absolute top-[55%] right-[10%] md:top-[65%] md:right-[20%] w-[170px] bg-[#F8F5EF] dark:bg-[#292722] px-5 py-5 border border-black/[0.04] dark:border-[#3A3631] shadow-[0_6px_16px_-3px_rgba(42,41,40,0.04)] dark:shadow-[0_6px_16px_-3px_rgba(0,0,0,0.12)] rounded-[1px_3px_2px_2px] z-10 flex-col"
+                    transition={{ opacity: { duration: 1.2, delay: 0.7 }, y: { repeat: Infinity, duration: 7.5, ease: "easeInOut", delay: 0.5 } }}
+                    className="hidden md:flex absolute bottom-[10%] left-[8%] md:bottom-[15%] md:left-[10%] w-[170px] h-[190px] sm:w-[210px] sm:h-[230px] bg-[#E5D9FF] dark:bg-[#3B2C59] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:-rotate-2"
                   >
-                    <p className="font-serif text-2xl text-foreground tracking-tight">ephemeral</p>
-                    <p className="font-sans text-[8px] text-subtle mt-2 uppercase tracking-[0.2em] self-end pr-1">[ adjective ]</p>
+                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
+                      <Bookmark size={20} strokeWidth={2} />
+                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                    </div>
+                    <p className="font-serif text-[32px] sm:text-[40px] leading-[0.95] text-black/80 dark:text-white/90 tracking-tight mb-2">glow-<br/>up</p>
+                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight mt-1">positive transformation</p>
                   </motion.div>
 
-                  {/* METICULOUS (Small card, lower-middle-right) */}
+                  {/* APRICITY (Yellow) */}
                   <motion.div 
-                    initial={{ opacity: 0, rotate: 1, y: 10 }}
-                    animate={{ opacity: 1, y: [-2, 2, -2] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.8 }, y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 } }}
-                    className="absolute bottom-[5%] right-[15%] md:bottom-[5%] md:right-[50%] w-[140px] bg-[#FBF8F2] dark:bg-[#272521] px-4 py-4 border border-black/[0.03] dark:border-[#383530] shadow-[0_4px_10px_-2px_rgba(42,41,40,0.03)] dark:shadow-[0_4px_10px_-2px_rgba(0,0,0,0.1)] rounded-[2px_1px_3px_2px] z-10 flex flex-col"
+                    initial={{ opacity: 0, rotate: 3, y: 10 }}
+                    animate={{ opacity: 1, y: [-3, 3, -3] }}
+                    transition={{ opacity: { duration: 1.2, delay: 0.8 }, y: { repeat: Infinity, duration: 8.5, ease: "easeInOut", delay: 1.5 } }}
+                    className="hidden lg:flex absolute bottom-[8%] right-[8%] md:bottom-[2%] md:right-[15%] w-[200px] h-[220px] sm:w-[240px] sm:h-[260px] bg-[#FFF1CC] dark:bg-[#594B22] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-30 flex-col transition-transform hover:rotate-1"
                   >
-                    <p className="font-serif text-lg text-foreground tracking-tight">meticulous</p>
-                    <p className="font-sans text-[7px] text-subtle mt-1.5 uppercase tracking-[0.2em]">[ adjective ]</p>
+                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
+                      <Bookmark size={20} strokeWidth={2} />
+                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                    </div>
+                    <p className="font-serif text-[36px] sm:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">apricity</p>
+                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">sun warmth in<br/>winter</p>
                   </motion.div>
-                  
+
                 </div>
               </div>
+            
             </section>
           </motion.div>
         ) : (
