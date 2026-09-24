@@ -106,8 +106,8 @@ export const Home: React.FC = () => {
               ? `Looking up "${evt.input}"`
               : evt.type === 'tool_result'
                 ? (evt.tool === 'thesaurus_lookup' 
-                    ? (evt.success ? 'Thesaurus information retrieved' : 'Thesaurus lookup failed')
-                    : (evt.success ? 'Dictionary information retrieved' : 'Dictionary lookup failed'))
+                    ? (evt.success ? 'Thesaurus information retrieved' : (evt.error ? `Thesaurus failed: ${evt.error}` : 'Thesaurus lookup failed'))
+                    : (evt.success ? 'Dictionary information retrieved' : (evt.error ? `Dictionary failed: ${evt.error}` : 'Dictionary lookup failed')))
                 : evt.type,
             status: evt.success === false ? 'error' : 'success',
             timestamp: Date.now()
