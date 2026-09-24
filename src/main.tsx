@@ -1,3 +1,5 @@
+import { useThemeStore } from './store/themeStore.ts';
+useThemeStore.getState().initTheme();
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

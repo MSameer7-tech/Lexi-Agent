@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getSavedWords, getWordHistory, removeSavedWord, saveWord } from '../services/lexiAgentApi';
 import { WordResult } from '../components/dictionary/WordResult';
 import { mapDictionaryApiToParsedEntry } from '../lib/parser';
-import { Heart, Loader2, ArrowRight } from 'lucide-react';
+import { Heart, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/motion';

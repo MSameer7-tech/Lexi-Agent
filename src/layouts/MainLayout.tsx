@@ -1,26 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { HistoryDrawer } from '../components/history/HistoryDrawer';
 import { useHistoryStore } from '../store/historyStore';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeStore } from '../store/themeStore';
 
 export const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useThemeStore();
   const { setDrawerOpen, setActiveSession } = useHistoryStore();
   const { session, signOut } = useAuth();
 
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
-  }, []);
-
-  const toggleDarkMode = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-  };
 
   const navItems = [
     { type: 'button', action: () => { setActiveSession(null); navigate('/'); }, label: 'Home', icon: undefined, id: 'home' },

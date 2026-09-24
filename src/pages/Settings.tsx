@@ -3,6 +3,7 @@ import { Moon, Sun, LogOut, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '../lib/motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeStore } from '../store/themeStore';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useHistoryStore } from '../store/historyStore';
@@ -10,14 +11,10 @@ import { useHistoryStore } from '../store/historyStore';
 export const Settings: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useThemeStore();
   
   const [counts, setCounts] = useState({ conversations: 0, saved: 0, explored: 0 });
   const [loadingCounts, setLoadingCounts] = useState(true);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -51,11 +48,6 @@ export const Settings: React.FC = () => {
       setLoadingCounts(false);
     }
   }, [user]);
-
-  const toggleDarkMode = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-  };
 
   const handleSignOut = async () => {
     await signOut();
