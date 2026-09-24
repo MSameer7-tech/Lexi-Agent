@@ -1,32 +1,81 @@
-# React + TypeScript + Vite
+# 📚 LexiAgent
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Words, understood differently. A modern lexicon that lets you explore language through natural, intelligent conversation.
 
-Currently, two official plugins are available:
+LexiAgent is an AI-powered conversational dictionary and thesaurus. Instead of simply searching for definitions in a static interface, you can ask follow-up questions, explore nuances, discover synonyms, and hear accurate pronunciations through a premium, editorial conversational interface.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Agentic Dictionary**: Powered by Groq and the Merriam-Webster API to provide accurate, nuanced, and conversational definitions.
+- **Interactive Explorations**: Ask follow-up questions about words, phrases, or linguistic nuances (e.g., "What is the precise difference between ephemeral and fleeting?").
+- **Audio Pronunciations**: Listen to the correct pronunciation of words natively fetched from the dictionary.
+- **Personal Vocabulary**: Save your favorite words to your personal lexicon and review your search history across devices.
+- **Beautiful & Tactile UI**: Designed with a premium editorial aesthetic, featuring subtle animations (Framer Motion), a warm ivory color palette, and full dark-mode support.
+- **Secure Edge Architecture**: All AI and Dictionary API calls are handled securely via Supabase Edge Functions.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack
 
-## Expanding the Oxlint configuration
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
+- **State Management**: Zustand
+- **Animation**: Framer Motion, Lucide Icons
+- **Backend & Auth**: Supabase (PostgreSQL, Row Level Security, Edge Functions)
+- **AI & Data**: Groq (Llama 3), Merriam-Webster Dictionary & Thesaurus APIs
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🚀 Getting Started
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+### Prerequisites
+- Node.js (v18+)
+- [Supabase CLI](https://supabase.com/docs/guides/cli) installed locally
+- API Keys for Groq and Merriam-Webster
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Local Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/MSameer7-tech/Lexi-Agent.git
+   cd Lexi-Agent
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+   ```
+
+4. **Supabase Setup**
+   Start the local Supabase environment and apply migrations:
+   ```bash
+   npx supabase start
+   ```
+
+5. **Edge Function Secrets**
+   Add your API keys to the Supabase Edge Function environment:
+   ```bash
+   npx supabase secrets set GROQ_API_KEY=your_groq_key
+   npx supabase secrets set MW_DICTIONARY_API_KEY=your_mw_dictionary_key
+   npx supabase secrets set MW_THESAURUS_API_KEY=your_mw_thesaurus_key
+   ```
+
+6. **Start the Development Server**
+   ```bash
+   npm run dev
+   ```
+
+## 📂 Project Architecture
+
+- `src/components/` - Reusable UI components (Cards, History Drawer, Layouts)
+- `src/contexts/` - React contexts (Authentication lifecycle)
+- `src/store/` - Zustand global state (History, Theme persistence)
+- `src/services/` - API clients bridging the frontend to Supabase
+- `supabase/functions/` - Deno Edge Functions handling secure AI routing and Dictionary parsing
+- `supabase/migrations/` - Postgres schema, RPCs, and RLS policies
+
+## 📄 License
+
+This project is licensed under the MIT License.
