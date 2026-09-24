@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, Eye, EyeOff, Loader2, LockKeyhole, Mail, Pin, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const GoogleIcon = () => (
@@ -20,6 +20,33 @@ const GithubIcon = () => (
   </svg>
 );
 
+const wordPins = [
+  {
+    word: 'serendipity',
+    note: 'happy accident',
+    color: 'bg-[#FFE6E0] dark:bg-[#51332F]',
+    className: 'col-span-5 mt-10 rotate-[-2deg]',
+  },
+  {
+    word: 'sonder',
+    note: 'everyone has a story',
+    color: 'bg-[#E5F1FF] dark:bg-[#24384C]',
+    className: 'col-span-4 rotate-[2deg]',
+  },
+  {
+    word: 'glow-up',
+    note: 'version 2.0',
+    color: 'bg-[#F3E8FF] dark:bg-[#3C2D4B]',
+    className: 'col-span-4 mt-6 rotate-[-1deg]',
+  },
+  {
+    word: 'apricity',
+    note: 'sun warmth in winter',
+    color: 'bg-[#FFF3C7] dark:bg-[#4A3D24]',
+    className: 'col-span-5 mt-2 rotate-[1deg]',
+  },
+];
+
 export const Auth: React.FC = () => {
   const { session, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -30,6 +57,7 @@ export const Auth: React.FC = () => {
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   if (isLoading) return null;
   if (session) return <Navigate to="/" replace />;
@@ -77,168 +105,208 @@ export const Auth: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col md:flex-row min-h-[80vh] pt-2 pb-12 items-center">
-      
-      {/* LEFT EDITORIAL AREA */}
-      <div className="w-full md:w-[58%] lg:w-[60%] flex flex-col justify-center px-8 md:px-16 lg:px-24 mb-12 md:mb-0">
-        <div className="flex flex-col xl:flex-row gap-12 xl:gap-24 items-start xl:items-center w-full max-w-[800px] mx-auto">
-          
-          {/* Main Typography */}
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="max-w-[380px] z-10 flex-shrink-0">
-            <div className="font-sans text-[10px] uppercase tracking-[0.2em] text-subtle/80 mb-6 sm:mb-8 flex items-center gap-4">
-              <span className="w-6 h-[1px] bg-border-strong"></span>
-              LexiAgent Personal Lexicon / 2026
-            </div>
-            <h1 className="font-serif text-[42px] sm:text-[48px] lg:text-[56px] font-medium leading-[1.05] text-foreground tracking-tight">
-              Your lexicon,<br/>kept close.
-            </h1>
-            <p className="font-sans text-[14.5px] sm:text-[15.5px] text-subtle mt-6 max-w-[320px] leading-[1.65]">
-              Save words you discover, revisit what you've learned, and keep your vocabulary in one quiet place.
-            </p>
-          </motion.div>
-
-          {/* Decorative Archive/Index Visual */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }} className="w-full max-w-[280px] flex-shrink-0">
-            <div className="flex flex-col">
-              <div className="font-sans text-[9px] uppercase tracking-[0.15em] text-foreground mb-4">
-                Personal Archive
+    <div className="flex-1 w-full px-4 pb-8 sm:px-6 md:px-10 lg:px-12">
+      <div className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1280px] items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(380px,0.72fr)] xl:gap-12">
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="relative overflow-hidden rounded-md border border-border-subtle bg-surface/70 px-5 py-6 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-8 sm:py-8 lg:min-h-[620px] lg:px-10"
+        >
+          <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#FF6F61,#FFE082,#92DCE5,#B8A5FF)]" />
+          <div className="relative z-10 grid h-full gap-8 lg:grid-cols-[0.86fr_1fr] lg:items-center">
+            <div className="max-w-[480px]">
+              <div className="mb-6 flex w-fit items-center gap-2 rounded-[6px] border border-border-subtle bg-background/80 px-3 py-2 text-[11px] font-medium uppercase text-muted shadow-subtle">
+                <Sparkles size={14} strokeWidth={1.8} className="text-[#D65A50]" />
+                Personal lexicon, remixed
               </div>
-              <div className="w-full h-[1px] bg-foreground mb-6"></div>
-              
-              <div className="flex flex-col gap-6">
-                <div className="flex items-start gap-5">
-                  <div className="font-serif text-[28px] text-muted/40 leading-none">01</div>
-                  <div className="flex flex-col">
-                    <div className="font-sans text-[10px] uppercase tracking-[0.1em] text-foreground">Discovered</div>
-                    <div className="font-serif text-[12px] italic text-subtle mt-0.5">Words you have explored</div>
-                  </div>
-                </div>
+              <h1 className="font-serif text-[44px] font-medium leading-[0.98] tracking-tight text-foreground sm:text-[60px] lg:text-[68px]">
+                Pin your words.
+                <span className="mt-2 block italic text-muted">Keep the meaning.</span>
+              </h1>
+              <p className="mt-6 max-w-[390px] text-base leading-7 text-muted">
+                Build a vocabulary board that feels personal, searchable, and ready whenever a new word catches your attention.
+              </p>
 
-                <div className="flex items-start gap-5">
-                  <div className="font-serif text-[28px] text-muted/40 leading-none">02</div>
-                  <div className="flex flex-col">
-                    <div className="font-sans text-[10px] uppercase tracking-[0.1em] text-foreground">Saved</div>
-                    <div className="font-serif text-[12px] italic text-subtle mt-0.5">Your personal vocabulary</div>
+              <div className="mt-8 grid max-w-[430px] grid-cols-3 gap-3">
+                {[
+                  ['2.4k', 'words found'],
+                  ['418', 'saved notes'],
+                  ['Fresh', 'daily recall'],
+                ].map(([value, label]) => (
+                  <div key={label} className="rounded-md border border-border-subtle bg-background/70 p-3 shadow-subtle">
+                    <p className="font-serif text-xl leading-none text-foreground">{value}</p>
+                    <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-subtle">{label}</p>
                   </div>
-                </div>
-
-                <div className="flex items-start gap-5">
-                  <div className="font-serif text-[28px] text-muted/40 leading-none">03</div>
-                  <div className="flex flex-col">
-                    <div className="font-sans text-[10px] uppercase tracking-[0.1em] text-foreground">Notes</div>
-                    <div className="font-serif text-[12px] italic text-subtle mt-0.5">Thoughts and contexts</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="w-full h-[1px] bg-border-subtle mt-8 mb-6"></div>
-              
-              <div className="font-serif italic text-[15px] text-subtle leading-relaxed pr-8">
-                "A place for words worth keeping."
+                ))}
               </div>
             </div>
-          </motion.div>
 
-        </div>
-      </div>
+            <div className="relative min-h-[360px] overflow-hidden rounded-md border border-border-subtle bg-[#F8F2EB] p-4 dark:bg-[#24211E] sm:min-h-[430px] sm:p-5">
+              <div className="grid grid-cols-9 gap-3 sm:gap-4">
+                {wordPins.map((pin, index) => (
+                  <motion.article
+                    key={pin.word}
+                    initial={{ opacity: 0, y: 20, rotate: 0 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, delay: 0.12 + index * 0.08, ease: 'easeOut' }}
+                    className={`${pin.className} ${pin.color} rounded-md border border-black/[0.04] p-4 shadow-[0_16px_36px_-24px_rgba(42,41,40,0.65)] dark:border-white/[0.06]`}
+                  >
+                    <div className="mb-5 flex items-center justify-between text-muted">
+                      <Pin size={14} strokeWidth={1.8} />
+                      <span className="h-2 w-2 rounded-full bg-current opacity-30" />
+                    </div>
+                    <h2 className="font-serif text-[22px] leading-none tracking-tight text-foreground sm:text-[26px]">
+                      {pin.word}
+                    </h2>
+                    <p className="mt-3 text-xs leading-5 text-muted">{pin.note}</p>
+                  </motion.article>
+                ))}
+              </div>
 
-      {/* RIGHT LOGIN AREA */}
-      <div className="w-full md:w-[42%] lg:w-[40%] flex justify-center lg:justify-start px-6 md:px-8">
-        
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }} className="w-full max-w-[420px] flex flex-col gap-8 bg-background sm:bg-[#FDFBF9] dark:bg-[#1C1C1A] p-0 sm:p-10 md:p-12 sm:shadow-[0_4px_30px_-4px_rgba(0,0,0,0.03)] dark:sm:shadow-none sm:border sm:border-border-subtle/50 rounded-[4px]">
-          
-          <div className="flex flex-col gap-2">
-            <h2 className="font-serif text-[26px] font-medium text-foreground tracking-tight">
-              {isLogin ? 'Welcome back' : 'Create account'}
-            </h2>
-            <p className="font-sans text-[13.5px] text-subtle">
-              {isLogin ? 'Sign in to continue building your personal lexicon.' : 'Join LexiAgent to build your personal lexicon.'}
-            </p>
-          </div>
-
-          {authError && (
-            <div className="font-sans text-[12.5px] text-red-700 dark:text-red-400 bg-red-500/10 p-3.5 rounded-[2px] border border-red-500/20">
-              {authError}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.45, ease: 'easeOut' }}
+                className="absolute bottom-5 left-5 right-5 rounded-md border border-border-subtle bg-surface/90 p-4 shadow-[0_20px_48px_-32px_rgba(42,41,40,0.7)] backdrop-blur"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-foreground text-background">
+                    <Bookmark size={16} strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Your latest save is waiting.</p>
+                    <p className="mt-1 text-xs leading-5 text-muted">Return to definitions, contexts, and notes in one polished library.</p>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          )}
-          
-          {message && (
-            <div className="font-sans text-[12.5px] text-green-700 dark:text-green-400 bg-green-500/10 p-3.5 rounded-[2px] border border-green-500/20">
-              {message}
-            </div>
-          )}
+          </div>
+        </motion.section>
 
-          <form onSubmit={handleEmailAuth} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4.5">
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent font-sans text-[14px] border border-border-subtle/70 focus:border-foreground py-3.5 px-4 outline-none transition-colors text-foreground placeholder:text-muted rounded-[2px] focus:ring-1 focus:ring-foreground/15"
-              />
-              <div className="h-4"></div>
-              <input
-                type="password"
-                required
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent font-sans text-[14px] border border-border-subtle/70 focus:border-foreground py-3.5 px-4 outline-none transition-colors text-foreground placeholder:text-muted rounded-[2px] focus:ring-1 focus:ring-foreground/15 -mt-4"
-              />
+        <div className="flex w-full justify-center lg:justify-end">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08, ease: 'easeOut' }}
+            className="w-full max-w-[450px] rounded-md border border-border-subtle bg-surface p-5 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-7 md:p-8"
+          >
+            <div className="mb-7 flex items-start justify-between gap-4">
+              <div>
+                <div className="mb-4 flex w-fit items-center gap-2 rounded-[6px] bg-[#FFE6E0] px-3 py-1.5 text-[11px] font-medium uppercase text-[#7E352F] dark:bg-[#51332F] dark:text-[#FFD1C9]">
+                  <Check size={13} strokeWidth={2} />
+                  {isLogin ? 'Back to your board' : 'Start your board'}
+                </div>
+                <h2 className="font-serif text-[32px] font-medium leading-tight tracking-tight text-foreground">
+                  {isLogin ? 'Welcome back' : 'Create account'}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  {isLogin ? 'Sign in and pick up right where your word board left off.' : 'Join LexiAgent and start collecting language that sticks.'}
+                </p>
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group flex items-center justify-between w-full border border-foreground bg-foreground text-background py-4 px-5 mt-2 font-sans text-[11px] uppercase tracking-[0.22em] transition-all duration-300 disabled:opacity-50 hover:bg-transparent hover:text-foreground rounded-[2px]"
-            >
-              <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
-              {isSubmitting ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                <ArrowRight size={14} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
-              )}
-            </button>
-          </form>
+            {authError && (
+              <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/10 p-3.5 text-[13px] text-red-700 dark:text-red-300">
+                {authError}
+              </div>
+            )}
+            
+            {message && (
+              <div className="mb-5 rounded-md border border-green-500/20 bg-green-500/10 p-3.5 text-[13px] text-green-700 dark:text-green-300">
+                {message}
+              </div>
+            )}
 
-          <div className="flex items-center gap-4 text-[10px] font-sans text-subtle/60 py-1">
-            <div className="flex-1 border-t border-border-subtle/40"></div>
-            <span className="uppercase tracking-[0.15em]">Or continue with</span>
-            <div className="flex-1 border-t border-border-subtle/40"></div>
-          </div>
+            <form onSubmit={handleEmailAuth} className="flex flex-col gap-5">
+              <div className="space-y-4">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-muted">Email</span>
+                  <span className="relative block">
+                    <Mail size={17} strokeWidth={1.8} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12 w-full rounded-md border border-border-subtle bg-background/70 py-3 pl-11 pr-4 text-base text-foreground outline-none transition-all placeholder:text-subtle focus:border-foreground focus:bg-surface focus:ring-4 focus:ring-foreground/10"
+                    />
+                  </span>
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-muted">Password</span>
+                  <span className="relative block">
+                    <LockKeyhole size={17} strokeWidth={1.8} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-12 w-full rounded-md border border-border-subtle bg-background/70 py-3 pl-11 pr-12 text-base text-foreground outline-none transition-all placeholder:text-subtle focus:border-foreground focus:bg-surface focus:ring-4 focus:ring-foreground/10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-subtle transition-colors hover:bg-surface-tint hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={17} strokeWidth={1.8} /> : <Eye size={17} strokeWidth={1.8} />}
+                    </button>
+                  </span>
+                </label>
+              </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => handleOAuth('google')}
-              className="flex-1 flex items-center justify-center gap-3 w-full border border-border-strong/50 py-3.5 font-sans text-[13px] text-foreground hover:border-foreground hover:bg-foreground hover:text-background transition-all duration-300 rounded-[2px] group"
-            >
-              <GoogleIcon />
-              Google
-            </button>
-            <button
-              onClick={() => handleOAuth('github')}
-              className="flex-1 flex items-center justify-center gap-3 w-full border border-border-strong/50 py-3.5 font-sans text-[13px] text-foreground hover:border-foreground hover:bg-foreground hover:text-background transition-all duration-300 rounded-[2px] group"
-            >
-              <GithubIcon />
-              GitHub
-            </button>
-          </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="group mt-1 flex h-13 min-h-13 w-full items-center justify-between rounded-md border border-foreground bg-foreground px-5 text-sm font-semibold text-background transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#D65A50] hover:text-white hover:shadow-[0_18px_36px_-26px_rgba(214,90,80,0.95)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/15 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <span>{isLogin ? 'Sign in' : 'Create account'}</span>
+                {isSubmitting ? (
+                  <Loader2 size={17} className="animate-spin" />
+                ) : (
+                  <ArrowRight size={17} strokeWidth={1.8} className="transition-transform group-hover:translate-x-1" />
+                )}
+              </button>
+            </form>
 
-          <div className="text-left mt-2">
+            <div className="my-6 flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.14em] text-subtle">
+              <div className="flex-1 border-t border-border-subtle"></div>
+              <span>Or continue with</span>
+              <div className="flex-1 border-t border-border-subtle"></div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <button
+                onClick={() => handleOAuth('google')}
+                className="flex h-12 items-center justify-center gap-3 rounded-md border border-border-subtle bg-background/70 text-sm font-medium text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/10"
+              >
+                <GoogleIcon />
+                Google
+              </button>
+              <button
+                onClick={() => handleOAuth('github')}
+                className="flex h-12 items-center justify-center gap-3 rounded-md border border-border-subtle bg-background/70 text-sm font-medium text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/10"
+              >
+                <GithubIcon />
+                GitHub
+              </button>
+            </div>
+
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
                 setAuthError('');
                 setMessage('');
               }}
-              className="font-sans text-[11px] uppercase tracking-[0.15em] text-subtle hover:text-foreground transition-colors border-b border-transparent hover:border-foreground pb-0.5"
+              className="mt-7 w-full rounded-md border border-dashed border-border-strong/70 px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/10"
             >
-              {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
