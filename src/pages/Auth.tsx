@@ -293,7 +293,10 @@ export const Auth: React.FC = () => {
             </div>
             
             <button
-              onClick={() => navigate('/')}
+              onClick={() => {
+                sessionStorage.setItem('lexiagent-guest', 'true');
+                navigate('/');
+              }}
               className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-md border border-dashed border-border-strong/70 bg-transparent text-[13px] font-medium text-muted transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-foreground/10"
             >
               Continue as Guest
