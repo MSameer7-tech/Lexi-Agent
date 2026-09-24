@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { staggerContainer, staggerItem } from '../../lib/motion';
 import { Check, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -43,14 +44,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ events, clas
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-2 mt-4 pl-1">
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex flex-col gap-2 mt-4 pl-1">
               {events.map((event) => (
-                <div key={event.id} className="flex items-center gap-3">
+                <motion.div variants={staggerItem} key={event.id} className="flex items-center gap-3">
                   <Check size={12} strokeWidth={2} className="text-muted" />
                   <span className="font-sans text-[12px] text-muted">{event.label}</span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

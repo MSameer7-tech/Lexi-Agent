@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, LogOut, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { staggerContainer, staggerItem } from '../lib/motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -76,13 +77,14 @@ export const Settings: React.FC = () => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
       className="mx-auto w-full max-w-[960px] px-5 py-10 sm:py-16 md:py-20"
     >
-      <div className="mb-10 sm:mb-14">
+      <motion.div variants={staggerItem} className="mb-10 sm:mb-14">
         <h1 className="font-serif text-[40px] sm:text-[46px] text-foreground tracking-tight leading-none">Preferences</h1>
-      </div>
+      </motion.div>
       
       {/* TWO COLUMN GRID FOR DESKTOP */}
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-10 lg:gap-14">
@@ -91,7 +93,7 @@ export const Settings: React.FC = () => {
         <div className="flex flex-col gap-10 lg:gap-14">
           
           {/* ACCOUNT PROFILE */}
-          <section>
+          <motion.section variants={staggerItem}>
             <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Account</h2>
             <div className="flex items-center gap-5 sm:gap-6 p-6 sm:p-7 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
               {avatarUrl ? (
@@ -107,10 +109,10 @@ export const Settings: React.FC = () => {
                 <span className="font-sans text-[9px] text-subtle mt-2.5 uppercase tracking-[0.15em] font-medium">{displayProvider}</span>
               </div>
             </div>
-          </section>
+          </motion.section>
 
           {/* APPEARANCE */}
-          <section>
+          <motion.section variants={staggerItem}>
             <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Appearance</h2>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 sm:p-7 gap-5 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
               <div>
@@ -127,7 +129,7 @@ export const Settings: React.FC = () => {
                 </span>
               </button>
             </div>
-          </section>
+          </motion.section>
 
         </div>
 
@@ -135,7 +137,7 @@ export const Settings: React.FC = () => {
         <div className="flex flex-col gap-10 lg:gap-14">
 
           {/* YOUR LEXIAGENT */}
-          <section>
+          <motion.section variants={staggerItem}>
             <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Your LexiAgent</h2>
             <div className="flex flex-col justify-center p-6 sm:p-7 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40">
               {loadingCounts ? (
@@ -162,10 +164,10 @@ export const Settings: React.FC = () => {
                 </div>
               )}
             </div>
-          </section>
+          </motion.section>
 
           {/* DICTIONARY */}
-          <section>
+          <motion.section variants={staggerItem}>
             <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Dictionary</h2>
             <div className="flex flex-col rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 overflow-hidden">
               
@@ -188,14 +190,14 @@ export const Settings: React.FC = () => {
               </div>
               
             </div>
-          </section>
+          </motion.section>
 
         </div>
       </div>
 
       {/* ACCOUNT ACTIONS (FULL WIDTH AT BOTTOM) */}
       <div className="mt-10 lg:mt-14">
-        <section>
+        <motion.section variants={staggerItem}>
           <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-3 sm:mb-4 pl-1">Session</h2>
           <button 
             onClick={handleSignOut}
@@ -207,7 +209,7 @@ export const Settings: React.FC = () => {
             </div>
             <LogOut size={18} className="text-subtle group-hover:text-foreground/70 transition-colors shrink-0 group-hover:translate-x-1 duration-300" />
           </button>
-        </section>
+        </motion.section>
       </div>
       
       {/* Spacer for bottom */}

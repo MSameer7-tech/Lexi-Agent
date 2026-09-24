@@ -187,8 +187,9 @@ export const HistoryDrawer: React.FC = () => {
       <motion.div 
         layout
         key={session.id}
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className={cn(
           "group relative p-4 rounded-2xl border transition-all duration-300 cursor-pointer",
@@ -328,10 +329,10 @@ export const HistoryDrawer: React.FC = () => {
 
           {/* Drawer Panel */}
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 20, opacity: 0 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 220 }}
             className="fixed top-0 right-0 bottom-0 w-full sm:w-[400px] bg-surface-tint border-l border-border-subtle shadow-2xl z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}

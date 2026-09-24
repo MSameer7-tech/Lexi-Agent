@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BookA, Clock, Settings, Moon, Sun } from 'lucide-react';
 import { HistoryDrawer } from '../components/history/HistoryDrawer';
 import { useHistoryStore } from '../store/historyStore';
@@ -70,14 +71,32 @@ export const MainLayout: React.FC = () => {
             className="text-muted hover:text-foreground transition-colors ml-2"
             aria-label="Toggle theme"
           >
-            {isDark ? <Sun size={12} strokeWidth={2} /> : <Moon size={12} strokeWidth={2} />}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isDark ? 'dark' : 'light'}
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isDark ? <Sun size={12} strokeWidth={2} /> : <Moon size={12} strokeWidth={2} />}
+              </motion.div>
+            </AnimatePresence>
           </button>
         </nav>
       </header>
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 w-full flex flex-col relative z-10 pt-24 md:pt-28">
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div key={location.pathname} className="w-full flex-1 flex flex-col" initial="initial" animate="animate" exit="exit" variants={{
+            initial: { opacity: 0, y: 8 },
+            animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1.0] } },
+            exit: { opacity: 0, y: -4, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1.0] } }
+          }}>
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <HistoryDrawer />

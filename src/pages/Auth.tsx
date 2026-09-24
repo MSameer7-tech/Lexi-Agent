@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { ArrowRight, Bookmark, Eye, EyeOff, Loader2, LockKeyhole, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { staggerContainer, staggerItem } from '../lib/motion';
 
 const GoogleIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -114,11 +115,9 @@ export const Auth: React.FC = () => {
 
   return (
     <div className="flex-1 w-full px-4 pb-8 sm:px-6 md:px-10 lg:px-12">
-      <div className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1400px] items-center gap-8 lg:grid-cols-[1.1fr_0.85fr] xl:gap-16 py-8">
+      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1400px] items-center gap-8 lg:grid-cols-[1.1fr_0.85fr] xl:gap-16 py-8">
         <motion.section
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          variants={staggerItem}
           className="relative overflow-hidden rounded-xl border border-border-subtle bg-surface/70 px-6 py-8 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-10 sm:py-12 lg:min-h-[640px] xl:min-h-[680px] lg:px-12 flex flex-col justify-center"
         >
           <div className="absolute inset-x-0 top-0 h-1 bg-border-strong/40" />
@@ -149,12 +148,10 @@ export const Auth: React.FC = () => {
 
             <div className="relative min-h-[380px] overflow-hidden rounded-lg border border-border-subtle bg-foreground/5 p-4 dark:bg-[#24211E] sm:min-h-[460px] sm:p-5 w-full">
               <div className="grid grid-cols-9 gap-3 sm:gap-4">
-                {wordPins.map((pin, index) => (
+                {wordPins.map((pin) => (
                   <motion.article
                     key={pin.word}
-                    initial={{ opacity: 0, y: 20, rotate: 0 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55, delay: 0.12 + index * 0.08, ease: 'easeOut' }}
+                    variants={staggerItem}
                     className={`${pin.className} ${pin.color} rounded-md border border-black/[0.04] p-4 shadow-[0_16px_36px_-24px_rgba(42,41,40,0.65)] dark:border-white/[0.06]`}
                   >
                     <div className="mb-5 flex items-center justify-between text-muted">
@@ -170,9 +167,7 @@ export const Auth: React.FC = () => {
               </div>
 
               <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.45, ease: 'easeOut' }}
+                variants={staggerItem}
                 className="absolute bottom-5 left-5 right-5 rounded-md border border-border-subtle bg-surface/90 p-4 shadow-[0_20px_48px_-32px_rgba(42,41,40,0.7)] backdrop-blur"
               >
                 <div className="flex items-start gap-3">
@@ -191,9 +186,7 @@ export const Auth: React.FC = () => {
 
         <div className="flex w-full justify-center lg:justify-end">
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.08, ease: 'easeOut' }}
+            variants={staggerItem}
             className="w-full max-w-[480px] rounded-xl border border-border-subtle bg-surface p-8 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-10 md:p-12 xl:p-14"
           >
             <div className="mb-7 flex items-start justify-between gap-4">
@@ -318,7 +311,7 @@ export const Auth: React.FC = () => {
             </button>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { mapDictionaryApiToParsedEntry } from '../lib/parser';
 import { Heart, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { staggerContainer, staggerItem } from '../lib/motion';
 
 const getVocabularyCardClasses = (word: string) => {
   let hash = 0;
@@ -29,7 +30,7 @@ const getVocabularyCardClasses = (word: string) => {
 };
 
 export const Vocabulary: React.FC = () => {
-  const { session, isLoading: authLoading } = useAuth();
+    const { session, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [history, setHistory] = useState<any[]>([]);
@@ -117,9 +118,9 @@ export const Vocabulary: React.FC = () => {
     }
 
     return (
-      <div 
+      <motion.div 
         key={item.id || item.word} 
-        className={getVocabularyCardClasses(item.word)}
+        variants={staggerItem} className={getVocabularyCardClasses(item.word)}
         onClick={() => setExpandedWord(item.word)}
       >
         <div className="flex items-start justify-between mb-4">
@@ -146,12 +147,12 @@ export const Vocabulary: React.FC = () => {
             ◷ {new Date(isSavedList ? item.created_at : item.last_seen_at).toLocaleDateString()}
           </span>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
   return (
-    <div className="flex-1 w-full max-w-[1150px] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-24">
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex-1 w-full max-w-[1150px] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-24">
       <header className="mb-14">
         <h1 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight mb-4">Vocabulary</h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -233,6 +234,6 @@ export const Vocabulary: React.FC = () => {
 
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

@@ -1,5 +1,7 @@
+import { motion } from 'framer-motion';
+import { staggerContainer, staggerItem } from '../../lib/motion';
 import React from 'react';
-import { Volume2, Loader2, Heart, MessageSquare } from 'lucide-react';
+import { Volume2, Heart, MessageSquare } from 'lucide-react';
 import { MerriamWebsterAttribution } from '../branding/MerriamWebsterAttribution';
 import { useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -98,7 +100,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
     : getCardColorClasses(entry.word || 'default');
 
   return (
-    <div className={`w-full ${variant === 'chat' ? 'max-w-[960px]' : ''} relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className={`w-full ${variant === 'chat' ? 'max-w-[960px]' : ''} relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
       
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && variant === 'chat' && (
@@ -262,10 +264,10 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
       )}
       
       {/* MERRIAM-WEBSTER ATTRIBUTION */}
-      <div className="w-full mt-10 sm:mt-12 pt-7 sm:pt-9 border-t border-border-subtle/20 -mb-1 sm:-mb-3 lg:-mb-4">
+      <motion.div variants={staggerItem} className="w-full mt-10 sm:mt-12 pt-7 sm:pt-9 border-t border-border-subtle/20 -mb-1 sm:-mb-3 lg:-mb-4">
         <MerriamWebsterAttribution />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -332,17 +334,19 @@ const AudioButton = ({ url, label }: { url: string, label: string }) => {
   };
 
   return (
-    <button 
+    <motion.button 
       onClick={handlePlay}
       disabled={isPlaying}
       aria-label={isPlaying ? `Pause ${label}` : `Listen to ${label}`}
-      className="flex items-center justify-center w-7 h-7 rounded-full bg-border-subtle/10 text-muted hover:text-foreground hover:bg-border-subtle/30 transition-all group focus:outline-none focus:ring-2 focus:ring-border-subtle shrink-0"
+      animate={isPlaying ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+      transition={{ repeat: isPlaying ? Infinity : 0, duration: 2, ease: "easeInOut" }}
+      className="flex items-center justify-center w-7 h-7 rounded-full bg-border-subtle/10 text-muted hover:text-foreground hover:bg-border-subtle/30 transition-colors group focus:outline-none focus:ring-2 focus:ring-border-subtle shrink-0"
     >
       {isPlaying ? (
-        <Loader2 size={13} className="animate-spin text-foreground" />
+        <Volume2 size={14} className="text-foreground" />
       ) : (
         <Volume2 size={14} strokeWidth={2.5} className="group-hover:scale-110 transition-transform ml-[1px]" />
       )}
-    </button>
+    </motion.button>
   );
 };

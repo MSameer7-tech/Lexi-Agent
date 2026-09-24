@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { EASE } from '../lib/motion';
 import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark, Mic } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
 import { MarkdownRenderer } from '../components/ui/MarkdownRenderer';
@@ -13,6 +14,7 @@ import { Loader2 } from 'lucide-react';
 import type { Message } from '../types';
 
 export const Home: React.FC = () => {
+  const shouldReduceMotion = useReducedMotion();
   const { user } = useAuth();
   const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages, prependMessages } = useHistoryStore();
   const session = sessions.find(s => s.id === activeSessionId) || null;
@@ -338,7 +340,7 @@ export const Home: React.FC = () => {
             key="landing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)', y: -20 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden bg-transparent"
           >
@@ -351,7 +353,7 @@ export const Home: React.FC = () => {
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
+                  transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
                   className="mb-8 flex items-center gap-4"
                 >
                   <span className="text-[9px] uppercase tracking-widest text-subtle">A Modern Lexicon</span>
@@ -361,7 +363,7 @@ export const Home: React.FC = () => {
                 <motion.h1 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
                   className="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground tracking-tight mb-8"
                 >
                   Words, <br/>
@@ -374,7 +376,7 @@ export const Home: React.FC = () => {
                 <motion.p 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
                   className="font-sans text-base md:text-lg text-muted max-w-[340px] mb-14 leading-relaxed"
                 >
                   LexiAgent lets you explore language through natural, intelligent conversation.
@@ -447,8 +449,8 @@ export const Home: React.FC = () => {
                   {/* ELOQUENT (Pink) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: -3, y: 10 }}
-                    animate={{ opacity: 1, y: [4, -4, 4] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.5 }, y: { repeat: Infinity, duration: 8, ease: "easeInOut" } }}
+                    animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [2, -2, 2] }}
+                    transition={{ opacity: { duration: 0.8, delay: 0.3 }, y: { repeat: Infinity, duration: 16, ease: "easeInOut" } }}
                     className="absolute top-[25%] left-[10%] md:top-[28%] md:left-[5%] w-[180px] h-[200px] sm:w-[220px] sm:h-[240px] bg-[#FFE6E0] dark:bg-[#51332F] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-20 flex flex-col transition-transform hover:-rotate-1"
                   >
                     <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
@@ -462,7 +464,7 @@ export const Home: React.FC = () => {
                   {/* LIMINAL (Blue) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: 6, y: 10 }}
-                    animate={{ opacity: 1, y: [-4, 4, -4] }}
+                    animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [-2, 2, -2] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 1 } }}
                     className="hidden sm:flex absolute top-[5%] right-[2%] md:top-[5%] md:right-[5%] w-[190px] h-[210px] sm:w-[230px] sm:h-[250px] bg-[#DCE4FF] dark:bg-[#283566] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:rotate-3"
                   >
@@ -543,9 +545,9 @@ export const Home: React.FC = () => {
               {!isLoadingMessages && session?.messages.map((message, index) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: message.role === 'user' ? 8 : 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index === session.messages.length - 1 ? 0.1 : 0 }}
+                  transition={{ duration: message.role === 'user' ? 0.35 : 0.45, ease: [0.25, 0.1, 0.25, 1.0], delay: index === session.messages.length - 1 ? 0.05 : 0 }}
                   className={`flex flex-col w-full ${message.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   {message.role === 'user' ? (

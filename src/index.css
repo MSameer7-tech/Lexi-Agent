@@ -124,3 +124,17 @@ input:-webkit-autofill:active {
 input:-webkit-autofill {
     -webkit-text-fill-color: #2a2928 !important;
 }
+
+@layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    *, ::before, ::after {
+      /* Smooth theme transitions */
+      transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+      transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+      transition-duration: 300ms;
+    }
+    
+    /* Exception for transforms or opacity where we want specific react-motion to rule, 
+       we shouldn't override transform/opacity in universal selector anyway because transition-property above is specific. */
+  }
+}
