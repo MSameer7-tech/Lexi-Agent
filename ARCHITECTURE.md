@@ -17,7 +17,7 @@ flowchart TD
 ```
 
 ### 1. Frontend Layer
-*   **Framework**: React 18 with TypeScript and Vite.
+*   **Framework**: React 19 with TypeScript and Vite.
 *   **Routing**: React Router DOM (Handles navigation between Home, History, Vocabulary, Settings, and Auth views).
 *   **State Management**: Zustand (`src/store/historyStore.ts`, `themeStore.ts`). Zustand manages optimistic local state while synchronizing with Supabase for authenticated users.
 *   **UI/Styling**: Tailwind CSS and Framer Motion. Components include `WordResult.tsx` (dictionary typesetting), `ActivityTimeline.tsx` (agent process visualization), and `HistoryDrawer.tsx` (sidebar).
@@ -29,7 +29,7 @@ flowchart TD
 *   **Tool Calling**: The Edge Function exposes specific tools to the LLM (`dictionary_lookup`, `thesaurus_lookup`). When the LLM decides it needs definitions, the Edge Function intercepts the tool call, fetches data from the Merriam-Webster APIs, and returns it to the LLM to formulate the final conversational response.
 
 ### 3. AI & Data Layer
-*   **AI Engine**: **Groq (Llama 3)**. Chosen for its ultra-low latency inference, enabling real-time conversational responses.
+*   **AI Engine**: **Groq** (currently using `openai/gpt-oss-20b`). Chosen for its ultra-low latency inference, enabling real-time conversational responses.
 *   **Dictionary Provider**: **Merriam-Webster Dictionary & Thesaurus APIs**. Provides authoritative definitions, synonyms, antonyms, and native audio pronunciations.
 
 ### 4. Database & Authentication
