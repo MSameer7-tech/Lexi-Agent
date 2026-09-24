@@ -165,8 +165,60 @@ export const Vocabulary: React.FC = () => {
       {error ? (
         <div className="text-red-500 font-sans text-sm">{error}</div>
       ) : loading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 size={24} className="animate-spin text-subtle" />
+        <div className="flex flex-col gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+            <section className="flex flex-col">
+              <h2 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-foreground border-b border-border-strong pb-4 mb-8">
+                Recent Words
+              </h2>
+              <div className="flex flex-col">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-surface/40 dark:bg-[#282B33]/40 border border-border-subtle/40 rounded-[12px] p-5 sm:p-6 mb-4 sm:mb-6 flex flex-col animate-pulse h-[155px]">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex flex-col gap-2.5 w-1/2">
+                        <div className="h-6 bg-border-strong/30 dark:bg-border-subtle/20 rounded w-3/4"></div>
+                        <div className="h-2.5 bg-border-subtle/50 dark:bg-border-subtle/10 rounded w-1/3"></div>
+                      </div>
+                      <div className="w-4 h-4 bg-border-subtle/50 dark:bg-border-subtle/20 rounded-full"></div>
+                    </div>
+                    <div className="space-y-2.5 mb-4">
+                      <div className="h-3 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-full"></div>
+                      <div className="h-3 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-5/6"></div>
+                    </div>
+                    <div className="mt-auto pt-3 border-t border-border-subtle/40 dark:border-border-subtle/20">
+                      <div className="h-2.5 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-1/4 mt-1"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="flex flex-col">
+              <h2 className="font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-foreground border-b border-border-strong pb-4 mb-8">
+                Saved
+              </h2>
+              <div className="flex flex-col">
+                {[1, 2].map(i => (
+                  <div key={i} className="bg-surface/40 dark:bg-[#282B33]/40 border border-border-subtle/40 rounded-[12px] p-5 sm:p-6 mb-4 sm:mb-6 flex flex-col animate-pulse h-[155px]">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex flex-col gap-2.5 w-1/2">
+                        <div className="h-6 bg-border-strong/30 dark:bg-border-subtle/20 rounded w-3/4"></div>
+                        <div className="h-2.5 bg-border-subtle/50 dark:bg-border-subtle/10 rounded w-1/3"></div>
+                      </div>
+                      <div className="w-4 h-4 bg-border-subtle/50 dark:bg-border-subtle/20 rounded-full"></div>
+                    </div>
+                    <div className="space-y-2.5 mb-4">
+                      <div className="h-3 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-full"></div>
+                      <div className="h-3 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-4/5"></div>
+                    </div>
+                    <div className="mt-auto pt-3 border-t border-border-subtle/40 dark:border-border-subtle/20">
+                      <div className="h-2.5 bg-border-subtle/40 dark:bg-border-subtle/10 rounded w-1/4 mt-1"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-12">
