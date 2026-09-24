@@ -97,7 +97,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
       
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && (
-        <div className="w-full lg:max-w-[80%] font-serif text-[14px] sm:text-[15px] text-foreground/90 leading-[1.6] prose prose-stone dark:prose-invert max-w-none mb-8 relative border-b border-border-subtle/30 pb-6">
+        <div className="w-full lg:max-w-[80%] font-serif text-[14px] sm:text-[15px] text-foreground/80 leading-[1.6] prose prose-stone prose-p:text-foreground/80 dark:prose-invert max-w-none mb-8 relative border-b border-border-subtle/30 pb-6">
           <div className="font-sans text-[9px] uppercase tracking-[0.25em] text-foreground/60 font-medium mb-3 flex items-center gap-3">
             <span className="w-3 h-[1px] bg-foreground/30"></span>
             LexiAgent · Explanation
