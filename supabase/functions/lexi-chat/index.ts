@@ -88,8 +88,9 @@ export default {
               // Fetch conversations with preview from the first user message
               const { data: convListData, error: convListErr } = await supabaseClient
                 .from('conversations')
-                .select('id, session_id, title, created_at, updated_at')
+                .select('id, session_id, title, created_at, updated_at, is_pinned')
                 .eq('user_id', authenticatedUser.id)
+                .order('is_pinned', { ascending: false })
                 .order('updated_at', { ascending: false });
               if (convListErr) throw convListErr;
 
@@ -111,10 +112,57 @@ export default {
                     preview: firstMsg?.content || '',
                     created_at: conv.created_at,
                     updated_at: conv.updated_at,
+                    is_pinned: conv.is_pinned || false
                   };
                 })
               );
               return new Response(JSON.stringify({ conversations: conversationsWithPreview }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+
+            case 'rename_conversation': {
+              if (!sessionId) throw new Error("Missing sessionId");
+              const newTitle = reqBody.title?.trim();
+              if (!newTitle) throw new Error("Title is required");
+              
+              const titleToSave = newTitle.substring(0, 100); // Enforce max 100 chars
+              
+              const { data: updatedConv, error: renameErr } = await supabaseClient
+                .from('conversations')
+                .update({ title: titleToSave, updated_at: new Date().toISOString() })
+                .eq('session_id', sessionId)
+                .eq('user_id', authenticatedUser.id)
+                .select()
+                .single();
+                
+              if (renameErr) throw renameErr;
+              return new Response(JSON.stringify({ success: true, conversation: updatedConv }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+            
+            case 'toggle_pin_conversation': {
+              if (!sessionId) throw new Error("Missing sessionId");
+              
+              // First fetch current state to toggle
+              const { data: currState } = await supabaseClient
+                .from('conversations')
+                .select('is_pinned')
+                .eq('session_id', sessionId)
+                .eq('user_id', authenticatedUser.id)
+                .single();
+                
+              if (!currState) throw new Error("Conversation not found");
+              
+              const newPinState = !currState.is_pinned;
+              
+              const { data: pinnedConv, error: pinErr } = await supabaseClient
+                .from('conversations')
+                .update({ is_pinned: newPinState, updated_at: new Date().toISOString() })
+                .eq('session_id', sessionId)
+                .eq('user_id', authenticatedUser.id)
+                .select()
+                .single();
+                
+              if (pinErr) throw pinErr;
+              return new Response(JSON.stringify({ success: true, isPinned: pinnedConv.is_pinned }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             }
 
             case 'get_messages': {

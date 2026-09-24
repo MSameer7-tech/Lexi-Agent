@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: c.session_id,
           title: c.title,
           preview: c.preview || '',
-          isPinned: false,
+          isPinned: c.is_pinned || false,
           messages: [],
           isLoaded: false,
           createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),

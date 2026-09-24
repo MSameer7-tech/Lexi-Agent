@@ -5,7 +5,7 @@ import { X, Search, Pin, Trash2, Edit2, MessageSquare, Clock, Loader2 } from 'lu
 import { isToday, isYesterday, isThisWeek, formatDistanceToNow } from 'date-fns';
 import { useHistoryStore } from '../../store/historyStore';
 import { useAuth } from '../../contexts/AuthContext';
-import { deleteConversation, getConversations } from '../../services/lexiAgentApi';
+import { deleteConversation, getConversations, renameConversation, togglePinConversation } from '../../services/lexiAgentApi';
 import { cn } from '../../lib/utils';
 import type { Session } from '../../types';
 
@@ -17,6 +17,8 @@ export const HistoryDrawer: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pinningId, setPinningId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
 
   const handleDeleteSession = async (sessionId: string) => {
     if (deletingId) return; // Prevent double-click
@@ -34,7 +36,7 @@ export const HistoryDrawer: React.FC = () => {
             id: c.session_id,
             title: c.title,
             preview: c.preview || '',
-            isPinned: false,
+            isPinned: c.is_pinned || false,
             messages: [],
             isLoaded: false,
             createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
@@ -44,6 +46,7 @@ export const HistoryDrawer: React.FC = () => {
         }
       } catch (err) {
         console.error("Failed to delete conversation:", err);
+        alert("Couldn't delete this conversation.");
         // Don't remove from UI if backend failed
       }
     } else {
@@ -75,11 +78,44 @@ export const HistoryDrawer: React.FC = () => {
     return { pinned, today, yesterday, previous7Days, older };
   }, [sessions, searchQuery]);
 
-  const handleRenameSubmit = (id: string) => {
-    if (editTitle.trim()) {
+    const handleRenameSubmit = async (id: string) => {
+    if (!editTitle.trim()) {
+      setEditingId(null);
+      return;
+    }
+    
+    if (user) {
+      setRenamingId(id);
+      try {
+        await renameConversation(id, editTitle.trim());
+        updateSession(id, { title: editTitle.trim() });
+      } catch (err) {
+        console.error("Failed to rename conversation:", err);
+        alert("Couldn't rename this conversation.");
+      }
+      setRenamingId(null);
+    } else {
       updateSession(id, { title: editTitle.trim() });
     }
     setEditingId(null);
+  };
+
+    const handleTogglePinSession = async (id: string) => {
+    if (pinningId) return;
+    
+    if (user) {
+      setPinningId(id);
+      try {
+        await togglePinConversation(id);
+        togglePin(id);
+      } catch (err) {
+        console.error("Failed to pin conversation:", err);
+        alert("Couldn't update this conversation.");
+      }
+      setPinningId(null);
+    } else {
+      togglePin(id);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, id: string) => {
@@ -167,11 +203,15 @@ export const HistoryDrawer: React.FC = () => {
             isActive ? "text-background/80" : "text-muted"
           )}>
             <button 
-              onClick={(e) => { e.stopPropagation(); togglePin(session.id); }}
-              className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors"
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                handleTogglePinSession(session.id); 
+              }}
+              disabled={pinningId === session.id}
+              className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors disabled:opacity-50"
               title={session.isPinned ? "Unpin" : "Pin"}
             >
-              <Pin size={14} className={session.isPinned ? "fill-current" : ""} />
+              {pinningId === session.id ? <Loader2 size={14} className="animate-spin" /> : <Pin size={14} className={session.isPinned ? "fill-current" : ""} />}
             </button>
             <button 
               onClick={(e) => { 
@@ -179,10 +219,11 @@ export const HistoryDrawer: React.FC = () => {
                 setEditingId(session.id);
                 setEditTitle(session.title);
               }}
-              className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors"
+              disabled={renamingId === session.id}
+              className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors disabled:opacity-50"
               title="Rename"
             >
-              <Edit2 size={14} />
+              {renamingId === session.id ? <Loader2 size={14} className="animate-spin" /> : <Edit2 size={14} />}
             </button>
             <button 
               onClick={(e) => { 
@@ -269,7 +310,7 @@ export const HistoryDrawer: React.FC = () => {
 
             {/* List */}
             <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
-              {sessions.length === 0 ? (
+                            {sessions.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
                   <Clock size={48} className="mb-4 text-muted" strokeWidth={1} />
                   <p className="font-serif text-xl text-foreground mb-2">No chats yet</p>
@@ -277,11 +318,26 @@ export const HistoryDrawer: React.FC = () => {
                 </div>
               ) : (
                 <div className="pb-20">
-                  {renderGroup('Pinned', groupedSessions.pinned)}
-                  {renderGroup('Today', groupedSessions.today)}
-                  {renderGroup('Yesterday', groupedSessions.yesterday)}
-                  {renderGroup('Previous 7 Days', groupedSessions.previous7Days)}
-                  {renderGroup('Older', groupedSessions.older)}
+                  {searchQuery.trim() && 
+                   groupedSessions.pinned.length === 0 && 
+                   groupedSessions.today.length === 0 && 
+                   groupedSessions.yesterday.length === 0 && 
+                   groupedSessions.previous7Days.length === 0 && 
+                   groupedSessions.older.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center p-12 opacity-70">
+                      <Search size={32} className="mb-4 text-muted" strokeWidth={1.5} />
+                      <p className="font-serif text-lg text-foreground mb-1">No conversations found</p>
+                      <p className="font-sans text-xs text-subtle">Try adjusting your search.</p>
+                    </div>
+                  ) : (
+                    <>
+                      {renderGroup('Pinned', groupedSessions.pinned)}
+                      {renderGroup('Today', groupedSessions.today)}
+                      {renderGroup('Yesterday', groupedSessions.yesterday)}
+                      {renderGroup('Previous 7 Days', groupedSessions.previous7Days)}
+                      {renderGroup('Older', groupedSessions.older)}
+                    </>
+                  )}
                 </div>
               )}
             </div>

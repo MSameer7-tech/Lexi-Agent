@@ -115,3 +115,11 @@ export async function getConversationMessages(sessionId: string) {
 export async function deleteConversation(sessionId: string) {
   return fetchVocabularyApi({ action: 'delete_conversation', sessionId });
 }
+
+export async function renameConversation(sessionId: string, title: string) {
+  return fetchVocabularyApi({ action: 'rename_conversation', sessionId, title });
+}
+
+export async function togglePinConversation(sessionId: string) {
+  return fetchVocabularyApi({ action: 'toggle_pin_conversation', sessionId });
+}
