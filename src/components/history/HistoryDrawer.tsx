@@ -20,7 +20,7 @@ export const HistoryDrawer: React.FC = () => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = sessions.filter(s => 
-        s.title.toLowerCase().includes(q) || 
+        (s.title || "").toLowerCase().includes(q) || 
         s.topic?.toLowerCase().includes(q) ||
         s.preview?.toLowerCase().includes(q)
       );
@@ -121,7 +121,7 @@ export const HistoryDrawer: React.FC = () => {
             isActive ? "text-background/60" : "text-muted"
           )}>
             <Clock size={12} />
-            {formatDistanceToNow(session.updatedAt, { addSuffix: true })}
+            {formatDistanceToNow(session.updatedAt || Date.now(), { addSuffix: true })}
           </span>
 
           <div className={cn(

@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = localStorage.getItem(GUEST_STORAGE_KEY);
       if (data) {
         const parsed = JSON.parse(data);
-        useHistoryStore.getState().setSessions(parsed.sessions || []);
+        useHistoryStore.getState().setSessions(Array.isArray(parsed.sessions) ? parsed.sessions : []);
         useHistoryStore.getState().setActiveSession(parsed.activeSessionId || null);
       } else {
         useHistoryStore.getState().clearSessions();
@@ -55,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isPinned: false,
           messages: [],
           isLoaded: false,
-          createdAt: new Date(c.created_at).getTime(),
-          updatedAt: new Date(c.updated_at).getTime()
+          createdAt: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
+          updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : Date.now()
         }));
         useHistoryStore.getState().setSessions(cloudSessions);
         // We don't restore active session from cloud automatically to keep it clean
