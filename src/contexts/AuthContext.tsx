@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession((prevSession) => {
         // Check if user changed
         if (prevSession?.user?.id && prevSession.user.id !== newSession?.user?.id) {
-          useHistoryStore.getState().clearSessions();
+          // useHistoryStore.getState().clearSessions(); // Disabled to prevent losing local chat history on sign out
         }
         return newSession;
       });
