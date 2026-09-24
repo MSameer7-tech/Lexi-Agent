@@ -1,5 +1,6 @@
 import React from 'react';
 import { Volume2, Loader2, Heart, MessageSquare } from 'lucide-react';
+import { MerriamWebsterAttribution } from '../branding/MerriamWebsterAttribution';
 import { useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -260,6 +261,10 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
         </section>
       )}
       
+      {/* MERRIAM-WEBSTER ATTRIBUTION */}
+      <div className="w-full flex justify-center mt-12 pt-8 border-t border-border-subtle/20">
+        <MerriamWebsterAttribution />
+      </div>
     </div>
   );
 };
