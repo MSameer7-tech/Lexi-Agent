@@ -114,11 +114,11 @@ export const Auth: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 w-full px-4 pb-8 sm:px-6 md:px-10 lg:px-12">
-      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="mx-auto grid min-h-[calc(100dvh-8rem)] w-full max-w-[1400px] items-center gap-8 lg:grid-cols-[1.1fr_0.85fr] xl:gap-16 py-8">
+    <div className="flex-1 w-full px-4 pb-12 sm:px-6 md:px-10 lg:px-12 min-h-0 overflow-y-auto custom-scrollbar">
+      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="mx-auto grid min-h-0 lg:min-h-[calc(100dvh-8rem)] w-full max-w-[1400px] items-start lg:items-center gap-8 lg:grid-cols-[1.1fr_0.85fr] xl:gap-16 py-4 sm:py-8">
         <motion.section
           variants={staggerItem}
-          className="relative overflow-hidden rounded-xl border border-border-subtle bg-surface/70 px-6 py-8 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-10 sm:py-12 lg:min-h-[640px] xl:min-h-[680px] lg:px-12 flex flex-col justify-center"
+          className="relative overflow-hidden rounded-xl border border-border-subtle bg-surface/70 px-6 py-8 shadow-[0_24px_70px_-52px_rgba(42,41,40,0.55)] dark:bg-surface/60 sm:px-10 sm:py-12 min-h-0 lg:min-h-[640px] xl:min-h-[680px] lg:px-12 flex flex-col justify-center order-2 lg:order-1"
         >
           <div className="absolute inset-x-0 top-0 h-1 bg-border-strong/40" />
           <div className="relative z-10 grid h-full gap-10 xl:gap-14 lg:grid-cols-[0.9fr_1fr] lg:items-center">
@@ -146,7 +146,7 @@ export const Auth: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative min-h-[380px] overflow-hidden rounded-lg border border-border-subtle bg-foreground/5 p-4 dark:bg-[#24211E] sm:min-h-[460px] sm:p-5 w-full">
+            <div className="relative min-h-[280px] overflow-hidden rounded-lg border border-border-subtle bg-foreground/5 p-4 dark:bg-[#24211E] sm:min-h-[380px] lg:min-h-[460px] sm:p-5 w-full">
               <div className="grid grid-cols-9 gap-3 sm:gap-4">
                 {wordPins.map((pin) => (
                   <motion.article
@@ -184,10 +184,10 @@ export const Auth: React.FC = () => {
           </div>
         </motion.section>
 
-        <div className="flex w-full justify-center lg:justify-end">
+        <div className="flex w-full justify-center lg:justify-end order-1 lg:order-2">
           <motion.div
             variants={staggerItem}
-            className="w-full max-w-[480px] rounded-xl border border-border-subtle bg-surface p-8 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-10 md:p-12 xl:p-14"
+            className="w-full max-w-[480px] rounded-xl border border-border-subtle bg-surface p-6 shadow-[0_28px_80px_-52px_rgba(42,41,40,0.75)] dark:bg-[#1F1E1B] sm:p-8 md:p-10 lg:p-12 xl:p-14"
           >
             <div className="mb-7 flex items-start justify-between gap-4">
               <div>
@@ -202,7 +202,7 @@ export const Auth: React.FC = () => {
             </div>
 
             {authError && (
-              <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/10 p-3.5 text-[13px] text-red-700 dark:text-red-300">
+              <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/10 p-3.5 text-[13px] text-red-700 dark:text-red-300 break-words min-w-0 w-full">
                 {authError}
               </div>
             )}
@@ -269,7 +269,7 @@ export const Auth: React.FC = () => {
               </button>
             </form>
 
-            <div className="my-6 flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.2em] text-subtle">
+            <div className="my-6 flex items-center gap-4 text-[10px] sm:text-[11px] font-medium uppercase tracking-widest sm:tracking-[0.2em] text-subtle whitespace-nowrap">
               <div className="flex-1 border-t border-border-subtle"></div>
               <span>Or continue with</span>
               <div className="flex-1 border-t border-border-subtle"></div>

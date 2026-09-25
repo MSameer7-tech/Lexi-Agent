@@ -16,21 +16,23 @@ export async function getTtsAudio(word: string, fallbackUrl: string | null): Pro
     });
 
     if (!supabaseUrl || !supabaseServiceKey || !elevenLabsKey) {
-      return `MISSING_ENV: url=${!!supabaseUrl} key=${!!supabaseServiceKey} 11labs=${!!elevenLabsKey}`;
+      console.warn("TTS: Missing env vars for Supabase or ElevenLabs. Falling back.");
+      return fallbackUrl;
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const fileName = `en/${cleanWord}.mp3`;
+    const voiceId = "yl2ZDV1MzN4HbQJbMihG"; // Alex
+    const fileName = `en/${voiceId}/${cleanWord}.mp3`;
     const bucket = supabase.storage.from('pronunciations');
 
     // Check cache
-    const { data: fileExists } = await bucket.list('en', { search: `${cleanWord}.mp3` });
+    const { data: fileExists } = await bucket.list(`en/${voiceId}`, { search: `${cleanWord}.mp3` });
     if (fileExists && fileExists.some((f: any) => f.name === `${cleanWord}.mp3`)) {
       return bucket.getPublicUrl(fileName).data.publicUrl;
     }
 
     // Call ElevenLabs
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/pNInz6obpgDQGcFmaJgB`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
       headers: {
         "xi-api-key": elevenLabsKey,
@@ -40,8 +42,9 @@ export async function getTtsAudio(word: string, fallbackUrl: string | null): Pro
         text: word,
         model_id: "eleven_multilingual_v2",
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75
+          stability: 0.65,
+          similarity_boost: 0.75,
+          style: 0
         }
       })
     });

@@ -72,7 +72,7 @@ export const Settings: React.FC = () => {
       variants={staggerContainer}
       initial="initial"
       animate="animate"
-      className="mx-auto w-full max-w-[960px] px-5 py-10 sm:py-16 md:py-20"
+      className="mx-auto w-full max-w-[960px] px-4 sm:px-5 py-10 sm:py-16 md:py-20"
     >
       <motion.div variants={staggerItem} className="mb-11 sm:mb-14">
         <h1 className="font-serif text-[40px] sm:text-[46px] text-foreground tracking-tight leading-none">Preferences</h1>
@@ -88,7 +88,7 @@ export const Settings: React.FC = () => {
         {/* ACCOUNT PROFILE */}
         <motion.section variants={staggerItem} className="flex flex-col h-full">
           <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1">Account</h2>
-          <div className="flex-1 flex items-center gap-5 p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[160px]">
+          <div className="flex-1 flex items-center gap-5 p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-0 lg:min-h-[160px]">
             {avatarUrl ? (
               <img src={avatarUrl} alt={displayName} className="w-[52px] h-[52px] rounded-full border border-border-subtle object-cover shrink-0 bg-surface-tint" />
             ) : (
@@ -96,10 +96,10 @@ export const Settings: React.FC = () => {
                 {getInitials(displayName)}
               </div>
             )}
-            <div className="flex flex-col justify-center">
-              <span className="font-serif text-[22px] sm:text-[24px] text-foreground leading-[1.1] truncate max-w-[200px] sm:max-w-[240px]">{displayName}</span>
-              <span className="font-sans text-[13px] text-muted mt-1.5 truncate max-w-[200px] sm:max-w-[240px]">{email}</span>
-              <span className="font-sans text-[9px] text-subtle mt-3 uppercase tracking-[0.15em] font-medium">{displayProvider}</span>
+            <div className="flex flex-col justify-center min-w-0 flex-1">
+              <span className="font-serif text-[22px] sm:text-[24px] text-foreground leading-[1.1] truncate block">{displayName}</span>
+              <span className="font-sans text-[13px] text-muted mt-1.5 truncate block break-words">{email}</span>
+              <span className="font-sans text-[9px] text-subtle mt-3 uppercase tracking-[0.15em] font-medium block">{displayProvider}</span>
             </div>
           </div>
         </motion.section>
@@ -107,7 +107,7 @@ export const Settings: React.FC = () => {
         {/* YOUR LEXIAGENT */}
         <motion.section variants={staggerItem} className="flex flex-col h-full">
           <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1">Your LexiAgent</h2>
-          <div className="flex-1 flex items-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[160px]">
+          <div className="flex-1 flex items-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-0 lg:min-h-[160px]">
             {loadingCounts ? (
               <div className="flex w-full items-center justify-center">
                 <Loader2 size={18} className="animate-spin text-subtle" />
@@ -138,10 +138,10 @@ export const Settings: React.FC = () => {
         {/* APPEARANCE */}
         <motion.section variants={staggerItem} className="flex flex-col h-full">
           <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1 mt-2 lg:mt-0">Appearance</h2>
-          <div className="flex-1 flex items-center justify-between p-6 gap-5 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[140px]">
-            <div className="flex flex-col justify-center">
+          <div className="flex-1 flex items-center justify-between p-6 gap-5 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-0 lg:min-h-[140px]">
+            <div className="flex flex-col justify-center min-w-0">
               <p className="font-serif text-[18px] sm:text-[20px] text-foreground leading-none">Theme</p>
-              <p className="text-[13px] text-muted mt-2 font-sans">Switch between light and dark modes.</p>
+              <p className="text-[13px] text-muted mt-2 font-sans break-words w-full min-w-0">Switch between light and dark modes.</p>
             </div>
             <motion.button 
               whileTap={{ scale: 0.98 }}
@@ -159,10 +159,10 @@ export const Settings: React.FC = () => {
         {/* DICTIONARY */}
         <motion.section variants={staggerItem} className="flex flex-col h-full">
           <h2 className="text-[9.5px] uppercase tracking-[0.25em] font-medium text-subtle mb-4 pl-1 mt-2 lg:mt-0">Dictionary</h2>
-          <div className="flex-1 flex flex-col justify-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-[140px]">
+          <div className="flex-1 flex flex-col justify-center p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 min-h-0 lg:min-h-[140px]">
             
             {/* Row 1 */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
               <div className="flex flex-col">
                 <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70 mb-1.5">Pronunciation</span>
                 <span className="text-[13px] text-muted font-sans leading-relaxed">Audio available on dictionary entries.</span>
@@ -173,11 +173,11 @@ export const Settings: React.FC = () => {
             <div className="w-full h-[1px] bg-border-subtle/30 my-4" />
             
             {/* Row 2 */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
               <div className="flex flex-col">
                 <span className="font-sans text-[10px] uppercase tracking-[0.15em] font-medium text-foreground/70">Dictionary Source</span>
               </div>
-              <div className="shrink-0 text-right">
+              <div className="shrink-0 text-left sm:text-right mt-1 sm:mt-0">
                 <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-medium text-foreground/90">Merriam-Webster</span>
               </div>
             </div>
@@ -195,11 +195,11 @@ export const Settings: React.FC = () => {
           <motion.button 
             whileTap={{ scale: 0.985 }}
             onClick={handleSignOut}
-            className="flex-1 flex flex-row items-center justify-between p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 hover:bg-surface-tint hover:border-border-strong/60 transition-all group outline-none focus-visible:ring-2 focus-visible:ring-border-strong min-h-[110px]"
+            className="flex-1 flex flex-row items-center justify-between p-6 rounded-[18px] bg-surface shadow-[0_2px_12px_rgba(42,41,40,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.15)] border border-border-subtle/40 hover:bg-surface-tint hover:border-border-strong/60 transition-all group outline-none focus-visible:ring-2 focus-visible:ring-border-strong min-h-0 lg:min-h-[110px]"
           >
-            <div className="flex flex-col items-start text-left justify-center">
+            <div className="flex flex-col items-start text-left justify-center min-w-0">
               <p className="font-serif text-[18px] sm:text-[20px] text-foreground group-hover:text-foreground/80 transition-colors leading-none">Sign out</p>
-              <p className="text-[13px] text-muted mt-2 font-sans">End your current LexiAgent session.</p>
+              <p className="text-[13px] text-muted mt-2 font-sans break-words w-full min-w-0">End your current LexiAgent session.</p>
             </div>
             <LogOut size={18} className="text-subtle group-hover:text-foreground/70 transition-colors shrink-0 group-hover:translate-x-1 duration-300" />
           </motion.button>

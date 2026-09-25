@@ -226,7 +226,7 @@ export const HistoryDrawer: React.FC = () => {
             />
           ) : (
             <h4 className={cn(
-              "font-serif text-lg leading-tight line-clamp-1 pr-4 transition-colors",
+              "font-serif text-lg leading-tight break-words min-w-0 w-full pr-2 sm:pr-4 transition-colors",
               isActive ? "text-background" : "text-foreground group-hover:text-foreground"
             )}>
               {session.title}
@@ -245,7 +245,7 @@ export const HistoryDrawer: React.FC = () => {
 
         {!isEditing && (
           <p className={cn(
-            "text-sm font-sans line-clamp-2 mb-4 transition-colors",
+            "text-sm font-sans break-words min-w-0 w-full line-clamp-2 mb-4 transition-colors",
             isActive ? "text-background/80" : "text-subtle"
           )}>
             {session.preview || "Empty conversation"}
@@ -339,10 +339,10 @@ export const HistoryDrawer: React.FC = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 20, opacity: 0 }}
             transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-            className="fixed top-0 right-0 bottom-0 w-full sm:w-[400px] bg-surface-tint border-l border-border-subtle shadow-2xl z-50 flex flex-col overflow-hidden"
+            className="fixed top-0 right-0 md:bottom-0 w-full sm:w-[400px] min-h-0 h-auto md:h-screen bg-surface-tint border-l border-border-subtle shadow-2xl z-50 flex flex-col md:overflow-hidden overflow-y-auto custom-scrollbar max-h-[100svh]"
           >
             {/* Header */}
-            <div className="px-6 py-6 border-b border-border-subtle flex items-center justify-between bg-surface/50 backdrop-blur-md sticky top-0 z-10">
+            <div className="px-6 py-6 border-b border-border-subtle flex items-center justify-between gap-4 bg-surface/50 backdrop-blur-md sticky top-0 z-10">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-foreground text-background rounded-lg">
                   <MessageSquare size={18} strokeWidth={2} />
@@ -366,27 +366,27 @@ export const HistoryDrawer: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search chats..."
-                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-surface border border-border-subtle focus:border-foreground focus:ring-1 focus:ring-foreground transition-all text-sm font-sans placeholder:text-subtle"
+                  className="w-full min-w-0 h-12 pl-11 sm:pl-12 pr-4 rounded-xl bg-surface border border-border-subtle focus:border-foreground focus:ring-1 focus:ring-foreground transition-all text-sm font-sans placeholder:text-subtle"
                 />
               </div>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
+            <div className="md:flex-1 md:overflow-y-auto px-6 py-6 md:custom-scrollbar">
               {isHydrating ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
+                <div className="h-full min-h-[300px] md:min-h-0 flex flex-col items-center justify-center text-center p-6 opacity-50">
                   <Loader2 size={32} className="mb-4 text-muted animate-spin" strokeWidth={1.5} />
                   <p className="font-serif text-xl text-foreground mb-2">Loading conversations</p>
                   <p className="font-sans text-sm text-subtle">Retrieving your history...</p>
                 </div>
               ) : sessions.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 opacity-50">
+                <div className="h-full min-h-[300px] md:min-h-0 flex flex-col items-center justify-center text-center p-6 opacity-50">
                   <Clock size={48} className="mb-4 text-muted" strokeWidth={1} />
                   <p className="font-serif text-xl text-foreground mb-2">No chats yet</p>
                   <p className="font-sans text-sm text-subtle">Your conversational explorations will appear here.</p>
                 </div>
               ) : (
-                <div className="pb-20">
+                <div className="pb-4 md:pb-20">
                   {searchQuery.trim() && 
                    groupedSessions.pinned.length === 0 && 
                    groupedSessions.today.length === 0 && 
@@ -428,7 +428,7 @@ export const HistoryDrawer: React.FC = () => {
             </div>
 
             {/* Create New Button (Optional, if they want to start a new chat from here) */}
-            <div className="absolute bottom-6 left-6 right-6">
+            <div className="mt-4 mb-8 md:mt-0 md:mb-0 md:absolute md:bottom-6 md:left-6 md:right-6 px-6 md:px-0 pb-safe md:pb-0 shrink-0">
               <button 
                 onClick={() => {
                   setActiveSession(null);

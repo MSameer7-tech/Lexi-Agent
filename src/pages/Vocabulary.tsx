@@ -85,8 +85,8 @@ export const Vocabulary: React.FC = () => {
 
   if (!session) {
     return (
-      <div className="flex-1 w-full flex items-center justify-center p-6 min-h-[70vh]">
-        <div className="w-full max-w-[400px] flex flex-col items-center gap-6 p-10 text-center">
+      <div className="flex-1 w-full flex items-center justify-center p-6 min-h-[50vh] md:min-h-[70vh]">
+        <div className="w-full max-w-[400px] flex flex-col items-center gap-6 p-6 sm:p-10 text-center">
           <h1 className="font-serif text-3xl font-medium text-foreground tracking-tight">Vocabulary Library</h1>
           <p className="font-sans text-sm text-subtle">
             Sign in to unlock your personal dictionary history and save words for later.
@@ -123,21 +123,21 @@ export const Vocabulary: React.FC = () => {
         variants={staggerItem} className={getVocabularyCardClasses(item.word)}
         onClick={() => setExpandedWord(item.word)}
       >
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex flex-col gap-1.5">
-            <h3 className="font-serif text-[20px] sm:text-[22px] text-foreground font-medium leading-none">{item.word}</h3>
-            {pos && <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-foreground/50">{pos}</span>}
+        <div className="flex items-start justify-between mb-4 gap-2">
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <h3 className="font-serif text-[20px] sm:text-[22px] text-foreground font-medium leading-[1.1] break-words">{item.word}</h3>
+            {pos && <span className="font-sans text-[9px] uppercase tracking-[0.2em] text-foreground/50 truncate block">{pos}</span>}
           </div>
           <button 
             onClick={(e) => { e.stopPropagation(); toggleSave(item, isSaved); }}
-            className="p-1 -mr-1 -mt-1 text-subtle hover:text-foreground transition-colors z-10"
+            className="p-2 -mr-2 -mt-2 text-subtle hover:text-foreground transition-colors z-10 shrink-0"
           >
             <Heart size={14} className={isSaved ? "fill-foreground text-foreground" : ""} />
           </button>
         </div>
         
         {shortDef && (
-          <p className="font-sans text-[13px] sm:text-[14px] text-foreground/80 line-clamp-2 leading-relaxed mb-4">
+          <p className="font-sans text-[13px] sm:text-[14px] text-foreground/80 line-clamp-2 leading-relaxed mb-4 break-words w-full min-w-0">
             {shortDef}
           </p>
         )}
@@ -152,7 +152,7 @@ export const Vocabulary: React.FC = () => {
   };
 
   return (
-    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex-1 w-full max-w-[1150px] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-24">
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex-1 w-full max-w-[1150px] mx-auto px-4 sm:px-6 lg:px-16 pt-12 pb-24">
       <header className="mb-14">
         <h1 className="font-serif text-4xl md:text-5xl font-medium text-foreground tracking-tight mb-4">Vocabulary</h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">

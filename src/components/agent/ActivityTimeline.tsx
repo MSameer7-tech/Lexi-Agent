@@ -46,9 +46,9 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ events, clas
           >
             <motion.div variants={staggerContainer} initial="initial" animate="animate" className="flex flex-col gap-2 mt-4 pl-1">
               {events.map((event) => (
-                <motion.div variants={staggerItem} key={event.id} className="flex items-center gap-3">
+                <motion.div variants={staggerItem} key={event.id} className="flex items-start gap-3 min-w-0 w-full">
                   <Check size={12} strokeWidth={2} className="text-muted" />
-                  <span className="font-sans text-[12px] text-muted">{event.label}</span>
+                  <span className="font-sans text-[12px] text-muted break-words min-w-0 leading-tight">{event.label}</span>
                 </motion.div>
               ))}
             </motion.div>

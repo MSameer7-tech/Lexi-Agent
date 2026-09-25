@@ -71,6 +71,12 @@
 }
 
 @layer base {
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
   * {
     @apply border-border-subtle;
   }

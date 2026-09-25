@@ -10,7 +10,7 @@ export const MerriamWebsterAttribution: React.FC<{ className?: string }> = ({ cl
         aria-label="Dictionary data provided by Merriam-Webster"
         className="flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-3.5 group opacity-80 hover:opacity-100 transition-opacity"
       >
-        <span className="font-sans text-[9px] uppercase tracking-widest text-subtle font-medium group-hover:text-muted transition-colors text-center whitespace-nowrap mt-[2px]">
+        <span className="font-sans text-[9px] uppercase tracking-widest text-subtle font-medium group-hover:text-muted transition-colors text-center whitespace-normal text-center mt-[2px]">
           Dictionary & Thesaurus Data by
         </span>
         

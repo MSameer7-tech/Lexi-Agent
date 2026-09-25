@@ -344,17 +344,17 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col justify-center min-h-[calc(100svh-120px)] relative overflow-hidden bg-transparent"
           >
+            
             {/* HERO COMPOSITION */}
-            <section className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between z-10 py-10 md:py-0">
+            <section className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[45%_1fr] xl:grid-cols-[40%_1fr] md:gap-x-8 lg:gap-x-12 items-center justify-between z-10 py-4 sm:py-6 md:py-0">
               
-              {/* LEFT SIDE (Typography & Search) */}
-              <div className="w-full lg:w-[45%] xl:w-[40%] z-10 relative flex flex-col justify-center mt-12 md:mt-0">
-                
+              {/* LEFT SIDE: TYPOGRAPHY (Top on Mobile, Left on Desktop) */}
+              <div className="w-full z-10 relative flex flex-col justify-center pt-4 sm:pt-8 md:pt-0 md:mt-0 order-1 md:col-start-1 md:row-start-1">
                 <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
-                  className="mb-8 flex items-center gap-4"
+                  transition={{ duration: 0.6, ease: EASE }}
+                  className="mb-6 md:mb-8 flex items-center gap-4"
                 >
                   <span className="text-[9px] uppercase tracking-widest text-subtle">A Modern Lexicon</span>
                   <div className="w-12 h-[1px] bg-border-strong/50"></div>
@@ -364,7 +364,7 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-                  className="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground tracking-tight mb-8"
+                  className="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground tracking-tight mb-6 md:mb-8"
                 >
                   Words, <br/>
                   <span className="italic text-foreground font-light -ml-1">
@@ -377,88 +377,29 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
-                  className="font-sans text-base md:text-lg text-muted max-w-[340px] mb-14 leading-relaxed"
+                  className="font-sans text-base md:text-lg text-muted w-full max-w-[340px] leading-relaxed"
                 >
                   LexiAgent lets you explore language through natural, intelligent conversation.
                 </motion.p>
-
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="w-full max-w-xl relative"
-                >
-                  <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
-                    FIG. 01 / INQUIRY
-                  </div>
-                  <form 
-                    onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] bg-white dark:bg-[#2F2D28]' : 'border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)]'}`}
-                    style={{ borderWidth: '1px' }}
-                  >
-                    <div className="absolute left-6 flex items-center text-muted pointer-events-none">
-                      <Search size={18} strokeWidth={1.5} />
-                    </div>
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      onFocus={() => setIsInputFocused(true)}
-                      onBlur={() => setIsInputFocused(false)}
-                      placeholder="Ask about a word, phrase, synonym..."
-                      className="w-full h-16 sm:h-20 pl-16 pr-[90px] bg-transparent text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
-                    />
-                    <div className="absolute right-2 flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={handleMicClick}
-                        className={`flex items-center justify-center w-10 h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
-                        title={isRecording ? "Stop recording" : "Use voice input"}
-                      >
-                        <Mic size={18} strokeWidth={1.5} className={isRecording ? "animate-pulse" : ""} />
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={!query.trim()}
-                        className="flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
-                      >
-                        <ArrowRight size={20} strokeWidth={1.5} />
-                      </button>
-                    </div>
-                  </form>
-                  
-                  <div className="mt-10 flex flex-col gap-5">
-                    {examplePrompts.map((prompt, i) => (
-                      <button
-                        key={prompt}
-                        onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
-                        className="text-left font-sans text-sm text-muted hover:text-foreground transition-colors duration-300 flex items-center group w-max"
-                      >
-                        <span className="w-8 text-[9px] tracking-widest text-subtle group-hover:text-muted transition-colors">0{i+1}</span>
-                        <span className="transform group-hover:translate-x-[3px] transition-transform duration-300">{prompt}</span>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
               </div>
 
-              {/* RIGHT SIDE (Floating Colored Cards) */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 md:static md:w-[50%] md:h-[640px] md:pointer-events-auto">
-                <div className="relative w-full h-full min-h-[500px]">
+              {/* RIGHT SIDE: CARDS (Middle on Mobile, Right on Desktop) */}
+              <div className="w-full h-[260px] sm:h-[300px] md:h-[640px] relative overflow-hidden md:overflow-visible z-0 order-2 md:col-start-2 md:row-start-1 md:row-span-2 my-8 md:my-0 pointer-events-none md:pointer-events-auto">
+                <div className="relative w-full h-full md:min-h-[500px]">
                   
                   {/* ELOQUENT (Pink) */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: -3, y: 10 }}
                     animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [2, -2, 2] }}
                     transition={{ opacity: { duration: 0.8, delay: 0.3 }, y: { repeat: Infinity, duration: 16, ease: "easeInOut" } }}
-                    className="absolute top-[25%] left-[10%] md:top-[28%] md:left-[5%] w-[180px] h-[200px] sm:w-[220px] sm:h-[240px] bg-[#FFE6E0] dark:bg-[#51332F] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-20 flex flex-col transition-transform hover:-rotate-1"
+                    className="absolute top-[10%] left-[2%] sm:left-[10%] md:top-[28%] md:left-[5%] w-[150px] h-[170px] sm:w-[180px] sm:h-[200px] md:w-[220px] md:h-[240px] bg-[#FFE6E0] dark:bg-[#51332F] p-4 md:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-20 flex flex-col transition-transform hover:-rotate-1"
                   >
                     <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={20} strokeWidth={2} />
-                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                      <Bookmark size={18} strokeWidth={2} className="md:w-5 md:h-5" />
+                      <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
                     </div>
-                    <p className="font-serif text-[32px] sm:text-[40px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">eloquent</p>
-                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">fluent or<br/>persuasive</p>
+                    <p className="font-serif text-[26px] sm:text-[32px] md:text-[40px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5 md:mb-2">eloquent</p>
+                    <p className="font-sans text-xs sm:text-sm md:text-base text-black/60 dark:text-white/60 leading-tight">fluent or<br/>persuasive</p>
                   </motion.div>
 
                   {/* LIMINAL (Blue) */}
@@ -466,17 +407,17 @@ export const Home: React.FC = () => {
                     initial={{ opacity: 0, rotate: 6, y: 10 }}
                     animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [-2, 2, -2] }}
                     transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 1 } }}
-                    className="hidden sm:flex absolute top-[5%] right-[2%] md:top-[5%] md:right-[5%] w-[190px] h-[210px] sm:w-[230px] sm:h-[250px] bg-[#DCE4FF] dark:bg-[#283566] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:rotate-3"
+                    className="flex absolute top-[25%] right-[2%] sm:right-[10%] md:top-[5%] md:right-[5%] w-[160px] h-[180px] sm:w-[190px] sm:h-[210px] md:w-[230px] md:h-[250px] bg-[#DCE4FF] dark:bg-[#283566] p-4 md:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:rotate-3"
                   >
                     <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={20} strokeWidth={2} />
-                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
+                      <Bookmark size={18} strokeWidth={2} className="md:w-5 md:h-5" />
+                      <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
                     </div>
-                    <p className="font-serif text-[36px] sm:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">liminal</p>
-                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">a transitional<br/>phase</p>
+                    <p className="font-serif text-[28px] sm:text-[36px] md:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5 md:mb-2">liminal</p>
+                    <p className="font-sans text-xs sm:text-sm md:text-base text-black/60 dark:text-white/60 leading-tight">a transitional<br/>phase</p>
                   </motion.div>
 
-                  {/* PETRICHOR (Purple) */}
+                  {/* PETRICHOR (Purple) - Hidden on Mobile */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: -6, y: 10 }}
                     animate={{ opacity: 1, y: [3, -3, 3] }}
@@ -491,7 +432,7 @@ export const Home: React.FC = () => {
                     <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight mt-1">the pleasant<br/>smell of rain</p>
                   </motion.div>
 
-                  {/* HALCYON (Yellow) */}
+                  {/* HALCYON (Yellow) - Hidden on Mobile */}
                   <motion.div 
                     initial={{ opacity: 0, rotate: 3, y: 10 }}
                     animate={{ opacity: 1, y: [-3, 3, -3] }}
@@ -508,9 +449,70 @@ export const Home: React.FC = () => {
 
                 </div>
               </div>
-            
+
+              {/* LEFT SIDE: SEARCH AREA (Bottom on Mobile, Left on Desktop) */}
+              <div className="w-full relative z-10 order-3 md:col-start-1 md:row-start-2 pb-8 sm:pb-12 md:pb-0">
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="w-full max-w-xl relative"
+                >
+                  <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
+                    FIG. 01 / INQUIRY
+                  </div>
+                  <form 
+                    onSubmit={handleInitialSearch} 
+                    className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] bg-white dark:bg-[#2F2D28]' : 'border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)]'}`}
+                    style={{ borderWidth: '1px' }}
+                  >
+                    <div className="absolute left-3.5 sm:left-6 flex items-center text-muted pointer-events-none">
+                      <Search size={18} strokeWidth={1.5} />
+                    </div>
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onFocus={() => setIsInputFocused(true)}
+                      onBlur={() => setIsInputFocused(false)}
+                      placeholder="Ask about a word..."
+                      className="w-full min-w-0 h-14 sm:h-16 md:h-20 pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
+                    />
+                    <div className="absolute right-1 sm:right-2 flex items-center gap-0 sm:gap-1">
+                      <button
+                        type="button"
+                        onClick={handleMicClick}
+                        className={`flex items-center justify-center w-[42px] h-[42px] sm:w-10 sm:h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
+                        title={isRecording ? "Stop recording" : "Use voice input"}
+                      >
+                        <Mic size={18} strokeWidth={1.5} className={isRecording ? "animate-pulse" : ""} />
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!query.trim()}
+                        className="flex items-center justify-center w-[42px] h-[42px] sm:w-10 sm:h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
+                      >
+                        <ArrowRight size={20} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </form>
+                  
+                  <div className="mt-8 sm:mt-10 flex flex-col gap-4 sm:gap-5">
+                    {examplePrompts.map((prompt, i) => (
+                      <button
+                        key={prompt}
+                        onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
+                        className="text-left font-sans text-[13px] sm:text-sm text-muted hover:text-foreground transition-colors duration-300 flex items-center group w-max max-w-full"
+                      >
+                        <span className="w-6 sm:w-8 text-[9px] tracking-widest text-subtle group-hover:text-muted transition-colors shrink-0">0{i+1}</span>
+                        <span className="transform group-hover:translate-x-[3px] transition-transform duration-300 truncate">{prompt}</span>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
             </section>
-          </motion.div>
+</motion.div>
         ) : (
           /* CONVERSATIONAL VIEW */
           <motion.div
@@ -568,7 +570,7 @@ export const Home: React.FC = () => {
                       )}
                       {message.dictionary ? (
                         <div className="w-full mt-2">
-                          <WordResult entry={mapDictionaryApiToParsedEntry(message.dictionary, message.content)} rawDictionaryData={message.dictionary} />
+                          <WordResult entry={mapDictionaryApiToParsedEntry(message.dictionary, message.content)} rawDictionaryData={message.dictionary} variant="chat" />
                         </div>
                       ) : (
                         message.content && (
@@ -628,7 +630,7 @@ export const Home: React.FC = () => {
             </div>
 
             {/* FLOATING INPUT AREA */}
-            <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-[2px] z-40 pointer-events-none flex flex-col items-center">
+            <div className="fixed bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-[2px] z-40 pointer-events-none flex flex-col items-center">
               <div className="w-full max-w-[760px] relative pointer-events-auto">
                 <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
                   FIG. 01 / INQUIRY
@@ -638,7 +640,7 @@ export const Home: React.FC = () => {
                   className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)] focus-within:border-foreground/30 focus-within:shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] focus-within:dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] focus-within:bg-white focus-within:dark:bg-[#2F2D28]`}
                   style={{ borderWidth: '1px' }}
                 >
-                  <div className="absolute left-6 flex items-center text-muted pointer-events-none">
+                  <div className="absolute left-3.5 sm:left-6 flex items-center text-muted pointer-events-none">
                     <Search size={18} strokeWidth={1.5} />
                   </div>
                   <textarea
@@ -646,16 +648,16 @@ export const Home: React.FC = () => {
                     value={inputValue}
                     onChange={handleTextareaInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask a follow up question..."
+                    placeholder="Ask a follow up..."
                     rows={1}
-                    className="w-full min-h-[64px] sm:min-h-[80px] py-[22px] sm:py-[28px] pl-16 pr-[90px] bg-transparent text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
+                    className="w-full min-w-0 min-h-[56px] sm:min-h-[80px] py-[16px] sm:py-[28px] pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
                     disabled={isLoading}
                   />
-                  <div className="absolute right-4 flex items-center gap-1">
+                  <div className="absolute right-1 sm:right-4 flex items-center gap-0 sm:gap-1">
                     <button
                       type="button"
                       onClick={handleMicClick}
-                      className={`flex items-center justify-center w-10 h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
+                      className={`flex items-center justify-center w-[42px] h-[42px] sm:w-10 sm:h-10 bg-transparent transition-colors duration-200 rounded-full ${isRecording ? 'text-red-500 hover:text-red-600 bg-red-500/10' : 'text-muted hover:text-foreground hover:bg-border-subtle/20'}`}
                       title={isRecording ? "Stop recording" : "Use voice input"}
                     >
                       <Mic size={18} strokeWidth={1.5} className={isRecording ? "animate-pulse" : ""} />
@@ -663,7 +665,7 @@ export const Home: React.FC = () => {
                     <button
                       type="submit"
                       disabled={!inputValue.trim() || isLoading}
-                      className="flex items-center justify-center w-10 h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
+                      className="flex items-center justify-center w-[42px] h-[42px] sm:w-10 sm:h-10 bg-transparent text-muted hover:text-foreground disabled:opacity-20 transition-colors duration-200"
                     >
                       <ArrowRight size={20} strokeWidth={1.5} />
                     </button>

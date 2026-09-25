@@ -100,7 +100,7 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
     : getCardColorClasses(entry.word || 'default');
 
   return (
-    <motion.div variants={staggerContainer} initial="initial" animate="animate" className={`w-full ${variant === 'chat' ? 'max-w-[960px]' : ''} relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-6 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className={`w-full ${variant === 'chat' ? 'max-w-[960px]' : ''} relative shadow-[0_12px_24px_-10px_rgba(42,41,40,0.05)] dark:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.2)] rounded-[20px] p-4 sm:p-8 lg:px-10 lg:py-9 transition-all border ${colorClasses}`}>
       
       {/* INTRODUCTORY AI RESPONSE */}
       {entry.rawMarkdown && variant === 'chat' && (
@@ -124,21 +124,26 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
             <div className="font-sans text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-foreground/50 font-medium">
               Dictionary Entry / {dateStr}
             </div>
+            {variant === 'vocabulary' && onClose && (
+              <button onClick={onClose} className="md:hidden flex items-center gap-2 font-sans text-[9px] uppercase tracking-[0.2em] text-subtle hover:text-foreground transition-colors px-3 py-1.5 rounded-full border border-border-subtle/50 shadow-sm shrink-0 ml-4">
+                <span className="font-medium">Close</span>
+              </button>
+            )}
           </div>
           
           {variant === 'vocabulary' && onClose && (
-            <button onClick={onClose} className="absolute top-6 right-6 lg:top-8 lg:right-10 flex items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-subtle hover:text-foreground transition-colors z-10 bg-background/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-border-subtle/50 shadow-sm">
+            <button onClick={onClose} className="hidden md:flex absolute top-6 right-6 lg:top-8 lg:right-10 items-center gap-2 font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-subtle hover:text-foreground transition-colors z-10 bg-background/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-border-subtle/50 shadow-sm">
               <span className="font-medium">Close</span>
             </button>
           )}
 
-          <div className="flex items-start justify-between mb-6">
-            <h2 className="font-serif text-[36px] sm:text-[40px] lg:text-[42px] font-medium text-foreground tracking-tighter leading-none">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 w-full">
+            <h2 className="font-serif text-[36px] sm:text-[40px] lg:text-[42px] font-medium text-foreground tracking-tighter leading-none break-words min-w-0 w-full">
               {entry.word}
             </h2>
             
             {/* ACTIONS */}
-            <div className="shrink-0 mt-2 ml-4 flex items-center gap-4">
+            <div className="shrink-0 sm:mt-2 sm:ml-4 flex items-center gap-4">
               {variant === 'vocabulary' && (
                 <button 
                   onClick={() => navigate('/', { state: { askAbout: entry.word } })}
@@ -225,8 +230,8 @@ export const WordResult: React.FC<WordResultProps> = ({ entry, rawDictionaryData
                     <div className="font-sans text-[9px] sm:text-[10px] text-subtle/40 mt-[3px] shrink-0 font-medium transition-opacity group-hover:text-subtle/70">
                       {String(dIdx + 1).padStart(2, '0')}
                     </div>
-                    <div className="flex flex-col gap-2 w-full">
-                      <p className="font-serif text-[16px] sm:text-[17px] text-foreground/90 leading-[1.5]">
+                    <div className="flex flex-col gap-2 w-full min-w-0">
+                      <p className="font-serif text-[16px] sm:text-[17px] text-foreground/90 leading-[1.5] break-words w-full min-w-0">
                         {def.text}
                       </p>
                     </div>
@@ -282,7 +287,7 @@ const WordListCluster = ({ words }: { words: string[] }) => {
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-2">
       {displayWords.map((word, i) => (
-        <span key={i} className="font-serif text-[13.5px] sm:text-[14px] text-foreground/80 leading-[1.75]">
+        <span key={i} className="font-serif text-[13.5px] sm:text-[14px] text-foreground/80 leading-[1.75] break-words">
           {word}
         </span>
       ))}
