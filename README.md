@@ -4,7 +4,16 @@
 </p>
 
 <p align="center">
-LexiAgent is an agentic AI dictionary and thesaurus that combines Merriam-Webster's dictionary data with Groq-powered conversational AI to turn vocabulary lookup into an interactive exploration.
+An agentic AI dictionary that turns vocabulary lookup into a conversational learning experience.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React_19-20232A?style=flat&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Groq-F55036?style=flat" alt="Groq" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat" alt="MIT License" />
 </p>
 
 <p align="center">
@@ -13,41 +22,32 @@ LexiAgent is an agentic AI dictionary and thesaurus that combines Merriam-Webste
 
 <br/>
 
----
-
-## ✦ Preview
-
-![LexiAgent Home](docs/screenshots/home.png)
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="LexiAgent" width="100%" />
+</p>
 
 <table>
   <tr>
-    <td><img src="docs/screenshots/dictionary-result.png" alt="Dictionary Result" /></td>
+    <td><img src="docs/screenshots/dictionary-result.png" alt="Dictionary" /></td>
     <td><img src="docs/screenshots/vocabulary.png" alt="Vocabulary" /></td>
-  </tr>
-  <tr>
-    <td align="center"><em>Dictionary result with definitions, pronunciation, and follow-up input</em></td>
-    <td align="center"><em>Personal vocabulary — recent words and saved collection</em></td>
   </tr>
 </table>
 
-<p align="center">
-  <img src="docs/screenshots/auth.png" alt="Authentication" width="360" />
-</p>
-<p align="center"><em>Editorial sign-in with Google, GitHub, and email</em></p>
-
 ---
 
-## ✦ What makes LexiAgent different
+## ✦ Features
 
-🤖 **Agentic lookup** — Groq autonomously decides when dictionary data is needed and invokes the tool.
+🤖 **Agentic lookup** — Groq autonomously decides when to fetch dictionary data and invokes the tool.
 
-📖 **Rich word intelligence** — Definitions, examples, phonetics, audio pronunciation, synonyms, and antonyms from Merriam-Webster.
+📖 **Rich word intelligence** — Definitions, examples, pronunciation audio, synonyms, and antonyms from Merriam-Webster.
 
-💬 **Conversational exploration** — Ask follow-up questions instead of isolated searches. Continue the dialogue.
+💬 **Conversational** — Ask follow-up questions. Continue the dialogue instead of isolated searches.
 
-🧠 **Personal vocabulary** — Save words, track lookup history, and build your lexicon across sessions.
+🧠 **Personal vocabulary** — Save words, track lookup history, build your lexicon across sessions.
 
 🎤 **Voice input** — Speak your query using native Web Speech API.
+
+🌗 **Light & dark** — Carefully designed editorial themes with warm ivory palette and tactile motion.
 
 ---
 
@@ -65,7 +65,7 @@ flowchart LR
     C --> B
 ```
 
-The user sends a message. The Edge Function routes it to Groq, which can autonomously invoke a dictionary tool to fetch real definitions and thesaurus data from Merriam-Webster. The final response — along with structured word data — is persisted and returned to the frontend.
+User sends a message. The Edge Function routes it to Groq, which can autonomously invoke a dictionary tool to fetch definitions and thesaurus data from Merriam-Webster. Structured word data and the conversational response are persisted and returned to the frontend. All API keys stay server-side.
 
 ---
 
@@ -73,18 +73,18 @@ The user sends a message. The Edge Function routes it to Groq, which can autonom
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19 · TypeScript · Vite |
-| Styling | Tailwind CSS 4 · Framer Motion |
+| Frontend | React 19 · TypeScript · Vite · Tailwind CSS 4 |
+| Animation | Framer Motion |
 | State | Zustand |
 | Backend | Supabase Edge Functions (Deno) |
 | AI | Groq |
 | Dictionary | Merriam-Webster Dictionary & Thesaurus APIs |
-| Database & Auth | Supabase (PostgreSQL · RLS · OAuth) |
+| Auth & DB | Supabase (PostgreSQL · Row Level Security · OAuth) |
 | Deployment | Vercel + Supabase |
 
 ---
 
-## ✦ Run locally
+## ✦ Quick Start
 
 ```bash
 git clone https://github.com/MSameer7-tech/Lexi-Agent.git
@@ -99,44 +99,21 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
 ```
 
-> Groq and Merriam-Webster API keys belong in [Supabase Edge Function secrets](https://supabase.com/docs/guides/functions/secrets), not in frontend environment variables.
-
 ```bash
 npm run dev
 ```
 
----
-
-## ✦ Project
-
-```
-src/
-├── components/       # WordResult, ActivityTimeline, HistoryDrawer
-├── pages/            # Home, Auth, Vocabulary, Settings
-├── store/            # Zustand (history, theme)
-├── services/         # Edge Function API client
-└── lib/              # Supabase client, parser, motion
-
-supabase/
-├── functions/
-│   └── lexi-chat/    # Agent orchestration, Groq, MW tools
-└── migrations/       # PostgreSQL schema, RLS, RPCs
-```
+> Backend secrets (Groq, Merriam-Webster) are configured in [Supabase Edge Function secrets](https://supabase.com/docs/guides/functions/secrets) and are never exposed to the browser.
 
 ---
 
-## ✦ Live
-
-**[lexiagent.vercel.app](https://lexiagent.vercel.app)** · **[GitHub](https://github.com/MSameer7-tech/Lexi-Agent)**
-
----
-
-## ✦ Attribution
-
-Dictionary and thesaurus data provided by the [Merriam-Webster API](https://dictionaryapi.com). LexiAgent follows the required attribution and branding guidelines.
+<p align="center">
+  <strong><a href="https://lexiagent.vercel.app">lexiagent.vercel.app</a></strong>
+</p>
 
 ---
 
-## ✦ License
-
-MIT
+<p align="center">
+Dictionary and thesaurus data provided by the <a href="https://dictionaryapi.com">Merriam-Webster API</a>.<br/>
+Licensed under MIT.
+</p>
