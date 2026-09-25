@@ -300,7 +300,16 @@ const WordListCluster = ({ words }: { words: string[] }) => {
 
 const AudioButton = ({ url, label }: { url: string, label: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Reset if URL changes
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  }, [url]);
 
   useEffect(() => {
     return () => {
@@ -312,23 +321,30 @@ const AudioButton = ({ url, label }: { url: string, label: string }) => {
   }, []);
 
   const handlePlay = async () => {
-    if (isPlaying) return;
+    if (isPlaying || isLoading) return;
     
     try {
-      setIsPlaying(true);
+      setIsLoading(true);
       if (!audioRef.current) {
         audioRef.current = new Audio(url);
       }
       
-      audioRef.current.onended = () => setIsPlaying(false);
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+        setIsLoading(false);
+      };
       audioRef.current.onerror = () => {
         setIsPlaying(false);
+        setIsLoading(false);
         console.error("Audio playback error");
       };
       
       await audioRef.current.play();
+      setIsLoading(false);
+      setIsPlaying(true);
     } catch (err) {
       setIsPlaying(false);
+      setIsLoading(false);
       console.error(err);
     }
   };
@@ -336,13 +352,15 @@ const AudioButton = ({ url, label }: { url: string, label: string }) => {
   return (
     <motion.button 
       onClick={handlePlay}
-      disabled={isPlaying}
+      disabled={isPlaying || isLoading}
       aria-label={isPlaying ? `Pause ${label}` : `Listen to ${label}`}
       animate={isPlaying ? { scale: [1, 1.08, 1] } : { scale: 1 }}
       transition={{ repeat: isPlaying ? Infinity : 0, duration: 2, ease: "easeInOut" }}
-      className="flex items-center justify-center w-7 h-7 rounded-full bg-border-subtle/10 text-muted hover:text-foreground hover:bg-border-subtle/30 transition-colors group focus:outline-none focus:ring-2 focus:ring-border-subtle shrink-0"
+      className={`flex items-center justify-center w-7 h-7 rounded-full bg-border-subtle/10 text-muted hover:text-foreground hover:bg-border-subtle/30 transition-colors group focus:outline-none focus:ring-2 focus:ring-border-subtle shrink-0 ${isLoading ? 'opacity-50 cursor-wait' : ''}`}
     >
-      {isPlaying ? (
+      {isLoading ? (
+        <div className="w-3 h-3 rounded-full border-2 border-muted border-t-foreground animate-spin" />
+      ) : isPlaying ? (
         <Volume2 size={14} className="text-foreground" />
       ) : (
         <Volume2 size={14} strokeWidth={2.5} className="group-hover:scale-110 transition-transform ml-[1px]" />

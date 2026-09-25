@@ -1,3 +1,5 @@
+import { getTtsAudio } from './tts.ts';
+
 export interface DictionaryDefinition {
   definition: string;
   example: string | null;
@@ -14,6 +16,7 @@ export interface DictionaryPronunciation {
 }
 
 export interface DictionaryResult {
+  audioUrl?: string | null;
   word: string;
   phonetic: string | null;
   pronunciations: DictionaryPronunciation[];
@@ -128,6 +131,7 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
     const result: DictionaryResult = {
       word: cleanWord,
       phonetic: null,
+      audioUrl: null,
       pronunciations: [],
       meanings: [],
       synonyms: [],
@@ -208,9 +212,47 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
        return { error: `No definitions found for ${cleanWord}` };
     }
 
+    // Normalize phonetic for comparison: remove slashes, stress marks, and hyphens.
+    const normalizePhonetic = (p: string) => p.replace(/[\/ˈˌ-]/g, '').trim();
+
+    // Filter out partial shorthand pronunciations (e.g. "/-ˈn(y)u̇r/" or "/ˌäⁿn-/")
+    // and count unique normalized phonetic strings.
+    const fullPhonetics = result.pronunciations
+      .filter(p => {
+        if (!p.phonetic) return false;
+        const inner = p.phonetic.replace(/^\//, '').replace(/\/$/, '');
+        return !inner.startsWith('-') && !inner.endsWith('-');
+      })
+      .map(p => normalizePhonetic(p.phonetic));
+      
+    const uniquePhonetics = new Set(fullPhonetics);
+
+    // Enhance with high-quality TTS audio ONLY if there is exactly 1 distinct full phonetic spelling.
+    // If > 1, we preserve all MW native audio to ensure phonetics match the audio exactly (Homographs).
+    if (uniquePhonetics.size <= 1) {
+      const mwAudioUrl = result.pronunciations[0]?.audioUrl || null;
+      const ttsUrl = await getTtsAudio(cleanWord, mwAudioUrl);
+      
+      if (ttsUrl) {
+        result.audioUrl = ttsUrl; // Root property for frontend compatibility
+        if (result.pronunciations.length > 0) {
+          result.pronunciations[0].audioUrl = ttsUrl; // Overwrite primary MW audio
+        } else {
+          result.pronunciations.push({ phonetic: result.phonetic || `/${cleanWord}/`, audioUrl: ttsUrl });
+        }
+      } else {
+        result.audioUrl = mwAudioUrl;
+      }
+    } else {
+      // Homograph or multiple valid variants: DO NOT use ElevenLabs.
+      // Retain the MW native URLs to ensure accuracy.
+      result.audioUrl = result.pronunciations[0]?.audioUrl || null;
+    }
+
     return result;
   } catch (error) {
     console.error("Dictionary lookup failed:", error);
     return { error: "Network failure or unexpected error during lookup" };
   }
 }
+

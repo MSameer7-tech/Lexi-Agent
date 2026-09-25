@@ -297,7 +297,7 @@ export default {
             .limit(CONTEXT_WINDOW);
             
           if (msgsData) {
-            historyMessages = msgsData.reverse().map(m => ({
+            historyMessages = msgsData.reverse().map((m: any) => ({
               role: m.role,
               content: m.content
             }));

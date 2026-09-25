@@ -15,6 +15,7 @@ export interface DictionaryPronunciation {
 }
 
 export interface DictionaryData {
+  audioUrl?: string | null;
   word: string;
   phonetic: string | null;
   pronunciations?: DictionaryPronunciation[];
