@@ -1,20 +1,13 @@
+const fs = require('fs');
+let content = fs.readFileSync('src/App.tsx', 'utf-8');
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MainLayout } from './layouts/MainLayout';
-import { Home } from './pages/Home';
-import { History } from './pages/History';
-import { Settings } from './pages/Settings';
-import { Auth } from './pages/Auth';
-import { Vocabulary } from './pages/Vocabulary';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
+const oldLoader = `    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-muted" size={32} />
+      </div>
+    );`;
 
-const RootGuard = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
+const newLoader = `    return (
       <div className="w-full flex-1 flex flex-col md:grid md:grid-cols-2 md:gap-8 lg:gap-16 pt-8 pb-12 animate-pulse">
         {/* Left Side Skeleton */}
         <div className="w-full flex flex-col justify-center gap-8 order-1 md:order-1 pt-12 md:pt-0">
@@ -44,30 +37,8 @@ const RootGuard = ({ children }: { children: React.ReactNode }) => {
           <div className="absolute top-1/2 left-1/2 w-[140px] md:w-[180px] h-[160px] md:h-[200px] -mt-[80px] md:-mt-[100px] -ml-[70px] md:-ml-[90px] bg-border-subtle/10 rounded-2xl translate-x-[70px] translate-y-[80px] rotate-[6deg] z-20"></div>
         </div>
       </div>
-    );
-  }
-  
-  if (!user && !sessionStorage.getItem('lexiagent-guest')) {
-    return <Navigate to="/auth" replace />;
-  }
-  
-  return <>{children}</>;
-};
+    );`;
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<RootGuard><Home /></RootGuard>} />
-          <Route path="history" element={<History />} />
-          <Route path="vocabulary" element={<Vocabulary />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="auth" element={<Auth />} />
-        </Route>
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
+content = content.replace(oldLoader, newLoader);
+fs.writeFileSync('src/App.tsx', content);
+console.log('App loader replaced');
