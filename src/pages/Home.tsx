@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { EASE } from '../lib/motion';
 import { Search, ArrowRight, RefreshCw, AlertCircle, Bookmark, Mic } from 'lucide-react';
 import { WordResult } from '../components/dictionary/WordResult';
@@ -14,7 +14,6 @@ import { Loader2 } from 'lucide-react';
 import type { Message } from '../types';
 
 export const Home: React.FC = () => {
-  const shouldReduceMotion = useReducedMotion();
   const { user } = useAuth();
   const { sessions, activeSessionId, setActiveSession, addSession, addMessageToSession, setMessages, prependMessages } = useHistoryStore();
   const session = sessions.find(s => s.id === activeSessionId) || null;
