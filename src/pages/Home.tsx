@@ -475,8 +475,8 @@ export const Home: React.FC = () => {
                     {/* Header */}
                     <div className="relative flex justify-between items-start z-10">
                       <div className="flex flex-col gap-1.5">
-                        <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.25em] uppercase text-black/70 dark:text-white/70 font-bold tracking-[0.2em] transition-colors duration-700">Word of the Day</span>
-                        <span className="text-[10px] sm:text-xs font-serif text-black/60 dark:text-white/60 italic font-medium">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+                        <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.25em] uppercase text-black/60 dark:text-white/60 font-semibold tracking-[0.2em] transition-colors duration-700">Word of the Day</span>
+                        <span className="text-[10px] sm:text-xs font-serif text-black/50 dark:text-white/50 italic">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
                       </div>
                       <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center transition-colors duration-700">
                         <Bookmark size={14} strokeWidth={2} className="text-black/40 dark:text-white/40" />
@@ -487,21 +487,21 @@ export const Home: React.FC = () => {
                     <div className="relative flex flex-col z-10">
                       {wotdData ? (
                         <>
-                          <h2 className="font-serif text-[36px] sm:text-[44px] md:text-[52px] leading-[1] text-black dark:text-white tracking-tight font-medium antialiased mb-3 break-words transition-colors duration-700">
+                          <h2 className="font-serif text-[36px] sm:text-[44px] md:text-[52px] leading-[1] text-black/95 dark:text-white/95 tracking-tight antialiased mb-3 break-words transition-colors duration-700">
                             {wotdData.word}
                           </h2>
                           
                           {wotdData.dictionary?.phonetic && (
                             <div className="flex items-center gap-3 mb-5">
-                              <span className="font-sans text-sm sm:text-base text-black/75 dark:text-white/75 tracking-wide font-semibold antialiased">{wotdData.dictionary.phonetic}</span>
-                              <span className="text-[9px] sm:text-[10px] font-sans tracking-widest uppercase text-black/60 dark:text-white/60 px-2.5 py-0.5 rounded-full border border-black/20 dark:border-white/20 font-bold">
+                              <span className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 tracking-wide font-medium antialiased">{wotdData.dictionary.phonetic}</span>
+                              <span className="text-[9px] sm:text-[10px] font-sans tracking-widest uppercase text-black/50 dark:text-white/50 px-2.5 py-0.5 rounded-full border border-black/15 dark:border-white/15 font-semibold">
                                 {wotdData.dictionary.meanings?.[0]?.partOfSpeech || 'word'}
                               </span>
                             </div>
                           )}
 
                           {wotdData.dictionary?.meanings?.[0]?.definitions?.[0]?.definition ? (
-                            <p className="font-serif text-sm sm:text-base md:text-[17px] text-black/80 dark:text-white/80 leading-relaxed italic font-medium antialiased">
+                            <p className="font-serif text-sm sm:text-base md:text-[17px] text-black/70 dark:text-white/70 leading-relaxed italic antialiased">
                               "{wotdData.dictionary.meanings[0].definitions[0].definition}"
                             </p>
                           ) : (
