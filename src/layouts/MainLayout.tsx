@@ -48,6 +48,7 @@ export const MainLayout: React.FC = () => {
 
   const navItems = [
     { type: 'button', action: () => { setActiveSession(null); navigate('/'); }, label: 'Home', icon: undefined, id: 'home' },
+    { type: 'button', action: () => { navigate('/', { state: { triggerWotd: true } }); }, label: 'Word of the Day', icon: undefined, id: 'wotd' },
     { type: 'button', action: () => setDrawerOpen(true), label: 'Chats', icon: Clock, id: 'history' },
     { type: 'link', path: '/vocabulary', label: 'Vocabulary', icon: undefined, id: 'vocabulary' },
     { type: 'link', path: '/settings', label: 'Settings', icon: Settings, id: 'settings' },

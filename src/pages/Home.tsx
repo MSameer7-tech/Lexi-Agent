@@ -41,6 +41,15 @@ export const Home: React.FC = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 
+  const [wotdData, setWotdData] = useState<{ word: string, dictionary: any } | null>(null);
+  useEffect(() => {
+    import('../services/lexiAgentApi').then(({ getWordOfTheDay }) => {
+      getWordOfTheDay().then(res => {
+        if (res && res.word) setWotdData({ word: res.word, dictionary: res.dictionary });
+      }).catch(console.error);
+    });
+  }, []);
+
     // Cloud Hydration for Messages
   useEffect(() => {
     if (activeSessionId && user && session && !session.isLoaded && session.messages.length === 0) {
@@ -183,28 +192,34 @@ export const Home: React.FC = () => {
     useEffect(() => {
     if (location.state?.askAbout) {
       const askWord = location.state.askAbout;
-      // Clear the state so it doesn't trigger on reload
       navigate('/', { replace: true });
-      
       const newPrompt = `Tell me more about the word "${askWord}"`;
-      
       if (activeSessionId) {
         setInputValue(newPrompt);
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.focus();
-          }
-        }, 100);
+        setTimeout(() => { if (textareaRef.current) textareaRef.current.focus(); }, 100);
       } else {
         setQuery(newPrompt);
-        // Automatically start the search?
-        // handleInitialSearch(newPrompt);
-        setTimeout(() => {
-          handleInitialSearch(newPrompt);
-        }, 100);
+        setTimeout(() => handleInitialSearch(newPrompt), 100);
+      }
+    } else if (location.state?.triggerWotd) {
+      navigate('/', { replace: true });
+      if (wotdData?.word) {
+        setQuery(wotdData.word);
+        setTimeout(() => handleInitialSearch(wotdData.word), 100);
+      } else {
+        // Fallback if not loaded yet
+        import('../services/lexiAgentApi').then(({ getWordOfTheDay }) => {
+          getWordOfTheDay().then(res => {
+            if (res && res.word) {
+              setWotdData({ word: res.word, dictionary: res.dictionary });
+              setQuery(res.word);
+              setTimeout(() => handleInitialSearch(res.word), 100);
+            }
+          });
+        });
       }
     }
-  }, [location.state]);
+  }, [location.state, wotdData]);
 
   const executeTurn = async (messageText: string) => {
     if (!messageText.trim()) return;
@@ -383,87 +398,142 @@ export const Home: React.FC = () => {
                 </motion.p>
               </div>
 
-              {/* RIGHT SIDE: CARDS (Middle on Mobile, Right on Desktop) */}
-              <div className="w-full h-[260px] sm:h-[300px] md:h-[640px] relative overflow-hidden md:overflow-visible z-0 order-2 md:col-start-2 md:row-start-1 md:row-span-2 my-8 md:my-0 pointer-events-none md:pointer-events-auto">
-                <div className="relative w-full h-full md:min-h-[500px]">
+              {/* RIGHT SIDE: BLOOMING FLOWER WOTD CLUSTER */}
+              <div className="w-full md:h-[640px] relative overflow-hidden md:overflow-visible z-0 order-2 md:col-start-2 md:row-start-1 md:row-span-2 my-8 md:my-0 flex items-center justify-center pointer-events-none md:pointer-events-auto">
+                <div className="relative flex items-center justify-center w-full max-w-[380px] h-full group/cluster">
                   
-                  {/* ELOQUENT (Pink) */}
-                  <motion.div 
-                    initial={{ opacity: 0, rotate: -3, y: 10 }}
-                    animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [2, -2, 2] }}
-                    transition={{ opacity: { duration: 0.8, delay: 0.3 }, y: { repeat: Infinity, duration: 16, ease: "easeInOut" } }}
-                    className="absolute top-[10%] left-[2%] sm:left-[10%] md:top-[28%] md:left-[5%] w-[150px] h-[170px] sm:w-[180px] sm:h-[200px] md:w-[220px] md:h-[240px] bg-[#FFE6E0] dark:bg-[#51332F] p-4 md:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-20 flex flex-col transition-transform hover:-rotate-1"
-                  >
-                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={18} strokeWidth={2} className="md:w-5 md:h-5" />
-                      <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
-                    </div>
-                    <p className="font-serif text-[26px] sm:text-[32px] md:text-[40px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5 md:mb-2">eloquent</p>
-                    <p className="font-sans text-xs sm:text-sm md:text-base text-black/60 dark:text-white/60 leading-tight">fluent or<br/>persuasive</p>
-                  </motion.div>
+                  {/* BACKGROUND CARDS (Wrapped in layout divs for hover transitions) */}
+                  
+                  {/* 1. ELOQUENT (Top Left) */}
+                  <div className="absolute top-1/2 left-1/2 w-[140px] h-[160px] sm:w-[160px] sm:h-[180px] md:w-[180px] md:h-[200px] -mt-[80px] sm:-mt-[90px] md:-mt-[100px] -ml-[70px] sm:-ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 -translate-x-[30px] -translate-y-[30px] -rotate-3 group-hover/cluster:-translate-x-[120px] sm:group-hover/cluster:-translate-x-[150px] md:group-hover/cluster:-translate-x-[180px] group-hover/cluster:-translate-y-[100px] sm:group-hover/cluster:-translate-y-[120px] group-hover/cluster:-rotate-12 opacity-80 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [3, -3, 3] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="w-full h-full bg-[#FFE6E0] dark:bg-[#51332F] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("eloquent"); handleInitialSearch("eloquent"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[24px] sm:text-[28px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">eloquent</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">fluent or<br/>persuasive</p>
+                    </motion.div>
+                  </div>
 
-                  {/* LIMINAL (Blue) */}
-                  <motion.div 
-                    initial={{ opacity: 0, rotate: 6, y: 10 }}
-                    animate={{ opacity: 1, y: shouldReduceMotion ? 0 : [-2, 2, -2] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.6 }, y: { repeat: Infinity, duration: 9, ease: "easeInOut", delay: 1 } }}
-                    className="flex absolute top-[25%] right-[2%] sm:right-[10%] md:top-[5%] md:right-[5%] w-[160px] h-[180px] sm:w-[190px] sm:h-[210px] md:w-[230px] md:h-[250px] bg-[#DCE4FF] dark:bg-[#283566] p-4 md:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:rotate-3"
-                  >
-                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={18} strokeWidth={2} className="md:w-5 md:h-5" />
-                      <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
-                    </div>
-                    <p className="font-serif text-[28px] sm:text-[36px] md:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5 md:mb-2">liminal</p>
-                    <p className="font-sans text-xs sm:text-sm md:text-base text-black/60 dark:text-white/60 leading-tight">a transitional<br/>phase</p>
-                  </motion.div>
+                  {/* 2. PETRICHOR (Bottom Left) */}
+                  <div className="absolute top-1/2 left-1/2 w-[140px] h-[160px] sm:w-[160px] sm:h-[180px] md:w-[180px] md:h-[200px] -mt-[80px] sm:-mt-[90px] md:-mt-[100px] -ml-[70px] sm:-ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-20 -translate-x-[20px] translate-y-[30px] rotate-2 group-hover/cluster:-translate-x-[100px] sm:group-hover/cluster:-translate-x-[130px] md:group-hover/cluster:-translate-x-[160px] group-hover/cluster:translate-y-[100px] sm:group-hover/cluster:translate-y-[130px] group-hover/cluster:-rotate-[16deg] opacity-80 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="w-full h-full bg-[#E5D9FF] dark:bg-[#3B2C59] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("petrichor"); handleInitialSearch("petrichor"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[26px] sm:text-[30px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">petrichor</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">the pleasant<br/>smell of rain</p>
+                    </motion.div>
+                  </div>
 
-                  {/* PETRICHOR (Purple) - Hidden on Mobile */}
-                  <motion.div 
-                    initial={{ opacity: 0, rotate: -6, y: 10 }}
-                    animate={{ opacity: 1, y: [3, -3, 3] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.7 }, y: { repeat: Infinity, duration: 7.5, ease: "easeInOut", delay: 0.5 } }}
-                    className="hidden md:flex absolute bottom-[10%] left-[20%] md:bottom-[5%] md:left-[25%] w-[170px] h-[190px] sm:w-[210px] sm:h-[230px] bg-[#E5D9FF] dark:bg-[#3B2C59] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-10 flex-col transition-transform hover:-rotate-2"
-                  >
-                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={20} strokeWidth={2} />
-                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
-                    </div>
-                    <p className="font-serif text-[32px] sm:text-[40px] leading-[0.95] text-black/80 dark:text-white/90 tracking-tight mb-2">petrichor</p>
-                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight mt-1">the pleasant<br/>smell of rain</p>
-                  </motion.div>
+                  {/* 3. HALCYON (Top Right) */}
+                  <div className="absolute top-1/2 left-1/2 w-[140px] h-[160px] sm:w-[160px] sm:h-[180px] md:w-[180px] md:h-[200px] -mt-[80px] sm:-mt-[90px] md:-mt-[100px] -ml-[70px] sm:-ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 translate-x-[25px] -translate-y-[20px] rotate-[4deg] group-hover/cluster:translate-x-[110px] sm:group-hover/cluster:translate-x-[140px] md:group-hover/cluster:translate-x-[170px] group-hover/cluster:-translate-y-[80px] sm:group-hover/cluster:-translate-y-[100px] group-hover/cluster:rotate-[14deg] opacity-70 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="w-full h-full bg-[#FFF2CC] dark:bg-[#5C4D26] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("halcyon"); handleInitialSearch("halcyon"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[26px] sm:text-[30px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">halcyon</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">calm, peaceful<br/>days</p>
+                    </motion.div>
+                  </div>
 
-                  {/* HALCYON (Yellow) - Hidden on Mobile */}
-                  <motion.div 
-                    initial={{ opacity: 0, rotate: 3, y: 10 }}
-                    animate={{ opacity: 1, y: [-3, 3, -3] }}
-                    transition={{ opacity: { duration: 1.2, delay: 0.8 }, y: { repeat: Infinity, duration: 8.5, ease: "easeInOut", delay: 1.5 } }}
-                    className="hidden lg:flex absolute bottom-[8%] right-[8%] md:bottom-[15%] md:right-[10%] w-[200px] h-[220px] sm:w-[240px] sm:h-[260px] bg-[#FFF1CC] dark:bg-[#594B22] p-5 sm:p-6 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] rounded-2xl z-30 flex-col transition-transform hover:rotate-1"
-                  >
-                    <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto">
-                      <Bookmark size={20} strokeWidth={2} />
-                      <div className="w-2.5 h-2.5 rounded-full bg-black/15 dark:bg-white/15" />
-                    </div>
-                    <p className="font-serif text-[36px] sm:text-[44px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-2">halcyon</p>
-                    <p className="font-sans text-sm sm:text-base text-black/60 dark:text-white/60 leading-tight">calm, peaceful<br/>days</p>
-                  </motion.div>
+                  {/* 4. LIMINAL (Bottom Right) */}
+                  <div className="absolute top-1/2 left-1/2 w-[140px] h-[160px] sm:w-[160px] sm:h-[180px] md:w-[180px] md:h-[200px] -mt-[80px] sm:-mt-[90px] md:-mt-[100px] -ml-[70px] sm:-ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-20 translate-x-[15px] translate-y-[20px] -rotate-1 group-hover/cluster:translate-x-[90px] sm:group-hover/cluster:translate-x-[120px] md:group-hover/cluster:translate-x-[150px] group-hover/cluster:translate-y-[110px] sm:group-hover/cluster:translate-y-[140px] group-hover/cluster:rotate-[18deg] opacity-70 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [-3, 3, -3] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1.5 }} className="w-full h-full bg-[#DCE4FF] dark:bg-[#283566] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("liminal"); handleInitialSearch("liminal"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[26px] sm:text-[30px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">liminal</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">a transitional<br/>phase</p>
+                    </motion.div>
+                  </div>
 
+                  {/* 5. EPHEMERAL (Far Left Middle) - Hidden on Mobile */}
+                  <div className="hidden sm:block absolute top-1/2 left-1/2 w-[160px] h-[180px] md:w-[180px] md:h-[200px] -mt-[90px] md:-mt-[100px] -ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-0 -translate-x-[10px] translate-y-[5px] rotate-[1deg] group-hover/cluster:-translate-x-[180px] md:group-hover/cluster:-translate-x-[220px] group-hover/cluster:translate-y-[10px] group-hover/cluster:-rotate-[25deg] opacity-60 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [5, -5, 5] }} transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="w-full h-full bg-[#E6F3E6] dark:bg-[#2A3B2A] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("ephemeral"); handleInitialSearch("ephemeral"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[26px] sm:text-[30px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">ephemeral</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">lasting for a<br/>very short time</p>
+                    </motion.div>
+                  </div>
+
+                  {/* 6. ETHEREAL (Far Right Middle) - Hidden on Mobile */}
+                  <div className="hidden sm:block absolute top-1/2 left-1/2 w-[160px] h-[180px] md:w-[180px] md:h-[200px] -mt-[90px] md:-mt-[100px] -ml-[80px] md:-ml-[90px] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-0 translate-x-[10px] -translate-y-[5px] -rotate-[2deg] group-hover/cluster:translate-x-[180px] md:group-hover/cluster:translate-x-[220px] group-hover/cluster:-translate-y-[10px] group-hover/cluster:rotate-[22deg] opacity-60 group-hover/cluster:opacity-100">
+                    <motion.div animate={{ y: [-5, 5, -5] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} className="w-full h-full bg-[#FCE8D5] dark:bg-[#4A3219] p-4 sm:p-5 shadow-lg rounded-2xl flex flex-col cursor-pointer pointer-events-auto" onClick={() => { setQuery("ethereal"); handleInitialSearch("ethereal"); }}>
+                      <div className="flex justify-between items-start text-black/40 dark:text-white/40 mb-auto"><Bookmark size={16} strokeWidth={2} /><div className="w-2 h-2 rounded-full bg-black/15 dark:bg-white/15" /></div>
+                      <p className="font-serif text-[26px] sm:text-[30px] leading-none text-black/80 dark:text-white/90 tracking-tight mb-1.5">ethereal</p>
+                      <p className="font-sans text-[10px] sm:text-xs text-black/60 dark:text-white/60 leading-tight">extremely delicate<br/>and light</p>
+                    </motion.div>
+                  </div>
+
+                  {/* MAIN WOTD CARD */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    onClick={() => { if (wotdData?.word) { setQuery(wotdData.word); handleInitialSearch(wotdData.word); } }}
+                    className="relative z-40 w-[85%] sm:w-[90%] bg-[#F9F7F1] dark:bg-[#1E1D1A] rounded-[32px] sm:rounded-[40px] p-8 sm:p-10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] dark:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)] border border-black/5 dark:border-white/5 cursor-pointer flex flex-col gap-12 sm:gap-16 overflow-hidden transition-all duration-700 hover:scale-[1.02] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)] pointer-events-auto ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  >
+                    {/* Subtle grain texture overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+                    
+                    {/* Soft Background Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#FDFCFB]/80 to-[#E2D1C3]/30 dark:from-[#2F2D28]/40 dark:to-[#1C1B19]/80 pointer-events-none transition-opacity duration-700 opacity-60"></div>
+
+                    {/* Header */}
+                    <div className="relative flex justify-between items-start z-10">
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.25em] uppercase text-black/50 dark:text-white/50 font-semibold transition-colors duration-700">Word of the Day</span>
+                        <span className="text-[10px] sm:text-xs font-serif text-black/40 dark:text-white/40 italic">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center transition-colors duration-700">
+                        <Bookmark size={14} strokeWidth={2} className="text-black/40 dark:text-white/40" />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative flex flex-col z-10">
+                      {wotdData ? (
+                        <>
+                          <h2 className="font-serif text-[36px] sm:text-[44px] md:text-[52px] leading-[1] text-black/90 dark:text-white/90 tracking-tight mb-3 break-words transition-colors duration-700">
+                            {wotdData.word}
+                          </h2>
+                          
+                          {wotdData.dictionary?.phonetic && (
+                            <div className="flex items-center gap-3 mb-5">
+                              <span className="font-sans text-sm sm:text-base text-black/50 dark:text-white/50 tracking-wide font-medium">{wotdData.dictionary.phonetic}</span>
+                              <span className="text-[9px] sm:text-[10px] font-sans tracking-widest uppercase text-black/40 dark:text-white/40 px-2.5 py-0.5 rounded-full border border-black/10 dark:border-white/10">
+                                {wotdData.dictionary.meanings?.[0]?.partOfSpeech || 'word'}
+                              </span>
+                            </div>
+                          )}
+
+                          {wotdData.dictionary?.meanings?.[0]?.definitions?.[0]?.definition ? (
+                            <p className="font-serif text-sm sm:text-base md:text-[17px] text-black/60 dark:text-white/60 leading-relaxed italic">
+                              "{wotdData.dictionary.meanings[0].definitions[0].definition}"
+                            </p>
+                          ) : (
+                            <p className="font-sans text-xs sm:text-sm text-black/40 dark:text-white/40 leading-tight">
+                              tap to discover full meaning & synonyms
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-4 py-8">
+                          <span className="w-6 h-6 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin"></span>
+                          <span className="text-xs font-sans tracking-widest uppercase text-black/30 dark:text-white/30">Curating...</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
                 </div>
               </div>
-
               {/* LEFT SIDE: SEARCH AREA (Bottom on Mobile, Left on Desktop) */}
               <div className="w-full relative z-10 order-3 md:col-start-1 md:row-start-2 pb-8 sm:pb-12 md:pb-0">
                 <motion.div 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
-                  className="w-full max-w-xl relative"
+                  className="w-full max-w-xl relative mt-8 sm:mt-12 md:mt-16"
                 >
                   <div className="mb-3 text-[9px] uppercase tracking-[0.15em] text-subtle">
                     FIG. 01 / INQUIRY
                   </div>
                   <form 
                     onSubmit={handleInitialSearch} 
-                    className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] ${isInputFocused ? 'border-foreground/30 shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] bg-white dark:bg-[#2F2D28]' : 'border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)]'}`}
+                    className={`relative flex items-center transition-all duration-200 rounded-[1px] bg-white dark:bg-[#2F2D28] ${isInputFocused ? 'border-foreground/40 shadow-[0_8px_30px_-6px_rgba(42,41,40,0.12)] dark:shadow-[0_8px_30px_-6px_rgba(0,0,0,0.3)]' : 'border-foreground/20 shadow-md dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)]'}`}
                     style={{ borderWidth: '1px' }}
                   >
                     <div className="absolute left-3.5 sm:left-6 flex items-center text-muted pointer-events-none">
@@ -476,7 +546,7 @@ export const Home: React.FC = () => {
                       onFocus={() => setIsInputFocused(true)}
                       onBlur={() => setIsInputFocused(false)}
                       placeholder="Ask about a word..."
-                      className="w-full min-w-0 h-14 sm:h-16 md:h-20 pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none placeholder:text-muted"
+                      className="w-full min-w-0 h-14 sm:h-16 md:h-20 pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif focus:outline-none placeholder:text-muted"
                     />
                     <div className="absolute right-1 sm:right-2 flex items-center gap-0 sm:gap-1">
                       <button
@@ -502,10 +572,10 @@ export const Home: React.FC = () => {
                       <button
                         key={prompt}
                         onClick={() => { setQuery(prompt); handleInitialSearch(prompt); }}
-                        className="text-left font-sans text-[13px] sm:text-sm text-muted hover:text-foreground transition-colors duration-300 flex items-center group w-max max-w-full"
+                        className="text-left font-sans text-[13px] sm:text-sm text-foreground/90 hover:text-foreground transition-colors duration-300 flex items-center group w-max max-w-full"
                       >
-                        <span className="w-6 sm:w-8 text-[9px] tracking-widest text-subtle group-hover:text-muted transition-colors shrink-0">0{i+1}</span>
-                        <span className="transform group-hover:translate-x-[3px] transition-transform duration-300 truncate">{prompt}</span>
+                        <span className="w-6 sm:w-8 text-[10px] sm:text-[11px] font-medium tracking-widest text-foreground/70 group-hover:text-foreground transition-colors shrink-0">0{i+1}</span>
+                        <span className="transform group-hover:translate-x-[3px] transition-transform duration-300 truncate text-base sm:text-[17px]">{prompt}</span>
                       </button>
                     ))}
                   </div>
@@ -555,8 +625,8 @@ export const Home: React.FC = () => {
                   {message.role === 'user' ? (
                     <div className="flex flex-col items-end gap-2 max-w-[85%] md:max-w-[70%]">
                       <div className="px-6 py-4 rounded-2xl rounded-tr-sm bg-surface border border-border-strong text-foreground shadow-sm">
-                        <p className="text-lg font-serif italic text-muted leading-relaxed">
-                          "{message.content}"
+                        <p className="text-lg font-serif text-muted leading-relaxed">
+                          {message.content}
                         </p>
                       </div>
                       <span className="text-[10px] text-border-strong font-medium uppercase tracking-widest mr-2">
@@ -637,7 +707,7 @@ export const Home: React.FC = () => {
                 </div>
                 <form 
                   onSubmit={handleSendMessage} 
-                  className={`relative flex items-center bg-surface transition-all duration-200 rounded-[1px] border-border-strong/60 shadow-[0_2px_12px_-2px_rgba(42,41,40,0.05)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.1)] focus-within:border-foreground/30 focus-within:shadow-[0_6px_24px_-6px_rgba(42,41,40,0.08)] focus-within:dark:shadow-[0_6px_24px_-6px_rgba(0,0,0,0.2)] focus-within:bg-white focus-within:dark:bg-[#2F2D28]`}
+                  className={`relative flex items-center transition-all duration-200 rounded-[1px] bg-white dark:bg-[#2F2D28] border-foreground/20 shadow-md dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] focus-within:border-foreground/40 focus-within:shadow-[0_8px_30px_-6px_rgba(42,41,40,0.12)] focus-within:dark:shadow-[0_8px_30px_-6px_rgba(0,0,0,0.3)]`}
                   style={{ borderWidth: '1px' }}
                 >
                   <div className="absolute left-3.5 sm:left-6 flex items-center text-muted pointer-events-none">
@@ -650,7 +720,7 @@ export const Home: React.FC = () => {
                     onKeyDown={handleKeyDown}
                     placeholder="Ask a follow up..."
                     rows={1}
-                    className="w-full min-w-0 min-h-[56px] sm:min-h-[80px] py-[16px] sm:py-[28px] pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif italic focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
+                    className="w-full min-w-0 min-h-[56px] sm:min-h-[80px] py-[16px] sm:py-[28px] pl-11 sm:pl-16 pr-[84px] sm:pr-[90px] bg-transparent text-base sm:text-lg text-foreground font-serif focus:outline-none resize-none placeholder:text-muted custom-scrollbar"
                     disabled={isLoading}
                   />
                   <div className="absolute right-1 sm:right-4 flex items-center gap-0 sm:gap-1">

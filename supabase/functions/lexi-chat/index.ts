@@ -79,7 +79,7 @@ export default {
       }
 
       if (action) {
-        if (!authenticatedUser) {
+        if (!authenticatedUser && action !== 'get_word_of_the_day') {
           return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), { 
             status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
           });
@@ -106,6 +106,48 @@ export default {
               const historyResult = await getWordHistory(supabaseClient, authenticatedUser.id);
               return new Response(JSON.stringify(historyResult), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             
+            case 'get_word_of_the_day': {
+              const today = new Date().toISOString().split('T')[0];
+              const { data: wotdData } = await supabaseClient
+                .from('word_of_the_day')
+                .select('word, dictionary_data')
+                .eq('date', today)
+                .maybeSingle();
+
+              if (wotdData && wotdData.word && wotdData.dictionary_data) {
+                return new Response(JSON.stringify({ success: true, word: wotdData.word, dictionary: wotdData.dictionary_data }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+              }
+
+              let newWord = wotdData?.word;
+
+              if (!newWord) {
+                // Ask Groq for a word if not exists
+                const groqKey = Deno.env.get('GROQ_API_KEY');
+                if (!groqKey) throw new Error("Internal Configuration Error");
+                
+                const groqResponse = await callGroqChatCompletion(groqKey, [
+                  { role: "system", content: "You are a vocabulary expert. Respond ONLY with a single fascinating, advanced English word. Do not include any punctuation, definitions, or extra text." },
+                  { role: "user", content: `Give me a fascinating word for ${today}.` }
+                ]);
+
+                newWord = groqResponse.content?.trim().toLowerCase().replace(/[^a-z]/g, '') || "serendipity";
+              }
+
+              // Fetch Dictionary data
+              const dictResult = await dictionary_lookup(newWord);
+              const dictionaryData = ("error" in dictResult) ? null : dictResult;
+
+              if (!wotdData) {
+                // Insert new row
+                await supabaseClient.from('word_of_the_day').insert({ date: today, word: newWord, dictionary_data: dictionaryData });
+              } else if (!wotdData.dictionary_data && dictionaryData) {
+                // Update existing row with dictionary data
+                await supabaseClient.from('word_of_the_day').update({ dictionary_data: dictionaryData }).eq('date', today);
+              }
+              
+              return new Response(JSON.stringify({ success: true, word: newWord, dictionary: dictionaryData }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+
             case 'get_conversations': {
               const limit = Math.max(1, Math.min(Number(body.limit) || 30, 100));
               const cursor = body.cursor || null;

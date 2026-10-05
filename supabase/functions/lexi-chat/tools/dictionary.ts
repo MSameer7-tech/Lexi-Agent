@@ -145,11 +145,26 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
       const entryId = entry.meta?.id?.split(':')[0]?.toLowerCase();
       if (!entryId) continue;
 
-      if (entryId !== targetWordLower) continue;
+      const stems = (entry.meta?.stems || []).map((s: string) => s.toLowerCase());
+      if (entryId !== targetWordLower && !stems.includes(targetWordLower)) continue;
+
+      // Determine if we should use the main entry or a run-on (uro)
+      let targetPrs = entry.hwi?.prs;
+      let partOfSpeech = entry.fl || "unknown";
+
+      if (entryId !== targetWordLower && entry.uros && Array.isArray(entry.uros)) {
+        const matchingUro = entry.uros.find((u: any) => 
+          u.ure && u.ure.replace(/\*/g, '').toLowerCase() === targetWordLower
+        );
+        if (matchingUro) {
+          if (matchingUro.prs) targetPrs = matchingUro.prs;
+          if (matchingUro.fl) partOfSpeech = matchingUro.fl;
+        }
+      }
 
       // Extract phonetic and audio
-      if (entry.hwi?.prs && Array.isArray(entry.hwi.prs)) {
-        for (const pr of entry.hwi.prs) {
+      if (targetPrs && Array.isArray(targetPrs)) {
+        for (const pr of targetPrs) {
           if (pr.mw) {
             const phoneticStr = `/${pr.mw}/`;
             
@@ -179,8 +194,6 @@ export async function dictionary_lookup(word: string): Promise<DictionaryResult 
           }
         }
       }
-      
-      const partOfSpeech = entry.fl || "unknown";
       
       const definitions: DictionaryDefinition[] = [];
 

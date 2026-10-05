@@ -123,3 +123,7 @@ export async function renameConversation(sessionId: string, title: string) {
 export async function togglePinConversation(sessionId: string) {
   return fetchVocabularyApi({ action: 'toggle_pin_conversation', sessionId });
 }
+
+export async function getWordOfTheDay() {
+  return fetchVocabularyApi({ action: 'get_word_of_the_day' });
+}
