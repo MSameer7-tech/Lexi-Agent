@@ -167,10 +167,13 @@ export const Home: React.FC = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  // Scroll to bottom only when switching to a new session
   useEffect(() => {
-    scrollToBottom();
-  }, [session?.messages, isLoading, error]);
+    setTimeout(scrollToBottom, 100);
+  }, [activeSessionId]);
+
+
+
 
   const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
@@ -222,6 +225,10 @@ export const Home: React.FC = () => {
     setIsSearching(true);
     setIsLoading(true);
     setError(null);
+    
+    // Scroll to bottom immediately to show the user's new message, 
+    // but DO NOT scroll again when the AI responds, so they can read from the top!
+    setTimeout(scrollToBottom, 50);
 
     // Initialize telemetry
     setActiveEvents([
