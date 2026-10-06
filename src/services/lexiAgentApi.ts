@@ -127,3 +127,7 @@ export async function togglePinConversation(sessionId: string) {
 export async function getWordOfTheDay() {
   return fetchVocabularyApi({ action: 'get_word_of_the_day' });
 }
+
+export async function generateExample(word: string) {
+  return fetchVocabularyApi({ action: 'generate_example', word });
+}
