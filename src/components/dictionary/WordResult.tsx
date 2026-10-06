@@ -6,7 +6,7 @@ import { MerriamWebsterAttribution } from '../branding/MerriamWebsterAttribution
 import { useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { isWordSaved, saveWord, removeSavedWord } from '../../services/lexiAgentApi';
+import { isWordSaved, saveWord, removeSavedWord, generateExample } from '../../services/lexiAgentApi';
 import type { ParsedDictionaryEntry } from '../../lib/parser';
 import type { DictionaryData } from '../../types';
 import { MarkdownRenderer } from '../ui/MarkdownRenderer';
