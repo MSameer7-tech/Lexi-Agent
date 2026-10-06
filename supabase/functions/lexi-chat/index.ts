@@ -119,7 +119,9 @@ export default {
                 .eq('date', today)
                 .maybeSingle();
 
-              if (wotdData && wotdData.word && wotdData.dictionary_data) {
+              const backgroundCards = ['ephemeral', 'petrichor', 'halcyon', 'eloquent', 'liminal', 'ethereal', 'serendipity'];
+              
+              if (wotdData && wotdData.word && wotdData.dictionary_data && !backgroundCards.includes(wotdData.word)) {
                 return new Response(JSON.stringify({ success: true, word: wotdData.word, dictionary: wotdData.dictionary_data }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
               }
 
@@ -139,7 +141,7 @@ export default {
                 const groqKey = Deno.env.get('GROQ_API_KEY');
                 if (!groqKey) throw new Error("Internal Configuration Error");
 
-                const fallbackWords = ["ephemeral", "serendipity", "petrichor", "halcyon", "eloquent", "liminal", "ethereal", "sonder", "mellifluous", "ineffable", "luminescence", "perspicacious", "resilience", "tenacious", "sagacious", "luminous", "vicarious", "quintessential", "recalcitrant", "obfuscate", "alacrity", "pellucid", "sycophant", "solipsistic", "phosphenes"];
+                const fallbackWords = ["sonder", "mellifluous", "ineffable", "luminescence", "perspicacious", "resilience", "tenacious", "sagacious", "luminous", "vicarious", "quintessential", "recalcitrant", "obfuscate", "alacrity", "pellucid", "sycophant", "solipsistic", "phosphenes", "defenestration", "magnanimous", "fastidious", "clandestine", "cacophony", "euphemism"];
                 
                 let attempts = 0;
                 while (!dictionaryData && attempts < 3) {
@@ -153,7 +155,7 @@ export default {
                      const themes = ["nature", "emotions", "light and darkness", "time", "philosophy", "intelligence", "courage", "mystery", "sound and music", "architecture", "the cosmos", "human connection"];
                      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
                      
-                     const prompt = "You are a master lexicographer. Select a beautiful, highly useful, advanced English word (e.g., GRE/SAT level, eloquent, poetic). It MUST be a standard word that exists in the Merriam-Webster dictionary. Do NOT pick ultra-obscure, medical, or highly technical terms. Respond ONLY with the single word in lowercase, with no punctuation or explanation.";
+                     const prompt = "You are a master lexicographer. Select a beautiful, highly useful, advanced English word. It MUST exist in the Merriam-Webster dictionary. Do NOT use any of these words: ephemeral, petrichor, halcyon, eloquent, liminal, ethereal, serendipity. Respond ONLY with the single word in lowercase, with no punctuation.";
                      const groqResponse = await callGroqChatCompletion(groqKey, [
                        { role: "system", content: prompt },
                        { role: "user", content: `Give me a beautiful, valid dictionary word related to the theme of "${randomTheme}". Random seed: ${Math.random()}` }
