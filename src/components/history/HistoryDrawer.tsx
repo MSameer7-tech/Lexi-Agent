@@ -16,8 +16,7 @@ export const HistoryDrawer: React.FC = () => {
   const { user } = useAuth();
     const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [pinningId, setPinningId] = useState<string | null>(null);
+    const [pinningId, setPinningId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
@@ -291,11 +290,11 @@ export const HistoryDrawer: React.FC = () => {
                 e.stopPropagation(); 
                 handleDeleteSession(session.id);
               }}
-              disabled={deletingId === session.id}
+              
               className="p-1.5 hover:bg-red-500/20 hover:text-red-500 rounded-md transition-colors disabled:opacity-50"
               title="Delete"
             >
-              {deletingId === session.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              <Trash2 size={14} />
             </button>
           </div>
         </div>
